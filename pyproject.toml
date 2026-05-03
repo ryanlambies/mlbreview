@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlbreview"
+version = "0.1.0"
+description = "Personal MLB daily digest — email + dashboard"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Ryan Lambies" }]
+dependencies = [
+    "httpx>=0.27",
+    "anthropic>=0.42",
+    "resend>=2.0",
+    "jinja2>=3.1",
+    "MLB-StatsAPI>=1.9",
+    "python-dateutil>=2.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.12",
+]
+
+[project.scripts]
+mlbreview = "mlbreview.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

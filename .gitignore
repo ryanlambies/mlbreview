@@ -10,3 +10,21 @@ __pycache__/
 *.pyc
 .vscode/
 .idea/
+
+# Python build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local dashboard render output (published to gh-pages by Actions)
+public/
+
+# Virtualenvs
+.venv/
+venv/
