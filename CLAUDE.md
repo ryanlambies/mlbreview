@@ -49,7 +49,7 @@ V2 leverages the dashboard surface more than email (sortable, expandable rows).
 - **Email:** Resend (transactional, free tier covers one daily send)
 - **Templating:** Jinja2 for both email HTML and dashboard pages
 - **Run env:** GitHub Actions cron (schedule both `30 09 * * *` and `30 10 * * *` UTC to cover EST/EDT, guard with timezone check)
-- **Dashboard hosting:** GitHub Pages at `https://ryanlambies.github.io/mlbreview/digests/YYYY-MM-DD/`
+- **Dashboard hosting:** GitHub Pages, served from the `gh-pages` branch (published by `peaceiris/actions-gh-pages@v4`). Per-day archive at `https://ryanlambies.github.io/mlbreview/digests/YYYY-MM-DD/`. `main` contains source code only — no rendered HTML.
 - **Secrets:** `RESEND_API_KEY` + `ANTHROPIC_API_KEY` in GitHub Actions secrets (min-privilege scope, upstream spend caps)
 
 ## Working agreements
@@ -61,23 +61,41 @@ V2 leverages the dashboard surface more than email (sortable, expandable rows).
 - **V1 must not paint V2 into a corner.** Data model and dashboard layout should accommodate V2 leaderboards from day one.
 - **Email is the habit, dashboard is the depth.** Don't bury the dashboard link, don't make the email require the dashboard.
 
+## Workflow conventions
+
+This project uses a **PR-per-unit** flow. Branch protection is not enabled (direct pushes to `main` are still possible as an escape hatch), but the convention below is the default for substantive work, especially anything implementing a plan unit.
+
+- **One branch per logical change.** For implementation-plan work, that means one branch per U-ID — e.g., `u1-project-skeleton`, `u2-data-fetch-layer`. For other changes, use `chore/<topic>`, `fix/<topic>`, or `docs/<topic>`.
+- **Open a PR with `gh pr create`.** Title format: short imperative (e.g., `feat: add MLB data fetch layer (U2)`). Body should reference the plan unit by U-ID and call out anything the reviewer should look at first.
+- **Pause for review before starting the next unit.** When implementing a plan, finish the unit, push the branch, open the PR, and stop. Wait for the user to merge (or leave comments) before opening the next branch. This is the whole point of the PR flow — don't pipeline multiple units past the review gate.
+- **Self-merge is fine.** This is a solo project; the PR is for the diff-review surface, not multi-person approval.
+- **Direct pushes to `main` are reserved for:** trivial doc edits (typo fixes), tagging releases, or unblocking a stuck PR. If you ever find yourself doing direct pushes for real code changes, that's a signal to add branch protection as a forcing function.
+- **`gh` CLI must have the `workflow` scope** to push branches that touch `.github/workflows/`. If you hit "refusing to allow an OAuth App to create or update workflow", run `gh auth refresh -h github.com -s workflow` and retry.
+
 ## Repo layout
 
 ```
-mlbreview/
+mlbreview/                              # main branch (source code, docs)
 ├── CLAUDE.md                           # this file — orientation
 ├── README.md
 ├── docs/
-│   └── brainstorms/
-│       └── 2026-05-02-mlbreview-digest-requirements.md   # full product spec
+│   ├── brainstorms/
+│   │   └── 2026-05-02-mlbreview-digest-requirements.md   # full product spec
+│   ├── plans/
+│   │   └── 2026-05-02-001-feat-v1-daily-digest-plan.md   # V1 implementation plan
+│   └── formulas.md                     # plain-language drama / hype / variety explainer (built in U3)
 ├── src/
-│   └── mlbreview/                      # Python package (placeholder; built in V1)
-├── templates/                          # Jinja2 (email + dashboard) — built in V1
-├── .github/workflows/                  # cron + deploy — built in V1
-├── requirements.txt
+│   └── mlbreview/                      # Python package (built in V1)
+├── templates/                          # Jinja2 (email + dashboard) — built in U4
+├── config/                             # stars.json — built in U3
+├── tests/                              # built alongside each unit
+├── .github/workflows/                  # cron + gh-pages publish — built in U7
+├── pyproject.toml                      # built in U1 (replaces requirements.txt)
 └── .env.example
 ```
 
+The rendered dashboard (per-day HTML + index) lives on the **`gh-pages` branch** — it's generated at run time and published by the workflow, never committed to `main`.
+
 ## Next steps for future Claude sessions
 
-The product spec is settled. The next session should run `/ce-plan` to design V1 implementation: data fetch layer, drama-score formula, hype-score formula, LLM prompt + grounding payload shape, Jinja2 templates (email + dashboard), GitHub Actions workflow with Pages deploy. The brainstorm doc's "Deferred to Planning" section is the planning agenda.
+Both the product spec (`docs/brainstorms/`) and the V1 implementation plan (`docs/plans/2026-05-02-001-feat-v1-daily-digest-plan.md`) are settled. The next session should run `/ce-work` against the plan and walk through implementation units U1 → U7 in order, opening a PR per unit per the workflow convention above. Each unit's required files, test scenarios, and verification steps are spelled out in the plan.
