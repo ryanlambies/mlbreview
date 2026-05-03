@@ -22,20 +22,28 @@ from dataclasses import dataclass
 # ---------------------------------------------------------------------------
 # Drama formula (storyline ranking)
 # ---------------------------------------------------------------------------
-# drama = DRAMA_W_WPA * norm_max_wpa
-#       + DRAMA_W_LEVERAGE * norm_late_leverage
-#       + DRAMA_W_MARGIN * inverse_margin
-DRAMA_W_WPA: float = 0.5
-DRAMA_W_LEVERAGE: float = 0.3
+# drama = DRAMA_W_MAX_WPA   * norm_max_wpa
+#       + DRAMA_W_LATE_WPA  * norm_late_inning_peak_wpa
+#       + DRAMA_W_MARGIN    * inverse_margin
+#
+# Note on the middle term: the V1 plan called this `late_leverage` (Leverage
+# Index of late-game plays). The MLB Stats API does not expose Leverage Index
+# on `/feed/live` or `/winProbability` — only on Statcast / Baseball Savant
+# behind the `pybaseball` dep, which is V2-only. We substitute "max |WPA| in
+# innings >= DRAMA_LATE_INNING_THRESHOLD," which preserves the formula's
+# intent ("credit late-game high-stakes plays") with data we have. See
+# `docs/formulas.md` for the full rationale (lands in U3).
+DRAMA_W_MAX_WPA: float = 0.5
+DRAMA_W_LATE_WPA: float = 0.3
 DRAMA_W_MARGIN: float = 0.2
 
-# Normalization ceilings — divide raw values by these to land in [0, 1].
-# 0.5 is the practical max for a single-play |WPA|; 5.0 is a typical
-# late-inning leverage-index ceiling.
-DRAMA_MAX_WPA_CEILING: float = 0.5
-DRAMA_LATE_LEVERAGE_CEILING: float = 5.0
+# WPA from the MLB Stats API is in percentage points (0–100 scale, signed).
+# A practical single-play ceiling is ~50 points (a play that flips the home
+# win probability from 50% to 100%). Divide raw |WPA| by this to land in
+# roughly [0, 1] for the drama formula.
+DRAMA_MAX_WPA_CEILING: float = 50.0
 
-# Innings >= this count toward the late-leverage component.
+# Innings >= this count toward the late-inning peak-WPA component.
 DRAMA_LATE_INNING_THRESHOLD: int = 7
 
 

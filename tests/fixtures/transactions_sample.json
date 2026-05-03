@@ -1,0 +1,1970 @@
+{
+  "copyright": "Copyright 2026 MLB Advanced Media, L.P.  Use of any content on this page acknowledges agreement to the terms posted here http://gdx.mlb.com/components/copyright.txt",
+  "transactions": [
+    {
+      "date": "2025-08-14",
+      "description": "Los Angeles Angels sent RHP Robert Stephenson on a rehab assignment to Salt Lake Bees.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 108,
+        "link": "/api/v1/teams/108",
+        "name": "Los Angeles Angels"
+      },
+      "id": 864535,
+      "person": {
+        "fullName": "Robert Stephenson",
+        "id": 596112,
+        "link": "/api/v1/people/596112"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 561,
+        "link": "/api/v1/teams/561",
+        "name": "Salt Lake Bees"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Milwaukee Brewers placed CF Blake Perkins on the bereavement list.",
+      "effectiveDate": "2025-08-14",
+      "id": 864539,
+      "person": {
+        "fullName": "Blake Perkins",
+        "id": 663368,
+        "link": "/api/v1/people/663368"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "New York Yankees sent LHP Ryan Yarbrough on a rehab assignment to Scranton/Wilkes-Barre RailRiders.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 147,
+        "link": "/api/v1/teams/147",
+        "name": "New York Yankees"
+      },
+      "id": 864486,
+      "person": {
+        "fullName": "Ryan Yarbrough",
+        "id": 642232,
+        "link": "/api/v1/people/642232"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 531,
+        "link": "/api/v1/teams/531",
+        "name": "Scranton/Wilkes-Barre RailRiders"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Detroit Tigers sent RHP Alex Cobb on a rehab assignment to Toledo Mud Hens.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 116,
+        "link": "/api/v1/teams/116",
+        "name": "Detroit Tigers"
+      },
+      "id": 864510,
+      "person": {
+        "fullName": "Alex Cobb",
+        "id": 502171,
+        "link": "/api/v1/people/502171"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 512,
+        "link": "/api/v1/teams/512",
+        "name": "Toledo Mud Hens"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "New York Yankees signed free agent SS Andrew Velazquez to a minor league contract.",
+      "effectiveDate": "2025-08-14",
+      "id": 864525,
+      "person": {
+        "fullName": "Andrew Velazquez",
+        "id": 623205,
+        "link": "/api/v1/people/623205"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 147,
+        "link": "/api/v1/teams/147",
+        "name": "New York Yankees"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Texas Rangers sent RHP Jacob Webb on a rehab assignment to Round Rock Express.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 140,
+        "link": "/api/v1/teams/140",
+        "name": "Texas Rangers"
+      },
+      "id": 864537,
+      "person": {
+        "fullName": "Jacob Webb",
+        "id": 657097,
+        "link": "/api/v1/people/657097"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 102,
+        "link": "/api/v1/teams/102",
+        "name": "Round Rock Express"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Arizona Diamondbacks sent C Gabriel Moreno on a rehab assignment to Reno Aces.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 109,
+        "link": "/api/v1/teams/109",
+        "name": "Arizona Diamondbacks"
+      },
+      "id": 864546,
+      "person": {
+        "fullName": "Gabriel Moreno",
+        "id": 672515,
+        "link": "/api/v1/people/672515"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 2310,
+        "link": "/api/v1/teams/2310",
+        "name": "Reno Aces"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Milwaukee Brewers sent LF Jake Bauers on a rehab assignment to Nashville Sounds.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "id": 864464,
+      "person": {
+        "fullName": "Jake Bauers",
+        "id": 641343,
+        "link": "/api/v1/people/641343"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 556,
+        "link": "/api/v1/teams/556",
+        "name": "Nashville Sounds"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Chicago Cubs placed C Miguel Amaya on the 10-day injured list. Left ankle sprain.",
+      "effectiveDate": "2025-08-14",
+      "id": 864472,
+      "person": {
+        "fullName": "Miguel Amaya",
+        "id": 665804,
+        "link": "/api/v1/people/665804"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 112,
+        "link": "/api/v1/teams/112",
+        "name": "Chicago Cubs"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Detroit Tigers sent RHP Alex Cobb on a rehab assignment to Toledo Mud Hens.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 116,
+        "link": "/api/v1/teams/116",
+        "name": "Detroit Tigers"
+      },
+      "id": 865127,
+      "person": {
+        "fullName": "Alex Cobb",
+        "id": 502171,
+        "link": "/api/v1/people/502171"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 512,
+        "link": "/api/v1/teams/512",
+        "name": "Toledo Mud Hens"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Milwaukee Brewers sent LF Jake Bauers on a rehab assignment to Nashville Sounds.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "id": 864477,
+      "person": {
+        "fullName": "Jake Bauers",
+        "id": 641343,
+        "link": "/api/v1/people/641343"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 556,
+        "link": "/api/v1/teams/556",
+        "name": "Nashville Sounds"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Milwaukee Brewers sent LF Jake Bauers on a rehab assignment to Nashville Sounds.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "id": 865778,
+      "person": {
+        "fullName": "Jake Bauers",
+        "id": 641343,
+        "link": "/api/v1/people/641343"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 556,
+        "link": "/api/v1/teams/556",
+        "name": "Nashville Sounds"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Atlanta Braves designated RHP Carlos Carrasco for assignment.",
+      "effectiveDate": "2025-08-14",
+      "id": 864454,
+      "person": {
+        "fullName": "Carlos Carrasco",
+        "id": 471911,
+        "link": "/api/v1/people/471911"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 144,
+        "link": "/api/v1/teams/144",
+        "name": "Atlanta Braves"
+      },
+      "typeCode": "DES",
+      "typeDesc": "Designated for Assignment"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Washington Nationals designated 1B Nathaniel Lowe for assignment.",
+      "effectiveDate": "2025-08-14",
+      "id": 864474,
+      "person": {
+        "fullName": "Nathaniel Lowe",
+        "id": 663993,
+        "link": "/api/v1/people/663993"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 120,
+        "link": "/api/v1/teams/120",
+        "name": "Washington Nationals"
+      },
+      "typeCode": "DES",
+      "typeDesc": "Designated for Assignment"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Los Angeles Dodgers sent RHP Roki Sasaki on a rehab assignment to Oklahoma City Comets.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "id": 864531,
+      "person": {
+        "fullName": "Roki Sasaki",
+        "id": 808963,
+        "link": "/api/v1/people/808963"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 238,
+        "link": "/api/v1/teams/238",
+        "name": "Oklahoma City Comets"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Los Angeles Dodgers sent RHP Michael Kopech on a rehab assignment to Oklahoma City Comets.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "id": 864530,
+      "person": {
+        "fullName": "Michael Kopech",
+        "id": 656629,
+        "link": "/api/v1/people/656629"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 238,
+        "link": "/api/v1/teams/238",
+        "name": "Oklahoma City Comets"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "San Diego Padres placed RHP Michael King on the 15-day injured list retroactive to August 11, 2025. Left knee inflammation.",
+      "effectiveDate": "2025-08-11",
+      "id": 864543,
+      "person": {
+        "fullName": "Michael King",
+        "id": 650633,
+        "link": "/api/v1/people/650633"
+      },
+      "resolutionDate": "2025-08-11",
+      "toTeam": {
+        "id": 135,
+        "link": "/api/v1/teams/135",
+        "name": "San Diego Padres"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Toronto Blue Jays sent RF George Springer on a rehab assignment to Buffalo Bisons.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 141,
+        "link": "/api/v1/teams/141",
+        "name": "Toronto Blue Jays"
+      },
+      "id": 864518,
+      "person": {
+        "fullName": "George Springer",
+        "id": 543807,
+        "link": "/api/v1/people/543807"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 422,
+        "link": "/api/v1/teams/422",
+        "name": "Buffalo Bisons"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "New York Yankees sent RHP Fernando Cruz on a rehab assignment to Scranton/Wilkes-Barre RailRiders.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 147,
+        "link": "/api/v1/teams/147",
+        "name": "New York Yankees"
+      },
+      "id": 864485,
+      "person": {
+        "fullName": "Fernando Cruz",
+        "id": 518585,
+        "link": "/api/v1/people/518585"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 531,
+        "link": "/api/v1/teams/531",
+        "name": "Scranton/Wilkes-Barre RailRiders"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Los Angeles Angels sent RHP Robert Stephenson on a rehab assignment to Salt Lake Bees.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 108,
+        "link": "/api/v1/teams/108",
+        "name": "Los Angeles Angels"
+      },
+      "id": 864542,
+      "person": {
+        "fullName": "Robert Stephenson",
+        "id": 596112,
+        "link": "/api/v1/people/596112"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 561,
+        "link": "/api/v1/teams/561",
+        "name": "Salt Lake Bees"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Washington Nationals activated RF Dylan Crews from the 60-day injured list.",
+      "effectiveDate": "2025-08-14",
+      "id": 864476,
+      "person": {
+        "fullName": "Dylan Crews",
+        "id": 686611,
+        "link": "/api/v1/people/686611"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 120,
+        "link": "/api/v1/teams/120",
+        "name": "Washington Nationals"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Minnesota Twins signed free agent LHP G\u00e9nesis Cabrera to a minor league contract.",
+      "effectiveDate": "2025-08-14",
+      "id": 864573,
+      "person": {
+        "fullName": "G\u00e9nesis Cabrera",
+        "id": 650893,
+        "link": "/api/v1/people/650893"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 142,
+        "link": "/api/v1/teams/142",
+        "name": "Minnesota Twins"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Detroit Tigers sent RHP Alex Cobb on a rehab assignment to Toledo Mud Hens.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 116,
+        "link": "/api/v1/teams/116",
+        "name": "Detroit Tigers"
+      },
+      "id": 865128,
+      "person": {
+        "fullName": "Alex Cobb",
+        "id": 502171,
+        "link": "/api/v1/people/502171"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 512,
+        "link": "/api/v1/teams/512",
+        "name": "Toledo Mud Hens"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "RHP Trevor Stephan roster status changed by Cleveland Guardians.",
+      "effectiveDate": "2025-08-14",
+      "id": 883323,
+      "person": {
+        "fullName": "Trevor Stephan",
+        "id": 663986,
+        "link": "/api/v1/people/663986"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 114,
+        "link": "/api/v1/teams/114",
+        "name": "Cleveland Guardians"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Colorado Rockies reassigned RHP Angel Chivilli to the minor leagues.",
+      "effectiveDate": "2025-08-14",
+      "id": 865705,
+      "person": {
+        "fullName": "Angel Chivilli",
+        "id": 683409,
+        "link": "/api/v1/people/683409"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 115,
+        "link": "/api/v1/teams/115",
+        "name": "Colorado Rockies"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "New York Yankees sent LHP Ryan Yarbrough on a rehab assignment to Scranton/Wilkes-Barre RailRiders.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 147,
+        "link": "/api/v1/teams/147",
+        "name": "New York Yankees"
+      },
+      "id": 867261,
+      "person": {
+        "fullName": "Ryan Yarbrough",
+        "id": 642232,
+        "link": "/api/v1/people/642232"
+      },
+      "resolutionDate": "2025-08-14",
+      "toTeam": {
+        "id": 531,
+        "link": "/api/v1/teams/531",
+        "name": "Scranton/Wilkes-Barre RailRiders"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Chicago White Sox sent LF Corey Julks outright to Charlotte Knights.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 145,
+        "link": "/api/v1/teams/145",
+        "name": "Chicago White Sox"
+      },
+      "id": 864533,
+      "person": {
+        "fullName": "Corey Julks",
+        "id": 667452,
+        "link": "/api/v1/people/667452"
+      },
+      "toTeam": {
+        "id": 494,
+        "link": "/api/v1/teams/494",
+        "name": "Charlotte Knights"
+      },
+      "typeCode": "OUT",
+      "typeDesc": "Outrighted"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "San Diego Padres recalled RHP Randy V\u00e1squez from El Paso Chihuahuas.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 4904,
+        "link": "/api/v1/teams/4904",
+        "name": "El Paso Chihuahuas"
+      },
+      "id": 864544,
+      "person": {
+        "fullName": "Randy V\u00e1squez",
+        "id": 681190,
+        "link": "/api/v1/people/681190"
+      },
+      "toTeam": {
+        "id": 135,
+        "link": "/api/v1/teams/135",
+        "name": "San Diego Padres"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Atlanta Braves recalled RHP Hunter Stratton from Gwinnett Stripers.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 431,
+        "link": "/api/v1/teams/431",
+        "name": "Gwinnett Stripers"
+      },
+      "id": 864453,
+      "person": {
+        "fullName": "Hunter Stratton",
+        "id": 676702,
+        "link": "/api/v1/people/676702"
+      },
+      "toTeam": {
+        "id": 144,
+        "link": "/api/v1/teams/144",
+        "name": "Atlanta Braves"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Detroit Tigers optioned RHP Sawyer Gipson-Long to Toledo Mud Hens.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 116,
+        "link": "/api/v1/teams/116",
+        "name": "Detroit Tigers"
+      },
+      "id": 864515,
+      "person": {
+        "fullName": "Sawyer Gipson-Long",
+        "id": 687830,
+        "link": "/api/v1/people/687830"
+      },
+      "toTeam": {
+        "id": 512,
+        "link": "/api/v1/teams/512",
+        "name": "Toledo Mud Hens"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Detroit Tigers recalled LHP Bailey Horn from Toledo Mud Hens.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 512,
+        "link": "/api/v1/teams/512",
+        "name": "Toledo Mud Hens"
+      },
+      "id": 864514,
+      "person": {
+        "fullName": "Bailey Horn",
+        "id": 690544,
+        "link": "/api/v1/people/690544"
+      },
+      "toTeam": {
+        "id": 116,
+        "link": "/api/v1/teams/116",
+        "name": "Detroit Tigers"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Pittsburgh Pirates optioned RHP Cam Sanders to Indianapolis Indians.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 134,
+        "link": "/api/v1/teams/134",
+        "name": "Pittsburgh Pirates"
+      },
+      "id": 864540,
+      "person": {
+        "fullName": "Cam Sanders",
+        "id": 676742,
+        "link": "/api/v1/people/676742"
+      },
+      "toTeam": {
+        "id": 484,
+        "link": "/api/v1/teams/484",
+        "name": "Indianapolis Indians"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Chicago Cubs recalled RF Owen Caissie from Iowa Cubs.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 451,
+        "link": "/api/v1/teams/451",
+        "name": "Iowa Cubs"
+      },
+      "id": 864473,
+      "person": {
+        "fullName": "Owen Caissie",
+        "id": 683357,
+        "link": "/api/v1/people/683357"
+      },
+      "toTeam": {
+        "id": 112,
+        "link": "/api/v1/teams/112",
+        "name": "Chicago Cubs"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Tampa Bay Rays optioned LF Tristan Peters to Durham Bulls.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 139,
+        "link": "/api/v1/teams/139",
+        "name": "Tampa Bay Rays"
+      },
+      "id": 864541,
+      "person": {
+        "fullName": "Tristan Peters",
+        "id": 671976,
+        "link": "/api/v1/people/671976"
+      },
+      "toTeam": {
+        "id": 234,
+        "link": "/api/v1/teams/234",
+        "name": "Durham Bulls"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-14",
+      "description": "Los Angeles Angels sent RHP Shaun Anderson outright to Salt Lake Bees.",
+      "effectiveDate": "2025-08-14",
+      "fromTeam": {
+        "id": 108,
+        "link": "/api/v1/teams/108",
+        "name": "Los Angeles Angels"
+      },
+      "id": 864534,
+      "person": {
+        "fullName": "Shaun Anderson",
+        "id": 641312,
+        "link": "/api/v1/people/641312"
+      },
+      "toTeam": {
+        "id": 561,
+        "link": "/api/v1/teams/561",
+        "name": "Salt Lake Bees"
+      },
+      "typeCode": "OUT",
+      "typeDesc": "Outrighted"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cleveland Guardians sent LHP John Means on a rehab assignment to Lake County Captains.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 114,
+        "link": "/api/v1/teams/114",
+        "name": "Cleveland Guardians"
+      },
+      "id": 866294,
+      "person": {
+        "fullName": "John Means",
+        "id": 607644,
+        "link": "/api/v1/people/607644"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 437,
+        "link": "/api/v1/teams/437",
+        "name": "Lake County Captains"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Colorado Rockies activated SS Ryan Ritter from the 10-day injured list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864612,
+      "person": {
+        "fullName": "Ryan Ritter",
+        "id": 690022,
+        "link": "/api/v1/people/690022"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 115,
+        "link": "/api/v1/teams/115",
+        "name": "Colorado Rockies"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Colorado Rockies activated RHP Angel Chivilli from the restricted list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864614,
+      "person": {
+        "fullName": "Angel Chivilli",
+        "id": 683409,
+        "link": "/api/v1/people/683409"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 115,
+        "link": "/api/v1/teams/115",
+        "name": "Colorado Rockies"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Minnesota Twins sent RHP Simeon Woods Richardson on a rehab assignment to St. Paul Saints.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 142,
+        "link": "/api/v1/teams/142",
+        "name": "Minnesota Twins"
+      },
+      "id": 864619,
+      "person": {
+        "fullName": "Simeon Woods Richardson",
+        "id": 680573,
+        "link": "/api/v1/people/680573"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 1960,
+        "link": "/api/v1/teams/1960",
+        "name": "St. Paul Saints"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cleveland Guardians sent LHP John Means on a rehab assignment to Lake County Captains.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 114,
+        "link": "/api/v1/teams/114",
+        "name": "Cleveland Guardians"
+      },
+      "id": 864620,
+      "person": {
+        "fullName": "John Means",
+        "id": 607644,
+        "link": "/api/v1/people/607644"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 437,
+        "link": "/api/v1/teams/437",
+        "name": "Lake County Captains"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Chicago White Sox activated SS Chase Meidroth from the 10-day injured list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864621,
+      "person": {
+        "fullName": "Chase Meidroth",
+        "id": 805367,
+        "link": "/api/v1/people/805367"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 145,
+        "link": "/api/v1/teams/145",
+        "name": "Chicago White Sox"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Chicago White Sox designated SS Jacob Amaya for assignment.",
+      "effectiveDate": "2025-08-15",
+      "id": 864622,
+      "person": {
+        "fullName": "Jacob Amaya",
+        "id": 676070,
+        "link": "/api/v1/people/676070"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 145,
+        "link": "/api/v1/teams/145",
+        "name": "Chicago White Sox"
+      },
+      "typeCode": "DES",
+      "typeDesc": "Designated for Assignment"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Seattle Mariners placed RHP Logan Evans on the 15-day injured list. Right elbow inflammation.",
+      "effectiveDate": "2025-08-15",
+      "id": 864630,
+      "person": {
+        "fullName": "Logan Evans",
+        "id": 688138,
+        "link": "/api/v1/people/688138"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 136,
+        "link": "/api/v1/teams/136",
+        "name": "Seattle Mariners"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Seattle Mariners activated RF Luke Raley from the 10-day injured list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864631,
+      "person": {
+        "fullName": "Luke Raley",
+        "id": 670042,
+        "link": "/api/v1/people/670042"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 136,
+        "link": "/api/v1/teams/136",
+        "name": "Seattle Mariners"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Tampa Bay Rays released C Logan Driscoll.",
+      "effectiveDate": "2025-08-15",
+      "id": 864647,
+      "person": {
+        "fullName": "Logan Driscoll",
+        "id": 686482,
+        "link": "/api/v1/people/686482"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 139,
+        "link": "/api/v1/teams/139",
+        "name": "Tampa Bay Rays"
+      },
+      "typeCode": "REL",
+      "typeDesc": "Released"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Kansas City Royals signed free agent RHP Nick Robertson to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 864648,
+      "person": {
+        "fullName": "Nick Robertson",
+        "id": 687798,
+        "link": "/api/v1/people/687798"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 118,
+        "link": "/api/v1/teams/118",
+        "name": "Kansas City Royals"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Houston Astros sent RHP Lance McCullers Jr. on a rehab assignment to Sugar Land Space Cowboys.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 117,
+        "link": "/api/v1/teams/117",
+        "name": "Houston Astros"
+      },
+      "id": 864651,
+      "person": {
+        "fullName": "Lance McCullers Jr.",
+        "id": 621121,
+        "link": "/api/v1/people/621121"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 5434,
+        "link": "/api/v1/teams/5434",
+        "name": "Sugar Land Space Cowboys"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics designated 3B Gio Urshela for assignment.",
+      "effectiveDate": "2025-08-15",
+      "id": 864653,
+      "person": {
+        "fullName": "Gio Urshela",
+        "id": 570482,
+        "link": "/api/v1/people/570482"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "typeCode": "DES",
+      "typeDesc": "Designated for Assignment"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Angels signed free agent RHP Shaun Anderson to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 864663,
+      "person": {
+        "fullName": "Shaun Anderson",
+        "id": 641312,
+        "link": "/api/v1/people/641312"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 108,
+        "link": "/api/v1/teams/108",
+        "name": "Los Angeles Angels"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Angels signed free agent RHP Shaun Anderson to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 864664,
+      "person": {
+        "fullName": "Shaun Anderson",
+        "id": 641312,
+        "link": "/api/v1/people/641312"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 108,
+        "link": "/api/v1/teams/108",
+        "name": "Los Angeles Angels"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Dodgers designated RHP Julian Fern\u00e1ndez for assignment.",
+      "effectiveDate": "2025-08-15",
+      "id": 864678,
+      "person": {
+        "fullName": "Julian Fern\u00e1ndez",
+        "id": 642759,
+        "link": "/api/v1/people/642759"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "typeCode": "DES",
+      "typeDesc": "Designated for Assignment"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics sent CF Denzel Clarke on a rehab assignment to Las Vegas Aviators.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "id": 864679,
+      "person": {
+        "fullName": "Denzel Clarke",
+        "id": 672016,
+        "link": "/api/v1/people/672016"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 400,
+        "link": "/api/v1/teams/400",
+        "name": "Las Vegas Aviators"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Philadelphia Phillies signed free agent SS Jose Colmenares to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 864680,
+      "person": {
+        "fullName": "Jose Colmenares",
+        "id": 683569,
+        "link": "/api/v1/people/683569"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 143,
+        "link": "/api/v1/teams/143",
+        "name": "Philadelphia Phillies"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "San Francisco Giants placed RHP Ryan Walker on the paternity list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864702,
+      "person": {
+        "fullName": "Ryan Walker",
+        "id": 676254,
+        "link": "/api/v1/people/676254"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 137,
+        "link": "/api/v1/teams/137",
+        "name": "San Francisco Giants"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "San Francisco Giants placed 3B Matt Chapman on the 10-day injured list retroactive to August 13, 2025. Right hand inflammation.",
+      "effectiveDate": "2025-08-13",
+      "id": 864704,
+      "person": {
+        "fullName": "Matt Chapman",
+        "id": 656305,
+        "link": "/api/v1/people/656305"
+      },
+      "resolutionDate": "2025-08-13",
+      "toTeam": {
+        "id": 137,
+        "link": "/api/v1/teams/137",
+        "name": "San Francisco Giants"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Dodgers activated 1B Buddy Kennedy.",
+      "effectiveDate": "2025-08-15",
+      "id": 864705,
+      "person": {
+        "fullName": "Buddy Kennedy",
+        "id": 671083,
+        "link": "/api/v1/people/671083"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Dodgers placed 3B Max Muncy on the 10-day injured list retroactive to August 13, 2025. Right oblique strain.",
+      "effectiveDate": "2025-08-13",
+      "id": 864706,
+      "person": {
+        "fullName": "Max Muncy",
+        "id": 571970,
+        "link": "/api/v1/people/571970"
+      },
+      "resolutionDate": "2025-08-13",
+      "toTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "San Francisco Giants activated RHP Landen Roupp from the 15-day injured list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864703,
+      "person": {
+        "fullName": "Landen Roupp",
+        "id": 694738,
+        "link": "/api/v1/people/694738"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 137,
+        "link": "/api/v1/teams/137",
+        "name": "San Francisco Giants"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Dodgers activated 1B Buddy Kennedy.",
+      "effectiveDate": "2025-08-15",
+      "id": 864707,
+      "person": {
+        "fullName": "Buddy Kennedy",
+        "id": 671083,
+        "link": "/api/v1/people/671083"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cincinnati Reds sent LHP Wade Miley on a rehab assignment to Chattanooga Lookouts.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 113,
+        "link": "/api/v1/teams/113",
+        "name": "Cincinnati Reds"
+      },
+      "id": 864918,
+      "person": {
+        "fullName": "Wade Miley",
+        "id": 489119,
+        "link": "/api/v1/people/489119"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 498,
+        "link": "/api/v1/teams/498",
+        "name": "Chattanooga Lookouts"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Atlanta Braves signed free agent RHP Robinson Narciso to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 864973,
+      "person": {
+        "fullName": "Robinson Narciso",
+        "id": 811626,
+        "link": "/api/v1/people/811626"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 144,
+        "link": "/api/v1/teams/144",
+        "name": "Atlanta Braves"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics sent CF Denzel Clarke on a rehab assignment to Las Vegas Aviators.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "id": 865203,
+      "person": {
+        "fullName": "Denzel Clarke",
+        "id": 672016,
+        "link": "/api/v1/people/672016"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 400,
+        "link": "/api/v1/teams/400",
+        "name": "Las Vegas Aviators"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Toronto Blue Jays signed free agent RHP Elieser Hern\u00e1ndez to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 864842,
+      "person": {
+        "fullName": "Elieser Hern\u00e1ndez",
+        "id": 622694,
+        "link": "/api/v1/people/622694"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 141,
+        "link": "/api/v1/teams/141",
+        "name": "Toronto Blue Jays"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics signed free agent C Bryan Lavastida to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 865081,
+      "person": {
+        "fullName": "Bryan Lavastida",
+        "id": 681526,
+        "link": "/api/v1/people/681526"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "New York Mets signed free agent RHP Dalton Mall to a minor league contract.",
+      "effectiveDate": "2025-08-15",
+      "id": 865097,
+      "person": {
+        "fullName": "Dalton Mall",
+        "id": 681273,
+        "link": "/api/v1/people/681273"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 121,
+        "link": "/api/v1/teams/121",
+        "name": "New York Mets"
+      },
+      "typeCode": "SFA",
+      "typeDesc": "Signed as Free Agent"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cincinnati Reds sent LHP Wade Miley on a rehab assignment to Chattanooga Lookouts.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 113,
+        "link": "/api/v1/teams/113",
+        "name": "Cincinnati Reds"
+      },
+      "id": 864588,
+      "person": {
+        "fullName": "Wade Miley",
+        "id": 489119,
+        "link": "/api/v1/people/489119"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 498,
+        "link": "/api/v1/teams/498",
+        "name": "Chattanooga Lookouts"
+      },
+      "typeCode": "ASG",
+      "typeDesc": "Assigned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cincinnati Reds placed RHP Chase Burns on the 15-day injured list retroactive to August 12, 2025. Grade 1 right flexor strain.",
+      "effectiveDate": "2025-08-12",
+      "id": 864589,
+      "person": {
+        "fullName": "Chase Burns",
+        "id": 695505,
+        "link": "/api/v1/people/695505"
+      },
+      "resolutionDate": "2025-08-12",
+      "toTeam": {
+        "id": 113,
+        "link": "/api/v1/teams/113",
+        "name": "Cincinnati Reds"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Pittsburgh Pirates designated LHP Ryan Borucki for assignment.",
+      "effectiveDate": "2025-08-15",
+      "id": 864593,
+      "person": {
+        "fullName": "Ryan Borucki",
+        "id": 621366,
+        "link": "/api/v1/people/621366"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 134,
+        "link": "/api/v1/teams/134",
+        "name": "Pittsburgh Pirates"
+      },
+      "typeCode": "DES",
+      "typeDesc": "Designated for Assignment"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Milwaukee Brewers activated RHP Jacob Misiorowski from the 15-day injured list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864603,
+      "person": {
+        "fullName": "Jacob Misiorowski",
+        "id": 694819,
+        "link": "/api/v1/people/694819"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Milwaukee Brewers placed LF Isaac Collins on the paternity list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864607,
+      "person": {
+        "fullName": "Isaac Collins",
+        "id": 686555,
+        "link": "/api/v1/people/686555"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Atlanta Braves activated RF Ronald Acu\u00f1a Jr. from the 10-day injured list.",
+      "effectiveDate": "2025-08-15",
+      "id": 864608,
+      "person": {
+        "fullName": "Ronald Acu\u00f1a Jr.",
+        "id": 660670,
+        "link": "/api/v1/people/660670"
+      },
+      "resolutionDate": "2025-08-15",
+      "toTeam": {
+        "id": 144,
+        "link": "/api/v1/teams/144",
+        "name": "Atlanta Braves"
+      },
+      "typeCode": "SC",
+      "typeDesc": "Status Change"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Pittsburgh Pirates recalled LHP Evan Sisk from Indianapolis Indians.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 484,
+        "link": "/api/v1/teams/484",
+        "name": "Indianapolis Indians"
+      },
+      "id": 864591,
+      "person": {
+        "fullName": "Evan Sisk",
+        "id": 681895,
+        "link": "/api/v1/people/681895"
+      },
+      "toTeam": {
+        "id": 134,
+        "link": "/api/v1/teams/134",
+        "name": "Pittsburgh Pirates"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Pittsburgh Pirates recalled RHP Colin Holderman from Indianapolis Indians.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 484,
+        "link": "/api/v1/teams/484",
+        "name": "Indianapolis Indians"
+      },
+      "id": 864592,
+      "person": {
+        "fullName": "Colin Holderman",
+        "id": 670059,
+        "link": "/api/v1/people/670059"
+      },
+      "toTeam": {
+        "id": 134,
+        "link": "/api/v1/teams/134",
+        "name": "Pittsburgh Pirates"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cleveland Guardians sent RHP Trevor Stephan outright to Columbus Clippers.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 114,
+        "link": "/api/v1/teams/114",
+        "name": "Cleveland Guardians"
+      },
+      "id": 864674,
+      "person": {
+        "fullName": "Trevor Stephan",
+        "id": 663986,
+        "link": "/api/v1/people/663986"
+      },
+      "toTeam": {
+        "id": 445,
+        "link": "/api/v1/teams/445",
+        "name": "Columbus Clippers"
+      },
+      "typeCode": "OUT",
+      "typeDesc": "Outrighted"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Milwaukee Brewers recalled RF Steward Berroa from Nashville Sounds.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 556,
+        "link": "/api/v1/teams/556",
+        "name": "Nashville Sounds"
+      },
+      "id": 864604,
+      "person": {
+        "fullName": "Steward Berroa",
+        "id": 672642,
+        "link": "/api/v1/people/672642"
+      },
+      "toTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Milwaukee Brewers recalled 3B Tyler Black from Nashville Sounds.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 556,
+        "link": "/api/v1/teams/556",
+        "name": "Nashville Sounds"
+      },
+      "id": 864605,
+      "person": {
+        "fullName": "Tyler Black",
+        "id": 672012,
+        "link": "/api/v1/people/672012"
+      },
+      "toTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Milwaukee Brewers optioned RHP Grant Anderson to Nashville Sounds.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 158,
+        "link": "/api/v1/teams/158",
+        "name": "Milwaukee Brewers"
+      },
+      "id": 864606,
+      "person": {
+        "fullName": "Grant Anderson",
+        "id": 681982,
+        "link": "/api/v1/people/681982"
+      },
+      "toTeam": {
+        "id": 556,
+        "link": "/api/v1/teams/556",
+        "name": "Nashville Sounds"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Houston Astros sent LF Cooper Hummel outright to Sugar Land Space Cowboys.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 117,
+        "link": "/api/v1/teams/117",
+        "name": "Houston Astros"
+      },
+      "id": 864675,
+      "person": {
+        "fullName": "Cooper Hummel",
+        "id": 669450,
+        "link": "/api/v1/people/669450"
+      },
+      "toTeam": {
+        "id": 5434,
+        "link": "/api/v1/teams/5434",
+        "name": "Sugar Land Space Cowboys"
+      },
+      "typeCode": "OUT",
+      "typeDesc": "Outrighted"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Atlanta Braves sent C Sandy Le\u00f3n outright to Gwinnett Stripers.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 144,
+        "link": "/api/v1/teams/144",
+        "name": "Atlanta Braves"
+      },
+      "id": 864609,
+      "person": {
+        "fullName": "Sandy Le\u00f3n",
+        "id": 506702,
+        "link": "/api/v1/people/506702"
+      },
+      "toTeam": {
+        "id": 431,
+        "link": "/api/v1/teams/431",
+        "name": "Gwinnett Stripers"
+      },
+      "typeCode": "OUT",
+      "typeDesc": "Outrighted"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "San Francisco Giants recalled RHP Keaton Winn from Sacramento River Cats.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 105,
+        "link": "/api/v1/teams/105",
+        "name": "Sacramento River Cats"
+      },
+      "id": 864701,
+      "person": {
+        "fullName": "Keaton Winn",
+        "id": 676775,
+        "link": "/api/v1/people/676775"
+      },
+      "toTeam": {
+        "id": 137,
+        "link": "/api/v1/teams/137",
+        "name": "San Francisco Giants"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Houston Astros sent RHP H\u00e9ctor Neris outright to Sugar Land Space Cowboys.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 117,
+        "link": "/api/v1/teams/117",
+        "name": "Houston Astros"
+      },
+      "id": 864676,
+      "person": {
+        "fullName": "H\u00e9ctor Neris",
+        "id": 593576,
+        "link": "/api/v1/people/593576"
+      },
+      "toTeam": {
+        "id": 5434,
+        "link": "/api/v1/teams/5434",
+        "name": "Sugar Land Space Cowboys"
+      },
+      "typeCode": "OUT",
+      "typeDesc": "Outrighted"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Tampa Bay Rays selected the contract of 1B Bob Seymour from Durham Bulls.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 234,
+        "link": "/api/v1/teams/234",
+        "name": "Durham Bulls"
+      },
+      "id": 864645,
+      "person": {
+        "fullName": "Bob Seymour",
+        "id": 676044,
+        "link": "/api/v1/people/676044"
+      },
+      "toTeam": {
+        "id": 139,
+        "link": "/api/v1/teams/139",
+        "name": "Tampa Bay Rays"
+      },
+      "typeCode": "SE",
+      "typeDesc": "Selected"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Los Angeles Dodgers claimed 1B Buddy Kennedy off waivers from Toronto Blue Jays.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 141,
+        "link": "/api/v1/teams/141",
+        "name": "Toronto Blue Jays"
+      },
+      "id": 864677,
+      "person": {
+        "fullName": "Buddy Kennedy",
+        "id": 671083,
+        "link": "/api/v1/people/671083"
+      },
+      "toTeam": {
+        "id": 119,
+        "link": "/api/v1/teams/119",
+        "name": "Los Angeles Dodgers"
+      },
+      "typeCode": "CLW",
+      "typeDesc": "Claimed Off Waivers"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Colorado Rockies optioned 2B Adael Amador to Albuquerque Isotopes.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 115,
+        "link": "/api/v1/teams/115",
+        "name": "Colorado Rockies"
+      },
+      "id": 864613,
+      "person": {
+        "fullName": "Adael Amador",
+        "id": 691182,
+        "link": "/api/v1/people/691182"
+      },
+      "toTeam": {
+        "id": 342,
+        "link": "/api/v1/teams/342",
+        "name": "Albuquerque Isotopes"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Colorado Rockies optioned RHP Angel Chivilli to Albuquerque Isotopes.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 115,
+        "link": "/api/v1/teams/115",
+        "name": "Colorado Rockies"
+      },
+      "id": 864615,
+      "person": {
+        "fullName": "Angel Chivilli",
+        "id": 683409,
+        "link": "/api/v1/people/683409"
+      },
+      "toTeam": {
+        "id": 342,
+        "link": "/api/v1/teams/342",
+        "name": "Albuquerque Isotopes"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics recalled 3B Brett Harris from Las Vegas Aviators.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 400,
+        "link": "/api/v1/teams/400",
+        "name": "Las Vegas Aviators"
+      },
+      "id": 864652,
+      "person": {
+        "fullName": "Brett Harris",
+        "id": 695391,
+        "link": "/api/v1/people/695391"
+      },
+      "toTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics claimed LHP Jared Shuster off waivers from Chicago White Sox.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 145,
+        "link": "/api/v1/teams/145",
+        "name": "Chicago White Sox"
+      },
+      "id": 864654,
+      "person": {
+        "fullName": "Jared Shuster",
+        "id": 694363,
+        "link": "/api/v1/people/694363"
+      },
+      "toTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "typeCode": "CLW",
+      "typeDesc": "Claimed Off Waivers"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Athletics optioned LHP Jared Shuster to Las Vegas Aviators.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 133,
+        "link": "/api/v1/teams/133",
+        "name": "Athletics"
+      },
+      "id": 864655,
+      "person": {
+        "fullName": "Jared Shuster",
+        "id": 694363,
+        "link": "/api/v1/people/694363"
+      },
+      "toTeam": {
+        "id": 400,
+        "link": "/api/v1/teams/400",
+        "name": "Las Vegas Aviators"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Cincinnati Reds recalled LHP Joe La Sorsa from Louisville Bats.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 416,
+        "link": "/api/v1/teams/416",
+        "name": "Louisville Bats"
+      },
+      "id": 864627,
+      "person": {
+        "fullName": "Joe La Sorsa",
+        "id": 686747,
+        "link": "/api/v1/people/686747"
+      },
+      "toTeam": {
+        "id": 113,
+        "link": "/api/v1/teams/113",
+        "name": "Cincinnati Reds"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Seattle Mariners optioned 3B Miles Mastrobuoni to Tacoma Rainiers.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 136,
+        "link": "/api/v1/teams/136",
+        "name": "Seattle Mariners"
+      },
+      "id": 864628,
+      "person": {
+        "fullName": "Miles Mastrobuoni",
+        "id": 670156,
+        "link": "/api/v1/people/670156"
+      },
+      "toTeam": {
+        "id": 529,
+        "link": "/api/v1/teams/529",
+        "name": "Tacoma Rainiers"
+      },
+      "typeCode": "OPT",
+      "typeDesc": "Optioned"
+    },
+    {
+      "date": "2025-08-15",
+      "description": "Seattle Mariners recalled LHP Tayler Saucedo from Tacoma Rainiers.",
+      "effectiveDate": "2025-08-15",
+      "fromTeam": {
+        "id": 529,
+        "link": "/api/v1/teams/529",
+        "name": "Tacoma Rainiers"
+      },
+      "id": 864629,
+      "person": {
+        "fullName": "Tayler Saucedo",
+        "id": 642048,
+        "link": "/api/v1/people/642048"
+      },
+      "toTeam": {
+        "id": 136,
+        "link": "/api/v1/teams/136",
+        "name": "Seattle Mariners"
+      },
+      "typeCode": "CU",
+      "typeDesc": "Recalled"
+    }
+  ]
+}
