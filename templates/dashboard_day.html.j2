@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Digest — {{ digest.digest_date | format_date }}</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--gray-100); color: var(--gray-800); line-height: 1.6; }
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  header { background: var(--navy); color: #fff; padding: 32px 24px; border-radius: 12px 12px 0 0; text-align: center; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .date { color: #a0c4e8; font-size: 14px; margin-top: 4px; }
+  .content { background: #fff; padding: 0; border-radius: 0 0 12px 12px; }
+  .section { padding: 24px; border-bottom: 1px solid var(--gray-200); }
+  .section:last-child { border-bottom: none; }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 16px; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+  .score-row:last-child { border-bottom: none; }
+  .team { flex: 1; }
+  .team.winner { font-weight: 700; }
+  .score { text-align: center; min-width: 60px; font-variant-numeric: tabular-nums; }
+  .extra { color: var(--gray-400); font-size: 12px; margin-left: 4px; }
+  .storyline { margin-bottom: 16px; padding: 16px; background: var(--gray-50); border-radius: 8px; border-left: 3px solid var(--blue); }
+  .storyline:last-child { margin-bottom: 0; }
+  .storyline-meta { font-size: 12px; color: var(--gray-600); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+  .storyline-prose { font-size: 15px; }
+  .preview { padding: 16px; background: #fef9ee; border-radius: 8px; border-left: 3px solid var(--amber); }
+  .preview-meta { font-size: 12px; color: #92400e; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+  .preview-prose { font-size: 15px; }
+  .txn-list { list-style: none; }
+  .txn-list li { padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-600); }
+  .txn-list li:last-child { border-bottom: none; }
+  .nav { text-align: center; padding: 16px; }
+  .nav a { color: var(--blue); text-decoration: none; font-size: 13px; }
+  .nav a:hover { text-decoration: underline; }
+  footer { text-align: center; padding: 24px; color: var(--gray-400); font-size: 12px; }
+  .off-day { padding: 32px 24px; text-align: center; }
+  .off-day h2 { color: var(--navy); margin-bottom: 8px; }
+  .off-day p { color: var(--gray-600); }
+  .tonight-schedule { margin-top: 20px; text-align: left; }
+  .tonight-schedule .game { padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>⚾ MLB Digest</h1>
+  <div class="date">{{ digest.digest_date | format_date }}</div>
+</header>
+
+<div class="content">
+
+{% if digest.is_off_day %}
+<div class="off-day">
+  <h2>{{ digest.off_day_headline }}</h2>
+  <p>{{ digest.off_day_body }}</p>
+
+  {% if digest.tonight_games %}
+  <div class="tonight-schedule">
+    <h3 style="font-size:14px; color:var(--navy); margin-bottom:8px;">Tonight's Schedule</h3>
+    {% for g in digest.tonight_games %}
+    <div class="game">
+      {{ g.away_team_abbr }} @ {{ g.home_team_abbr }}
+      {% if g.away_probable_pitcher and g.away_probable_pitcher.full_name %}
+      <span style="color:var(--gray-400);">— {{ g.away_probable_pitcher.full_name }}</span>
+      {% endif %}
+      {% if g.home_probable_pitcher and g.home_probable_pitcher.full_name %}
+      <span style="color:var(--gray-400);">vs {{ g.home_probable_pitcher.full_name }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% else %}
+
+{# ── Scores ── #}
+<div class="section">
+  <div class="section-title">Scores</div>
+  {% for game in digest.games %}
+  <div class="score-row">
+    <span class="team{% if game.away_score > game.home_score %} winner{% endif %}">{{ game.away_team_abbr }}</span>
+    <span class="score">
+      <span{% if game.away_score > game.home_score %} style="font-weight:700"{% endif %}>{{ game.away_score }}</span>
+      –
+      <span{% if game.home_score > game.away_score %} style="font-weight:700"{% endif %}>{{ game.home_score }}</span>
+    </span>
+    <span class="team{% if game.home_score > game.away_score %} winner{% endif %}" style="text-align:right;">
+      {{ game.home_team_abbr }}
+      {% if game.extra_innings %}<span class="extra">({{ game.line_score | length }})</span>{% endif %}
+    </span>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── Storylines ── #}
+{% if digest.storylines %}
+<div class="section">
+  <div class="section-title">Storylines</div>
+  {% for story in digest.storylines %}
+  <div class="storyline">
+    <div class="storyline-meta">
+      {{ story.scored.game.away_team_abbr }} @ {{ story.scored.game.home_team_abbr }}
+      · {{ story.scored.game.away_score }}–{{ story.scored.game.home_score }}
+      {% set cat_label = story.scored.category | category_label %}
+      {% if cat_label %} · {{ cat_label }}{% endif %}
+    </div>
+    <div class="storyline-prose">{{ story.prose }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Tonight ── #}
+{% if digest.tonight %}
+<div class="section">
+  <div class="section-title">Tonight</div>
+  <div class="preview">
+    <div class="preview-meta">
+      {{ digest.tonight.scored.game.away_team_abbr }} @ {{ digest.tonight.scored.game.home_team_abbr }}
+      {% if digest.tonight.scored.game.is_national %} · National TV{% endif %}
+    </div>
+    <div class="preview-prose">{{ digest.tonight.prose }}</div>
+  </div>
+</div>
+{% endif %}
+
+{# ── Off-field ── #}
+{% if digest.transactions %}
+<div class="section">
+  <div class="section-title">Off-field</div>
+  <ul class="txn-list">
+    {% for txn in digest.transactions %}
+    <li>{{ txn.description }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% endif %}
+
+<!-- V2 placeholder: hot/cold/breakout player leaderboards -->
+
+</div>
+
+<div class="nav">
+  <a href="../">← All digests</a>
+</div>
+
+<footer>
+  mlbreview · {{ digest.digest_date | format_date }}
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Digest — {{ digest.digest_date | format_date }}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, Helvetica, sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f4;">
+<tr><td align="center" style="padding:20px 10px;">
+
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:8px; overflow:hidden;">
+
+{# ── Header ── #}
+<tr>
+<td style="background-color:#1a3a5c; padding:24px 30px; text-align:center;">
+  <h1 style="margin:0; color:#ffffff; font-size:22px; font-weight:700;">⚾ MLB Digest</h1>
+  <p style="margin:6px 0 0; color:#a0c4e8; font-size:14px;">{{ digest.digest_date | format_date }}</p>
+</td>
+</tr>
+
+{% if digest.is_off_day %}
+{# ── Off-day content ── #}
+<tr>
+<td style="padding:30px;">
+  <h2 style="margin:0 0 10px; color:#1a3a5c; font-size:18px;">{{ digest.off_day_headline }}</h2>
+  <p style="margin:0 0 20px; color:#444; font-size:14px; line-height:1.6;">{{ digest.off_day_body }}</p>
+
+  {% if digest.tonight_games %}
+  <h3 style="margin:20px 0 10px; color:#1a3a5c; font-size:16px;">Tonight's Schedule</h3>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;">
+    {% for g in digest.tonight_games %}
+    <tr>
+      <td style="padding:6px 0; color:#333; border-bottom:1px solid #eee;">
+        {{ g.away_team_abbr }} @ {{ g.home_team_abbr }}
+        {% if g.away_probable_pitcher and g.away_probable_pitcher.full_name %}
+        <span style="color:#888;"> — {{ g.away_probable_pitcher.full_name }}</span>
+        {% endif %}
+        {% if g.home_probable_pitcher and g.home_probable_pitcher.full_name %}
+        <span style="color:#888;"> vs {{ g.home_probable_pitcher.full_name }}</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</td>
+</tr>
+
+{% else %}
+{# ── Dashboard CTA (above the fold) ── #}
+<tr>
+<td style="padding:20px 30px 10px; text-align:center;">
+  <a href="{{ digest.dashboard_url }}" style="display:inline-block; background-color:#2563eb; color:#ffffff; padding:12px 28px; border-radius:6px; text-decoration:none; font-size:14px; font-weight:600;">Open in dashboard →</a>
+</td>
+</tr>
+
+{# ── Section 1: Scores Recap ── #}
+<tr>
+<td style="padding:20px 30px;">
+  <h2 style="margin:0 0 12px; color:#1a3a5c; font-size:16px; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid #e5e7eb; padding-bottom:8px;">Scores</h2>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;">
+    {% for game in digest.games %}
+    <tr>
+      <td style="padding:5px 0; color:#333; border-bottom:1px solid #f0f0f0;" width="40%">
+        <span style="font-weight:{% if game.away_score > game.home_score %}700{% else %}400{% endif %};">{{ game.away_team_abbr }}</span>
+      </td>
+      <td style="padding:5px 0; text-align:center; color:#333; border-bottom:1px solid #f0f0f0;" width="20%">
+        <span style="font-weight:{% if game.away_score > game.home_score %}700{% else %}400{% endif %};">{{ game.away_score }}</span>
+        <span style="color:#999; margin:0 2px;">–</span>
+        <span style="font-weight:{% if game.home_score > game.away_score %}700{% else %}400{% endif %};">{{ game.home_score }}</span>
+      </td>
+      <td style="padding:5px 0; text-align:right; color:#333; border-bottom:1px solid #f0f0f0;" width="40%">
+        <span style="font-weight:{% if game.home_score > game.away_score %}700{% else %}400{% endif %};">{{ game.home_team_abbr }}</span>
+        {% if game.extra_innings %}<span style="color:#888; font-size:11px;"> ({{ game.line_score | length }})</span>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</td>
+</tr>
+
+{# ── Section 2: Top Storylines ── #}
+{% if digest.storylines %}
+<tr>
+<td style="padding:20px 30px;">
+  <h2 style="margin:0 0 12px; color:#1a3a5c; font-size:16px; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid #e5e7eb; padding-bottom:8px;">Storylines</h2>
+  {% for story in digest.storylines %}
+  <div style="margin-bottom:16px; padding:14px; background-color:#f8fafc; border-radius:6px; border-left:3px solid #2563eb;">
+    <p style="margin:0 0 4px; font-size:12px; color:#6b7280; font-weight:600; text-transform:uppercase;">
+      {{ story.scored.game.away_team_abbr }} @ {{ story.scored.game.home_team_abbr }}
+      · {{ story.scored.game.away_score }}–{{ story.scored.game.home_score }}
+      {% set cat_label = story.scored.category | category_label %}
+      {% if cat_label %} · {{ cat_label }}{% endif %}
+    </p>
+    <p style="margin:0; color:#333; font-size:14px; line-height:1.6;">{{ story.prose }}</p>
+  </div>
+  {% endfor %}
+</td>
+</tr>
+{% endif %}
+
+{# ── Section 3: Tonight's Preview ── #}
+{% if digest.tonight %}
+<tr>
+<td style="padding:20px 30px;">
+  <h2 style="margin:0 0 12px; color:#1a3a5c; font-size:16px; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid #e5e7eb; padding-bottom:8px;">Tonight</h2>
+  <div style="padding:14px; background-color:#fef9ee; border-radius:6px; border-left:3px solid #f59e0b;">
+    <p style="margin:0 0 4px; font-size:12px; color:#92400e; font-weight:600; text-transform:uppercase;">
+      {{ digest.tonight.scored.game.away_team_abbr }} @ {{ digest.tonight.scored.game.home_team_abbr }}
+      {% if digest.tonight.scored.game.is_national %} · National TV{% endif %}
+    </p>
+    <p style="margin:0; color:#333; font-size:14px; line-height:1.6;">{{ digest.tonight.prose }}</p>
+  </div>
+</td>
+</tr>
+{% endif %}
+
+{# ── Section 4: Off-field News Brief ── #}
+{% if digest.transactions %}
+<tr>
+<td style="padding:20px 30px;">
+  <h2 style="margin:0 0 12px; color:#1a3a5c; font-size:16px; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid #e5e7eb; padding-bottom:8px;">Off-field</h2>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;">
+    {% for txn in digest.transactions %}
+    <tr>
+      <td style="padding:4px 0; color:#555; border-bottom:1px solid #f0f0f0;">
+        {{ txn.description }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</td>
+</tr>
+{% endif %}
+{% endif %}
+
+{# ── Footer ── #}
+<tr>
+<td style="padding:20px 30px; text-align:center; border-top:1px solid #e5e7eb;">
+  <p style="margin:0; color:#9ca3af; font-size:11px;">
+    <a href="{{ digest.dashboard_url }}" style="color:#6b7280;">View on dashboard</a>
+    · mlbreview
+  </p>
+</td>
+</tr>
+
+</table>
+
+</td></tr>
+</table>
+</body>
+</html>
