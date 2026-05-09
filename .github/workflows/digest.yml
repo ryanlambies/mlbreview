@@ -67,7 +67,12 @@ jobs:
         run: pip install -e .
 
       - name: Run digest pipeline
-        run: python -m mlbreview --out-dir public
+        run: |
+          EXTRA_FLAGS=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            EXTRA_FLAGS="--skip-dst-guard"
+          fi
+          python -m mlbreview --out-dir public $EXTRA_FLAGS
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

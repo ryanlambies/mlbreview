@@ -42,6 +42,11 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="./public",
         help="Directory to write rendered dashboard HTML into. Default: ./public",
     )
+    parser.add_argument(
+        "--skip-dst-guard",
+        action="store_true",
+        help="Skip the DST/hour guard. Used by workflow_dispatch for manual runs.",
+    )
     return parser.parse_args(argv)
 
 
@@ -73,6 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         dry_run=args.dry_run,
         out_dir=args.out_dir,
         config=config,
+        skip_dst_guard=args.skip_dst_guard,
     )
 
 

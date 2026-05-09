@@ -211,6 +211,7 @@ def run(
     dry_run: bool = False,
     out_dir: str = "./public",
     config: Config | None = None,
+    skip_dst_guard: bool = False,
 ) -> int:
     """Run the full digest pipeline for *target_date*.
 
@@ -218,7 +219,7 @@ def run(
     """
     out_path = Path(out_dir)
 
-    if not _check_dst_guard(dry_run):
+    if not skip_dst_guard and not _check_dst_guard(dry_run):
         return 0
 
     if not _is_active_season(target_date):
