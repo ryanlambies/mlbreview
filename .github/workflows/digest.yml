@@ -1,0 +1,78 @@
+# Daily MLB Digest — fetch, score, generate, email, deploy.
+#
+# Runs at 5:30am ET daily during the MLB season. Scheduled at both
+# 09:30 and 10:30 UTC to cover EST and EDT; the pipeline's DST guard
+# (`pipeline._check_dst_guard`) exits cleanly during the wrong slot.
+#
+# Manual re-runs via workflow_dispatch are always available. The
+# pipeline's idempotency guard skips duplicate sends if the day's
+# dashboard already exists in the gh-pages checkout.
+#
+# Secrets required (set in repo Settings → Secrets and variables → Actions):
+#   ANTHROPIC_API_KEY  — Claude API key for storyline/preview prose
+#   RESEND_API_KEY     — Resend transactional email API key
+#   DIGEST_TO_EMAIL    — recipient email address
+#
+# One-time setup after the first successful run creates the gh-pages branch:
+#   Repo Settings → Pages → Source: "Deploy from a branch" → gh-pages (root)
+#
+# Failure notification: GitHub's built-in workflow-failure email
+# (configured in user notification settings) is sufficient for V1.
+
+name: Daily MLB Digest
+
+on:
+  schedule:
+    # 09:30 UTC = 5:30am EDT (Apr–Nov)
+    - cron: "30 9 * * *"
+    # 10:30 UTC = 5:30am EST (Nov–Mar)
+    - cron: "30 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      DIGEST_TO_EMAIL: ${{ secrets.DIGEST_TO_EMAIL }}
+      DIGEST_FROM_EMAIL: "MLB Digest <onboarding@resend.dev>"
+
+    steps:
+      - name: Checkout main (source code)
+        uses: actions/checkout@v4
+
+      - name: Checkout gh-pages into ./public
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: public
+          fetch-depth: 1
+        continue-on-error: true
+
+      - name: Ensure public directory exists
+        run: mkdir -p public
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Run digest pipeline
+        run: python -m mlbreview --out-dir public
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          user_name: "github-actions[bot]"
+          user_email: "41898282+github-actions[bot]@users.noreply.github.com"
