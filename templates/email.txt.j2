@@ -1,0 +1,53 @@
+MLB Digest — {{ digest.digest_date | format_date }}
+{{ "=" * 50 }}
+
+{% if digest.is_off_day %}
+{{ digest.off_day_headline }}
+
+{{ digest.off_day_body }}
+
+{% if digest.tonight_games %}
+TONIGHT'S SCHEDULE
+------------------
+{% for g in digest.tonight_games %}
+{{ g.away_team_abbr }} @ {{ g.home_team_abbr }}{% if g.away_probable_pitcher and g.away_probable_pitcher.full_name %} — {{ g.away_probable_pitcher.full_name }}{% endif %}{% if g.home_probable_pitcher and g.home_probable_pitcher.full_name %} vs {{ g.home_probable_pitcher.full_name }}{% endif %}
+
+{% endfor %}
+{% endif %}
+{% else %}
+Dashboard: {{ digest.dashboard_url }}
+
+SCORES
+------
+{% for game in digest.games %}
+{{ game.away_team_abbr }} {{ game.away_score }} - {{ game.home_score }} {{ game.home_team_abbr }}{% if game.extra_innings %} ({{ game.line_score | length }}){% endif %}
+
+{% endfor %}
+
+{% if digest.storylines %}
+STORYLINES
+----------
+{% for story in digest.storylines %}
+{{ story.scored.game.away_team_abbr }} @ {{ story.scored.game.home_team_abbr }} · {{ story.scored.game.away_score }}-{{ story.scored.game.home_score }}
+{{ story.prose }}
+
+{% endfor %}
+{% endif %}
+{% if digest.tonight %}
+TONIGHT
+-------
+{{ digest.tonight.scored.game.away_team_abbr }} @ {{ digest.tonight.scored.game.home_team_abbr }}{% if digest.tonight.scored.game.is_national %} · National TV{% endif %}
+
+{{ digest.tonight.prose }}
+
+{% endif %}
+{% if digest.transactions %}
+OFF-FIELD
+---------
+{% for txn in digest.transactions %}
+• {{ txn.description }}
+{% endfor %}
+{% endif %}
+{% endif %}
+--
+{{ digest.dashboard_url }}
