@@ -82,6 +82,14 @@ MAX_STORYLINES: int = 3
 
 
 # ---------------------------------------------------------------------------
+# LLM (storyline + preview prose generation)
+# ---------------------------------------------------------------------------
+LLM_MODEL: str = "claude-haiku-4-5"
+LLM_MAX_TOKENS: int = 200
+LLM_RETRY_DELAY: float = 2.0
+
+
+# ---------------------------------------------------------------------------
 # Pipeline behavior
 # ---------------------------------------------------------------------------
 # Hour (in America/New_York) the digest is intended to send. The pipeline
