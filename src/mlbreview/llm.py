@@ -43,9 +43,24 @@ SYSTEM_PROMPT = (
 _NAME_PATTERN = re.compile(r"\b([A-Z][a-z]+\s+(?:[A-Z][a-z]+\s+)?[A-Z][a-z]+)\b")
 
 # Common phrases that look like player names but aren't.
+# Includes MLB team name fragments that the regex picks up as multi-word
+# capitalized sequences (e.g. "Washington Nationals", "San Diego Padres").
 _KNOWN_NON_PLAYER_NAMES = frozenset({
     "All Star", "World Series", "American League", "National League",
     "Wild Card", "Division Series", "Opening Day", "Spring Training",
+    "New York Yankees", "New York Mets", "Boston Red Sox", "Red Sox",
+    "Tampa Bay Rays", "Tampa Bay", "Toronto Blue Jays", "Blue Jays",
+    "Baltimore Orioles", "Chicago White Sox", "White Sox",
+    "Cleveland Guardians", "Detroit Tigers", "Kansas City Royals",
+    "Kansas City", "Minnesota Twins", "Houston Astros",
+    "Los Angeles Angels", "Oakland Athletics", "Seattle Mariners",
+    "Texas Rangers", "Atlanta Braves", "Miami Marlins",
+    "Philadelphia Phillies", "Washington Nationals",
+    "Chicago Cubs", "Cincinnati Reds", "Milwaukee Brewers",
+    "Pittsburgh Pirates", "St Louis Cardinals", "Louis Cardinals",
+    "Arizona Diamondbacks", "Colorado Rockies",
+    "Los Angeles Dodgers", "San Diego Padres", "San Diego",
+    "San Francisco Giants", "San Francisco",
 })
 
 
@@ -55,7 +70,7 @@ def _build_storyline_payload(scored: ScoredGame) -> dict[str, Any]:
 
     top_plays = sorted(feed.plays, key=lambda p: abs(p.wpa), reverse=True)[:3]
 
-    known_names: set[str] = set()
+    known_names: set[str] = {game.away_team_name, game.home_team_name}
     plays_data = []
     for p in top_plays:
         entry: dict[str, Any] = {
@@ -112,7 +127,7 @@ def _build_storyline_payload(scored: ScoredGame) -> dict[str, Any]:
 def _build_preview_payload(scored: ScoredTonightGame) -> dict[str, Any]:
     game = scored.game
 
-    known_names: set[str] = set()
+    known_names: set[str] = {game.away_team_name, game.home_team_name}
 
     away_pitcher = "TBD"
     home_pitcher = "TBD"
