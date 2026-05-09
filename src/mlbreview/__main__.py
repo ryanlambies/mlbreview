@@ -5,9 +5,6 @@ Usage:
     python -m mlbreview --dry-run             # local iteration: no email, no publish
     python -m mlbreview --date 2025-08-15     # backfill a specific date
     python -m mlbreview --out-dir ./public    # where rendered files land
-
-Pipeline orchestration arrives in U6; for now this validates that the package
-imports cleanly, parses flags, and surfaces config errors helpfully.
 """
 
 from __future__ import annotations
@@ -19,6 +16,7 @@ from datetime import date as date_cls, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from mlbreview.config import Config
+from mlbreview.pipeline import run
 
 logger = logging.getLogger("mlbreview")
 
@@ -61,8 +59,7 @@ def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     target_date = args.date or _default_date_et()
 
-    # Loading config validates env state. Dry-run tolerates missing secrets.
-    Config.load(require_secrets=not args.dry_run)
+    config = Config.load(require_secrets=not args.dry_run)
 
     logger.info(
         "mlbreview starting (date=%s, dry_run=%s, out_dir=%s)",
@@ -71,9 +68,12 @@ def main(argv: list[str] | None = None) -> int:
         args.out_dir,
     )
 
-    # Pipeline lands in U6.
-    logger.info("Pipeline not yet implemented (arrives in U6).")
-    return 0
+    return run(
+        target_date,
+        dry_run=args.dry_run,
+        out_dir=args.out_dir,
+        config=config,
+    )
 
 
 if __name__ == "__main__":
