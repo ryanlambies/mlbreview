@@ -92,9 +92,12 @@ LLM_RETRY_DELAY: float = 2.0
 # ---------------------------------------------------------------------------
 # Pipeline behavior
 # ---------------------------------------------------------------------------
-# Hour (in America/New_York) the digest is intended to send. The pipeline
-# guards against the wrong UTC cron slot by checking this at runtime.
-SEND_HOUR_ET: int = 5
+# Acceptable hour window (in America/New_York) for the digest to send.
+# GitHub Actions cron can delay jobs by 30-120+ minutes, so we accept a
+# range instead of a single hour. The two cron slots (09:30 and 10:30 UTC)
+# target 5:30am ET across EST/EDT; the window covers typical delays.
+SEND_HOUR_ET_MIN: int = 5
+SEND_HOUR_ET_MAX: int = 7
 
 # Phrasing surfaced when there were no MLB games the prior day.
 OFF_DAY_HEADLINE: str = "No games last night"

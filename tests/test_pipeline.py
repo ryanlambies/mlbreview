@@ -189,16 +189,37 @@ class TestDSTGuard:
             assert result == 0
             mock_fetch.assert_called_once()
 
-    def test_wrong_hour_exits_zero(self):
+    @pytest.mark.parametrize("hour", [6, 7])
+    def test_hour_within_window_passes(self, tmp_path, hour):
+        """Hours 5, 6, 7 are all within the acceptable DST guard window."""
+        with patch("mlbreview.pipeline.datetime") as mock_dt, \
+             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+             patch("mlbreview.pipeline.fetch_finals", return_value=[]) as mock_fetch, \
+             patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
+             patch("mlbreview.pipeline.resend"):
+            mock_dt.now.return_value = _mock_dt_at_hour(hour)
+            mock_make_client.return_value = MagicMock()
+            result = run(
+                date(2025, 8, 15),
+                dry_run=False,
+                out_dir=str(tmp_path),
+                config=_stub_config(),
+            )
+            assert result == 0, f"Hour {hour} should be within the DST guard window"
+            mock_fetch.assert_called_once()
+
+    @pytest.mark.parametrize("hour", [4, 8])
+    def test_wrong_hour_exits_zero(self, hour):
+        """Hours outside the 5–7 window are rejected cleanly."""
         with patch("mlbreview.pipeline.datetime") as mock_dt:
-            mock_dt.now.return_value = _mock_dt_at_hour(4)
+            mock_dt.now.return_value = _mock_dt_at_hour(hour)
             result = run(
                 date(2025, 8, 15),
                 dry_run=False,
                 out_dir="/tmp/test-pipeline-dst-wrong",
                 config=_stub_config(),
             )
-            assert result == 0
+            assert result == 0, f"Hour {hour} should be rejected but exit cleanly"
 
     def test_dry_run_skips_dst_guard(self, tmp_path):
         with patch("mlbreview.pipeline.datetime") as mock_dt, \

@@ -20,7 +20,7 @@ import anthropic
 import httpx
 import resend
 
-from mlbreview.config import SEND_HOUR_ET, Config
+from mlbreview.config import SEND_HOUR_ET_MAX, SEND_HOUR_ET_MIN, Config
 from mlbreview.data.client import MlbApiError, make_client
 from mlbreview.data.game import GameFeed, fetch_game_feed
 from mlbreview.data.schedule import Game, fetch_finals, fetch_tonight
@@ -64,10 +64,10 @@ def _check_dst_guard(dry_run: bool) -> bool:
     if dry_run:
         return True
     now_et = datetime.now(ET)
-    if now_et.hour != SEND_HOUR_ET:
+    if not (SEND_HOUR_ET_MIN <= now_et.hour <= SEND_HOUR_ET_MAX):
         logger.info(
-            "DST guard: current ET hour is %d, expected %d. Exiting.",
-            now_et.hour, SEND_HOUR_ET,
+            "DST guard: current ET hour is %d, expected %d–%d. Exiting.",
+            now_et.hour, SEND_HOUR_ET_MIN, SEND_HOUR_ET_MAX,
         )
         return False
     return True
