@@ -2,25 +2,29 @@
 
 Single entry point: ``run(target_date, dry_run, out_dir)``. Fetches MLB data,
 scores storylines and tonight's game, generates LLM prose, renders the
-dashboard and email, and sends the email via Resend. Handles off-day,
-season-pause, and DST-guard branches.
+dashboard and email, and sends the email via Resend. Handles off-day and
+season-pause branches.
 
 The orchestrator owns sequencing only — all business logic lives in
 submodules. The GitHub Actions workflow (U7) calls this via ``__main__.py``.
+
+Duplicate-send protection comes from the idempotency guard alone: the workflow
+runs three cron slots per day (09:30, 10:30, 11:30 UTC) for delay tolerance,
+and the second/third runs no-op once ``public/digests/{target_date}/index.html``
+exists on gh-pages.
 """
 
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import anthropic
 import httpx
 import resend
 
-from mlbreview.config import SEND_HOUR_ET_MAX, SEND_HOUR_ET_MIN, Config
+from mlbreview.config import Config
 from mlbreview.data.client import MlbApiError, make_client
 from mlbreview.data.game import GameFeed, fetch_game_feed
 from mlbreview.data.schedule import Game, fetch_finals, fetch_tonight
@@ -47,8 +51,6 @@ from mlbreview.scoring.variety import apply_variety_rule
 
 logger = logging.getLogger(__name__)
 
-ET = ZoneInfo("America/New_York")
-
 OPENING_DAY_MONTH = 3
 OPENING_DAY_DAY = 20
 SEASON_END_MONTH = 11
@@ -58,19 +60,6 @@ SEASON_END_DAY = 10
 def _is_active_season(target: date) -> bool:
     month_day = (target.month, target.day)
     return (OPENING_DAY_MONTH, OPENING_DAY_DAY) <= month_day <= (SEASON_END_MONTH, SEASON_END_DAY)
-
-
-def _check_dst_guard(dry_run: bool) -> bool:
-    if dry_run:
-        return True
-    now_et = datetime.now(ET)
-    if not (SEND_HOUR_ET_MIN <= now_et.hour <= SEND_HOUR_ET_MAX):
-        logger.info(
-            "DST guard: current ET hour is %d, expected %d–%d. Exiting.",
-            now_et.hour, SEND_HOUR_ET_MIN, SEND_HOUR_ET_MAX,
-        )
-        return False
-    return True
 
 
 def _fetch_game_feeds(
@@ -211,16 +200,12 @@ def run(
     dry_run: bool = False,
     out_dir: str = "./public",
     config: Config | None = None,
-    skip_dst_guard: bool = False,
 ) -> int:
     """Run the full digest pipeline for *target_date*.
 
     Returns 0 on success or clean early-exit, 1 on fatal error.
     """
     out_path = Path(out_dir)
-
-    if not skip_dst_guard and not _check_dst_guard(dry_run):
-        return 0
 
     if not _is_active_season(target_date):
         logger.info("Season pause: %s is outside the active season window.", target_date)

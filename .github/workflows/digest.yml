@@ -1,12 +1,14 @@
 # Daily MLB Digest — fetch, score, generate, email, deploy.
 #
-# Runs at 5:30am ET daily during the MLB season. Scheduled at both
-# 09:30 and 10:30 UTC to cover EST and EDT; the pipeline's DST guard
-# (`pipeline._check_dst_guard`) exits cleanly during the wrong slot.
+# Targets a 5:30am ET delivery during the MLB season. GitHub Actions cron
+# is best-effort and routinely delays scheduled jobs by 30–120+ minutes
+# (sometimes skipping runs entirely under load). To stay reliable we
+# schedule three slots — 09:30, 10:30, and 11:30 UTC — and rely on the
+# pipeline's idempotency guard (checks for the day's dashboard in the
+# gh-pages checkout) to dedupe: the first slot to actually fire publishes
+# and sends; subsequent slots no-op.
 #
-# Manual re-runs via workflow_dispatch are always available. The
-# pipeline's idempotency guard skips duplicate sends if the day's
-# dashboard already exists in the gh-pages checkout.
+# Manual re-runs via workflow_dispatch are always available.
 #
 # Secrets required (set in repo Settings → Secrets and variables → Actions):
 #   ANTHROPIC_API_KEY  — Claude API key for storyline/preview prose
@@ -23,10 +25,12 @@ name: Daily MLB Digest
 
 on:
   schedule:
-    # 09:30 UTC = 5:30am EDT (Apr–Nov)
+    # 09:30 UTC = 5:30am EDT — primary slot in summer (DST active window).
     - cron: "30 9 * * *"
-    # 10:30 UTC = 5:30am EST (Nov–Mar)
+    # 10:30 UTC — 6:30am EDT / 5:30am EST. Backup when 09:30 is delayed.
     - cron: "30 10 * * *"
+    # 11:30 UTC — 7:30am EDT / 6:30am EST. Last-ditch fallback.
+    - cron: "30 11 * * *"
   workflow_dispatch:
 
 permissions:
@@ -67,12 +71,7 @@ jobs:
         run: pip install -e .
 
       - name: Run digest pipeline
-        run: |
-          EXTRA_FLAGS=""
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            EXTRA_FLAGS="--skip-dst-guard"
-          fi
-          python -m mlbreview --out-dir public $EXTRA_FLAGS
+        run: python -m mlbreview --out-dir public
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

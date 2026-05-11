@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -134,17 +134,7 @@ def _make_tonight_game(gamePk: int = 67890) -> TonightGame:
 
 
 # ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _mock_dt_at_hour(hour: int) -> datetime:
-    """Return a datetime fixed at the given ET hour on a mid-season date."""
-    from zoneinfo import ZoneInfo
-    return datetime(2025, 8, 16, hour, 30, 0, tzinfo=ZoneInfo("America/New_York"))
-
-
-# ---------------------------------------------------------------------------
-# Tests — season and DST guards
+# Tests — season guard
 # ---------------------------------------------------------------------------
 
 
@@ -171,74 +161,6 @@ class TestSeasonGuard:
         assert not _is_active_season(date(2025, 11, 11))
 
 
-class TestDSTGuard:
-    def test_correct_hour_passes(self, tmp_path):
-        with patch("mlbreview.pipeline.datetime") as mock_dt, \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
-             patch("mlbreview.pipeline.fetch_finals", return_value=[]) as mock_fetch, \
-             patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
-             patch("mlbreview.pipeline.resend"):
-            mock_dt.now.return_value = _mock_dt_at_hour(5)
-            mock_make_client.return_value = MagicMock()
-            result = run(
-                date(2025, 8, 15),
-                dry_run=False,
-                out_dir=str(tmp_path),
-                config=_stub_config(),
-            )
-            assert result == 0
-            mock_fetch.assert_called_once()
-
-    @pytest.mark.parametrize("hour", [6, 7])
-    def test_hour_within_window_passes(self, tmp_path, hour):
-        """Hours 5, 6, 7 are all within the acceptable DST guard window."""
-        with patch("mlbreview.pipeline.datetime") as mock_dt, \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
-             patch("mlbreview.pipeline.fetch_finals", return_value=[]) as mock_fetch, \
-             patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
-             patch("mlbreview.pipeline.resend"):
-            mock_dt.now.return_value = _mock_dt_at_hour(hour)
-            mock_make_client.return_value = MagicMock()
-            result = run(
-                date(2025, 8, 15),
-                dry_run=False,
-                out_dir=str(tmp_path),
-                config=_stub_config(),
-            )
-            assert result == 0, f"Hour {hour} should be within the DST guard window"
-            mock_fetch.assert_called_once()
-
-    @pytest.mark.parametrize("hour", [4, 8])
-    def test_wrong_hour_exits_zero(self, hour):
-        """Hours outside the 5–7 window are rejected cleanly."""
-        with patch("mlbreview.pipeline.datetime") as mock_dt:
-            mock_dt.now.return_value = _mock_dt_at_hour(hour)
-            result = run(
-                date(2025, 8, 15),
-                dry_run=False,
-                out_dir="/tmp/test-pipeline-dst-wrong",
-                config=_stub_config(),
-            )
-            assert result == 0, f"Hour {hour} should be rejected but exit cleanly"
-
-    def test_dry_run_skips_dst_guard(self, tmp_path):
-        with patch("mlbreview.pipeline.datetime") as mock_dt, \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
-             patch("mlbreview.pipeline.fetch_finals") as mock_fetch, \
-             patch("mlbreview.pipeline.fetch_tonight", return_value=[]):
-            mock_dt.now.return_value = _mock_dt_at_hour(14)
-            mock_make_client.return_value = MagicMock()
-            mock_fetch.return_value = []
-            result = run(
-                date(2025, 8, 15),
-                dry_run=True,
-                out_dir=str(tmp_path),
-                config=_stub_config(),
-            )
-            assert result == 0
-            mock_fetch.assert_called_once()
-
-
 class TestSeasonPause:
     def test_january_date_exits_zero(self):
         result = run(
@@ -257,8 +179,7 @@ class TestSeasonPause:
 
 class TestOffDayBranch:
     def test_no_finals_renders_off_day(self, tmp_path):
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", return_value=[]) as mock_fetch_finals, \
              patch("mlbreview.pipeline.fetch_tonight", return_value=[_make_tonight_game()]):
 
@@ -290,13 +211,12 @@ class TestIdempotencyGuard:
         day_dir.mkdir(parents=True)
         (day_dir / "index.html").write_text("<html>already done</html>")
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True):
-            result = run(
-                date(2025, 8, 15),
-                dry_run=True,
-                out_dir=str(tmp_path),
-                config=_stub_config(),
-            )
+        result = run(
+            date(2025, 8, 15),
+            dry_run=True,
+            out_dir=str(tmp_path),
+            config=_stub_config(),
+        )
 
         assert result == 0
 
@@ -322,8 +242,7 @@ class TestHappyPath:
             ),
         ]
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", return_value=[game]), \
              patch("mlbreview.pipeline.fetch_tonight", return_value=[tonight]), \
              patch("mlbreview.pipeline.fetch_game_feed", return_value=feed), \
@@ -356,8 +275,7 @@ class TestHappyPath:
         game = _make_game()
         feed = _make_feed()
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", return_value=[game]), \
              patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
              patch("mlbreview.pipeline.fetch_game_feed", return_value=feed), \
@@ -394,8 +312,7 @@ class TestHappyPath:
 
 class TestErrorHandling:
     def test_schedule_fetch_failure_returns_1(self, tmp_path):
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", side_effect=MlbApiError("API down")):
 
             mock_client = MagicMock()
@@ -420,8 +337,7 @@ class TestErrorHandling:
                 raise MlbApiError("Feed fetch failed")
             return feed2
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", return_value=[game1, game2]), \
              patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
              patch("mlbreview.pipeline.fetch_game_feed", side_effect=side_effect), \
@@ -448,8 +364,7 @@ class TestErrorHandling:
         game = _make_game()
         feed = _make_feed()
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", return_value=[game]), \
              patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
              patch("mlbreview.pipeline.fetch_game_feed", return_value=feed), \
@@ -489,8 +404,7 @@ class TestDryRunNoApiKey:
             digest_from_email="MLB Digest <onboarding@resend.dev>",
         )
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", return_value=[game]), \
              patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
              patch("mlbreview.pipeline.fetch_game_feed", return_value=feed), \
@@ -612,8 +526,7 @@ class TestCallOrder:
             call_log.append("write_preview")
             return "Preview prose."
 
-        with patch("mlbreview.pipeline._check_dst_guard", return_value=True), \
-             patch("mlbreview.pipeline.make_client") as mock_make_client, \
+        with patch("mlbreview.pipeline.make_client") as mock_make_client, \
              patch("mlbreview.pipeline.fetch_finals", side_effect=log_fetch_finals), \
              patch("mlbreview.pipeline.fetch_tonight", side_effect=log_fetch_tonight), \
              patch("mlbreview.pipeline.fetch_game_feed", side_effect=log_fetch_feed), \
