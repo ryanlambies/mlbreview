@@ -92,13 +92,6 @@ LLM_RETRY_DELAY: float = 2.0
 # ---------------------------------------------------------------------------
 # Pipeline behavior
 # ---------------------------------------------------------------------------
-# Acceptable hour window (in America/New_York) for the digest to send.
-# GitHub Actions cron can delay jobs by 30-120+ minutes, so we accept a
-# range instead of a single hour. The two cron slots (09:30 and 10:30 UTC)
-# target 5:30am ET across EST/EDT; the window covers typical delays.
-SEND_HOUR_ET_MIN: int = 5
-SEND_HOUR_ET_MAX: int = 7
-
 # Phrasing surfaced when there were no MLB games the prior day.
 OFF_DAY_HEADLINE: str = "No games last night"
 OFF_DAY_BODY: str = "Quiet night across the league. Tonight's schedule is below."
