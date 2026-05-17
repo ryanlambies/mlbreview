@@ -96,6 +96,10 @@ The full sequence from cron trigger to delivered email:
        |                      |                       |──apply_variety_rule() ──> top 3
        |                      |                       |──select_most_hyped() ──> best tonight
        |                      |                       |
+       |                      |                       |──collect batter IDs from top plays
+       |                      |                       |──GET /people (season stats)────>
+       |                      |                       |<───dict[name, BatterSeasonStats]
+       |                      |                       |
        |                      |                       |        Claude API
        |                      |                       |        ──────────
        |                      |                       |──write_storyline() ×3──────>
@@ -238,11 +242,12 @@ The orchestrator wires the submodules together. It owns sequencing, not business
 4. **Fetch game feeds** — `fetch_game_feed(gamePk)` for each final (WPA data)
 5. **Score and rank** — `score_games()` then `apply_variety_rule()` for storylines
 6. **Score tonight** — `select_most_hyped()` for the preview game
-7. **Generate prose** — `write_storyline()` x3 + `write_preview()` x1 via Claude
-8. **Fetch transactions** — `fetch_transactions()` for the off-field section
-9. **Build Digest** — assemble the `Digest` dataclass
-10. **Render** — dashboard HTML + email HTML/text via Jinja2
-11. **Deliver** — send email via Resend (or print in dry-run mode)
+7. **Fetch season stats** — collect batter IDs from top plays, batch-fetch hitting stats via `/api/v1/people`
+8. **Generate prose** — `write_storyline()` x3 + `write_preview()` x1 via Claude (storylines include season stats in payload)
+9. **Fetch transactions** — `fetch_transactions()` for the off-field section
+10. **Build Digest** — assemble the `Digest` dataclass
+11. **Render** — dashboard HTML + email HTML/text via Jinja2
+12. **Deliver** — send email via Resend (or print in dry-run mode)
 
 **Helper functions:**
 
@@ -252,7 +257,8 @@ The orchestrator wires the submodules together. It owns sequencing, not business
 | `_fetch_game_feeds(games, client)` | Fetch WPA data for each game; skip failures |
 | `_build_hype_contexts(tonight_games)` | Build `GameContext` for each tonight-game |
 | `_both_above_500(game)` | Parse W-L records to check if both teams are winning |
-| `_generate_storyline_prose(games, llm_client)` | Call LLM for each top storyline |
+| `_collect_batter_ids(top_games)` | Extract unique batter IDs from top plays across storyline games |
+| `_generate_storyline_prose(games, llm_client, season_stats)` | Call LLM for each top storyline, enriched with season stats |
 | `_generate_preview_prose(most_hyped, llm_client)` | Call LLM for tonight's preview |
 | `_write_dashboard(digest, out_dir)` | Write day page + rebuild archive index |
 | `_build_index_entries(out_dir)` | Scan `digests/` for existing date folders |
@@ -316,8 +322,11 @@ TonightGame
 The WPA endpoint returns a JSON array of play objects. Each play has:
 - `homeTeamWinProbabilityAdded` — signed WPA in percentage points (the drama formula uses `abs()` for swing magnitude)
 - `about.inning`, `about.halfInning` — when the play occurred
-- `matchup.batter.fullName`, `matchup.pitcher.fullName` — who was involved
+- `matchup.batter.fullName`, `matchup.batter.id` — batter name and MLBAM player ID
+- `matchup.pitcher.fullName`, `matchup.pitcher.id` — pitcher name and MLBAM player ID
 - `result.description` — human-readable description
+
+Player IDs (`batter_id`, `pitcher_id`) are captured on each `Play` and used downstream to batch-fetch season stats from the People API.
 
 **`GameFeed` dataclass:**
 
@@ -344,6 +353,29 @@ Pre-computed aggregates (`max_wpa_swing`, `late_inning_max_wpa`, `biggest_play`)
 | `injured_list` | `typeCode == "SC"` with IL-related keywords in description |
 
 Everything else (minor-league moves, status changes, extensions) is silently dropped. The news brief is factual bullets only — no LLM prose.
+
+#### `data/stats.py` — Season stats
+
+**`fetch_batter_season_stats(player_ids, season, client)`** — calls `/api/v1/people` with `hydrate=stats(type=season,season={year},group=[hitting])`. Accepts a set of MLBAM player IDs and returns `dict[str, BatterSeasonStats]` keyed by full name.
+
+A single batched HTTP call fetches all players at once (comma-separated `personIds` parameter). Players without hitting splits (pitchers) are silently filtered out.
+
+**`BatterSeasonStats` dataclass:**
+
+```
+BatterSeasonStats
+├── player_id: int
+├── full_name: str
+├── home_runs: int
+├── doubles: int
+├── triples: int
+├── hits: int
+├── rbi: int
+├── stolen_bases: int
+└── avg: str
+```
+
+On API failure, returns an empty dict — the pipeline continues without season stats and the LLM produces prose without tallies.
 
 ---
 
@@ -447,7 +479,7 @@ Generates 2-3 sentence prose for storylines and previews using Claude Haiku 4.5.
 
 The LLM receives a fixed system prompt:
 
-> "You write 2-3 sentence baseball storyline blurbs grounded strictly in the JSON facts provided. Never invent player names, stat lines, or plays. If the JSON does not contain a fact, do not state it. Plain prose, no markdown, no headlines."
+> "You write 2-3 sentence baseball storyline blurbs grounded strictly in the JSON facts provided. Never invent player names, stat lines, or plays. If the JSON does not contain a fact, do not state it. When batter_season_stats are provided, weave in the season tally naturally (e.g. "his 15th home run") — but only use numbers from the JSON. Plain prose, no markdown, no headlines."
 
 #### Payload construction
 
@@ -457,6 +489,7 @@ The LLM receives a fixed system prompt:
 - Decisive moment (the single biggest WPA play)
 - Winning/losing/save pitchers
 - Category tag, margin
+- `batter_season_stats` (optional) — season hitting stats for batters mentioned in the payload, keyed by full name. Includes `home_runs`, `doubles`, `triples`, `rbi`, `stolen_bases`, `avg`. Only present when the pipeline successfully fetches stats from the People API.
 
 **Preview payload** (`_build_preview_payload`):
 - Team names, abbreviations, records
@@ -566,10 +599,17 @@ MLB Stats API                    Dataclasses                      Scoring       
                                                                                         ├── games
 /game/{pk}/winProbability        GameFeed                                               ├── storylines
                                  ├── plays: tuple[Play]                                 ├── tonight
-                                 ├── max_wpa_swing                                      ├── transactions
-                                 ├── late_inning_max_wpa                                └── tonight_games
-                                 └── biggest_play                                           |
-                                                                                            v
+                                 │   └── batter_id, pitcher_id                          ├── transactions
+                                 ├── max_wpa_swing                                      └── tonight_games
+                                 ├── late_inning_max_wpa                                    |
+                                 └── biggest_play                                           v
+
+/people?personIds=...            BatterSeasonStats ──────── (enriches LLM payload)
+  (hydrate=stats)                ├── player_id, full_name
+                                 ├── home_runs, doubles, triples
+                                 ├── hits, rbi, stolen_bases
+                                 └── avg
+
 /schedule                        TonightGame ─────────────────── ScoredTonightGame ── TonightPreview
   (hydrate=probablePitcher,      ├── gamePk                       ├── game             ├── scored
    broadcasts)                   ├── teams, records               └── score: float     └── prose: str
@@ -615,6 +655,7 @@ Every LLM-generated prose string is checked for hallucinated player names before
 | Failure | Impact |
 |---------|--------|
 | One game feed fails to fetch | That game is skipped; others are scored normally |
+| Season stats fetch fails | LLM prose omits season tallies; storylines still render |
 | Transactions fetch fails | Off-field section is empty; rest of digest is unaffected |
 | Tonight's schedule fails | No "Tonight" section; storylines still render |
 | LLM call fails (both retries) | Deterministic template fallback is used |
