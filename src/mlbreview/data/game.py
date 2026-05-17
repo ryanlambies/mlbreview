@@ -38,7 +38,9 @@ class Play:
     home_win_probability: float | None
     away_win_probability: float | None
     batter: str | None
+    batter_id: int | None
     pitcher: str | None
+    pitcher_id: int | None
 
 
 @dataclass(frozen=True)
@@ -96,6 +98,9 @@ def parse_winprob(
         except (TypeError, ValueError):
             inning = 0
 
+        batter_block = matchup.get("batter") or {}
+        pitcher_block = matchup.get("pitcher") or {}
+
         play = Play(
             description=result.get("description") or "",
             event=result.get("event") or "",
@@ -104,8 +109,10 @@ def parse_winprob(
             wpa=wpa,
             home_win_probability=_safe_float(raw.get("homeTeamWinProbability")),
             away_win_probability=_safe_float(raw.get("awayTeamWinProbability")),
-            batter=(matchup.get("batter") or {}).get("fullName"),
-            pitcher=(matchup.get("pitcher") or {}).get("fullName"),
+            batter=batter_block.get("fullName"),
+            batter_id=batter_block.get("id"),
+            pitcher=pitcher_block.get("fullName"),
+            pitcher_id=pitcher_block.get("id"),
         )
         plays.append(play)
 

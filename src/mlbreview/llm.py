@@ -25,6 +25,7 @@ import anthropic
 from mlbreview.config import LLM_MAX_TOKENS, LLM_MODEL, LLM_RETRY_DELAY
 from mlbreview.data.game import GameFeed, Play
 from mlbreview.data.schedule import TonightGame
+from mlbreview.data.stats import BatterSeasonStats
 from mlbreview.scoring.drama import ScoredGame
 from mlbreview.scoring.hype import ScoredTonightGame
 
@@ -33,8 +34,10 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT = (
     "You write 2-3 sentence baseball storyline blurbs grounded strictly in "
     "the JSON facts provided. Never invent player names, stat lines, or plays. "
-    "If the JSON does not contain a fact, do not state it. Plain prose, no "
-    "markdown, no headlines."
+    "If the JSON does not contain a fact, do not state it. "
+    "When batter_season_stats are provided, weave in the season tally naturally "
+    '(e.g. "his 15th home run") — but only use numbers from the JSON. '
+    "Plain prose, no markdown, no headlines."
 )
 
 # Regex for capitalized multi-word names (e.g. "Aaron Judge", "Shohei Ohtani").
@@ -64,7 +67,10 @@ _KNOWN_NON_PLAYER_NAMES = frozenset({
 })
 
 
-def _build_storyline_payload(scored: ScoredGame) -> dict[str, Any]:
+def _build_storyline_payload(
+    scored: ScoredGame,
+    season_stats: dict[str, BatterSeasonStats] | None = None,
+) -> dict[str, Any]:
     game = scored.game
     feed = scored.feed
 
@@ -120,6 +126,22 @@ def _build_storyline_payload(scored: ScoredGame) -> dict[str, Any]:
         }
         if bp.batter:
             known_names.add(bp.batter)
+
+    if season_stats:
+        stats_data: dict[str, dict[str, Any]] = {}
+        for name in known_names:
+            if name in season_stats:
+                s = season_stats[name]
+                stats_data[name] = {
+                    "home_runs": s.home_runs,
+                    "doubles": s.doubles,
+                    "triples": s.triples,
+                    "rbi": s.rbi,
+                    "stolen_bases": s.stolen_bases,
+                    "avg": s.avg,
+                }
+        if stats_data:
+            payload["batter_season_stats"] = stats_data
 
     return payload, known_names
 
@@ -286,6 +308,7 @@ def write_storyline(
     scored: ScoredGame,
     *,
     client: anthropic.Anthropic,
+    season_stats: dict[str, BatterSeasonStats] | None = None,
 ) -> str:
     """Generate a 2-3 sentence storyline blurb for a completed game.
 
@@ -299,7 +322,7 @@ def write_storyline(
             f"{game.home_team_name} {game.home_score}."
         )
 
-    payload, known_names = _build_storyline_payload(scored)
+    payload, known_names = _build_storyline_payload(scored, season_stats)
     fallback = _storyline_fallback(scored)
     return _call_llm(payload, known_names, fallback, client=client)
 
