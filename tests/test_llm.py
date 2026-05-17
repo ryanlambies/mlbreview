@@ -16,7 +16,9 @@ from mlbreview.data.schedule import (
     ProbablePitcher,
     TonightGame,
 )
+from mlbreview.data.stats import BatterSeasonStats
 from mlbreview.llm import (
+    _build_storyline_payload,
     _extract_names,
     _grounding_check,
     _storyline_fallback,
@@ -38,7 +40,9 @@ def _make_play(
     half_inning: str = "top",
     wpa: float = 3.5,
     batter: str | None = "Mike Trout",
+    batter_id: int | None = 545361,
     pitcher: str | None = "Gerrit Cole",
+    pitcher_id: int | None = 543037,
 ) -> Play:
     return Play(
         description=description,
@@ -49,7 +53,9 @@ def _make_play(
         home_win_probability=55.0,
         away_win_probability=45.0,
         batter=batter,
+        batter_id=batter_id,
         pitcher=pitcher,
+        pitcher_id=pitcher_id,
     )
 
 
@@ -260,6 +266,51 @@ class TestWriteStoryline:
 
         assert "New York Yankees" in result or "Los Angeles Angels" in result
         assert client.messages.create.call_count == 2
+
+    def test_season_stats_included_in_payload(self):
+        """When season_stats are provided, the LLM payload includes batter_season_stats."""
+        stats = {
+            "Mike Trout": BatterSeasonStats(
+                player_id=545361, full_name="Mike Trout",
+                home_runs=15, doubles=20, triples=2,
+                hits=85, rbi=42, stolen_bases=5, avg=".285",
+            ),
+        }
+        scored = _make_scored_game()
+        payload, _ = _build_storyline_payload(scored, stats)
+
+        assert "batter_season_stats" in payload
+        trout_stats = payload["batter_season_stats"]["Mike Trout"]
+        assert trout_stats["home_runs"] == 15
+        assert trout_stats["doubles"] == 20
+        assert trout_stats["avg"] == ".285"
+
+    def test_season_stats_omitted_when_none(self):
+        """Without season_stats, no batter_season_stats key in the payload."""
+        scored = _make_scored_game()
+        payload, _ = _build_storyline_payload(scored)
+        assert "batter_season_stats" not in payload
+
+    def test_season_stats_passed_to_llm(self):
+        """Season stats are forwarded to the LLM call via the payload JSON."""
+        client = MagicMock(spec=anthropic.Anthropic)
+        expected = "Mike Trout hit his 15th home run of the season in a walk-off."
+        client.messages.create.return_value = _mock_anthropic_response(expected)
+
+        stats = {
+            "Mike Trout": BatterSeasonStats(
+                player_id=545361, full_name="Mike Trout",
+                home_runs=15, doubles=20, triples=2,
+                hits=85, rbi=42, stolen_bases=5, avg=".285",
+            ),
+        }
+        result = write_storyline(_make_scored_game(), client=client, season_stats=stats)
+
+        assert result == expected
+        call_args = client.messages.create.call_args
+        user_msg = call_args.kwargs["messages"][0]["content"]
+        assert "batter_season_stats" in user_msg
+        assert "15" in user_msg
 
 
 # ---------------------------------------------------------------------------

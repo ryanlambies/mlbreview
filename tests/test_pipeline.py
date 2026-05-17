@@ -88,7 +88,9 @@ def _make_play(
         home_win_probability=55.0,
         away_win_probability=45.0,
         batter=batter,
+        batter_id=None,
         pitcher=pitcher,
+        pitcher_id=None,
     )
 
 

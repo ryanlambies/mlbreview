@@ -68,7 +68,9 @@ def _feed(
         home_win_probability=None,
         away_win_probability=None,
         batter="Batter",
+        batter_id=None,
         pitcher="Pitcher",
+        pitcher_id=None,
     )
     return GameFeed(
         gamePk=gamePk,
@@ -165,9 +167,9 @@ class TestClassifyGame:
     def test_comeback(self) -> None:
         """Away team wins after home had >80% win probability → comeback."""
         plays = (
-            Play("", "", 1, "top", -5.0, 85.0, 15.0, None, None),
-            Play("", "", 5, "bottom", 5.0, 88.0, 12.0, None, None),
-            Play("", "", 9, "top", 30.0, 30.0, 70.0, None, None),
+            Play("", "", 1, "top", -5.0, 85.0, 15.0, None, None, None, None),
+            Play("", "", 5, "bottom", 5.0, 88.0, 12.0, None, None, None, None),
+            Play("", "", 9, "top", 30.0, 30.0, 70.0, None, None, None, None),
         )
         feed = GameFeed(
             gamePk=1,

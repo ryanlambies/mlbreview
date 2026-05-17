@@ -28,6 +28,7 @@ from mlbreview.config import Config
 from mlbreview.data.client import MlbApiError, make_client
 from mlbreview.data.game import GameFeed, fetch_game_feed
 from mlbreview.data.schedule import Game, fetch_finals, fetch_tonight
+from mlbreview.data.stats import BatterSeasonStats, fetch_batter_season_stats
 from mlbreview.data.transactions import fetch_transactions
 from mlbreview.llm import write_preview, write_storyline
 from mlbreview.render.pages import (
@@ -113,14 +114,30 @@ def _both_above_500(game) -> bool:
         return False
 
 
+def _collect_batter_ids(top_games: list[ScoredGame]) -> set[int]:
+    """Extract unique batter IDs from top plays across storyline games."""
+    ids: set[int] = set()
+    for scored in top_games:
+        top_plays = sorted(
+            scored.feed.plays, key=lambda p: abs(p.wpa), reverse=True
+        )[:3]
+        for play in top_plays:
+            if play.batter_id is not None:
+                ids.add(play.batter_id)
+        if scored.feed.biggest_play and scored.feed.biggest_play.batter_id is not None:
+            ids.add(scored.feed.biggest_play.batter_id)
+    return ids
+
+
 def _generate_storyline_prose(
     top_games: list[ScoredGame],
     *,
     llm_client: anthropic.Anthropic,
+    season_stats: dict[str, BatterSeasonStats] | None = None,
 ) -> list[Storyline]:
     storylines: list[Storyline] = []
     for scored in top_games:
-        prose = write_storyline(scored, client=llm_client)
+        prose = write_storyline(scored, client=llm_client, season_stats=season_stats)
         storylines.append(Storyline(scored=scored, prose=prose))
     return storylines
 
@@ -277,6 +294,15 @@ def _run_pipeline(
     contexts = _build_hype_contexts(tonight_games)
     most_hyped = select_most_hyped(tonight_games, contexts, stars)
 
+    # --- Fetch season stats for featured batters ---
+    batter_ids = _collect_batter_ids(top_storylines)
+    if batter_ids:
+        season_stats = fetch_batter_season_stats(
+            batter_ids, season=target_date.year, client=mlb_client,
+        )
+    else:
+        season_stats = {}
+
     # --- Generate LLM prose ---
     if dry_run and not config.anthropic_api_key:
         llm_client = None
@@ -284,7 +310,9 @@ def _run_pipeline(
         llm_client = anthropic.Anthropic(api_key=config.anthropic_api_key)
 
     if llm_client is not None:
-        storylines = _generate_storyline_prose(top_storylines, llm_client=llm_client)
+        storylines = _generate_storyline_prose(
+            top_storylines, llm_client=llm_client, season_stats=season_stats,
+        )
         preview = _generate_preview_prose(most_hyped, llm_client=llm_client)
     else:
         from mlbreview.llm import _storyline_fallback, _preview_fallback
