@@ -1,0 +1,242 @@
+{
+  "teams": {
+    "away": {
+      "team": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbreviation": "NYY"
+      },
+      "players": {
+        "ID660271": {
+          "person": {
+            "id": 660271,
+            "fullName": "Aaron Judge"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 5,
+              "atBats": 4,
+              "hits": 2,
+              "doubles": 1,
+              "triples": 0,
+              "homeRuns": 1,
+              "rbi": 3,
+              "stolenBases": 0,
+              "baseOnBalls": 1,
+              "strikeOuts": 1
+            },
+            "pitching": {}
+          }
+        },
+        "ID543037": {
+          "person": {
+            "id": 543037,
+            "fullName": "Gerrit Cole"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 0,
+              "atBats": 0,
+              "hits": 0,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 0
+            },
+            "pitching": {
+              "gamesStarted": 1,
+              "inningsPitched": "6.2",
+              "outs": 20,
+              "hits": 4,
+              "earnedRuns": 2,
+              "baseOnBalls": 1,
+              "strikeOuts": 9,
+              "homeRuns": 1,
+              "numberOfPitches": 102,
+              "saves": 0,
+              "blownSaves": 0,
+              "holds": 0
+            }
+          }
+        },
+        "ID622253": {
+          "person": {
+            "id": 622253,
+            "fullName": "Clay Holmes"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 0,
+              "atBats": 0,
+              "hits": 0,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 0
+            },
+            "pitching": {
+              "gamesStarted": 0,
+              "inningsPitched": "1.1",
+              "outs": 4,
+              "hits": 1,
+              "earnedRuns": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 1,
+              "homeRuns": 0,
+              "numberOfPitches": 18,
+              "saves": 0,
+              "blownSaves": 0,
+              "holds": 1
+            }
+          }
+        },
+        "ID665795": {
+          "person": {
+            "id": 665795,
+            "fullName": "Luke Weaver"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 0,
+              "atBats": 0,
+              "hits": 0,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 0
+            },
+            "pitching": {
+              "gamesStarted": 0,
+              "inningsPitched": "1.0",
+              "outs": 3,
+              "hits": 0,
+              "earnedRuns": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 2,
+              "homeRuns": 0,
+              "numberOfPitches": 14,
+              "saves": 1,
+              "blownSaves": 0,
+              "holds": 0
+            }
+          }
+        },
+        "ID518934": {
+          "person": {
+            "id": 518934,
+            "fullName": "Anthony Rizzo"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 4,
+              "atBats": 3,
+              "hits": 1,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 0,
+              "baseOnBalls": 1,
+              "strikeOuts": 0
+            },
+            "pitching": {}
+          }
+        }
+      }
+    },
+    "home": {
+      "team": {
+        "id": 111,
+        "name": "Boston Red Sox",
+        "abbreviation": "BOS"
+      },
+      "players": {
+        "ID678489": {
+          "person": {
+            "id": 678489,
+            "fullName": "Jarren Duran"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 4,
+              "atBats": 4,
+              "hits": 1,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 1,
+              "baseOnBalls": 0,
+              "strikeOuts": 2
+            },
+            "pitching": {}
+          }
+        },
+        "ID656302": {
+          "person": {
+            "id": 656302,
+            "fullName": "Brayan Bello"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 0,
+              "atBats": 0,
+              "hits": 0,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 0
+            },
+            "pitching": {
+              "gamesStarted": 1,
+              "inningsPitched": "5.0",
+              "outs": 15,
+              "hits": 6,
+              "earnedRuns": 3,
+              "baseOnBalls": 2,
+              "strikeOuts": 5,
+              "homeRuns": 1,
+              "numberOfPitches": 88,
+              "saves": 0,
+              "blownSaves": 0,
+              "holds": 0
+            }
+          }
+        },
+        "ID681867": {
+          "person": {
+            "id": 681867,
+            "fullName": "Bench Player"
+          },
+          "stats": {
+            "batting": {
+              "plateAppearances": 0,
+              "atBats": 0,
+              "hits": 0,
+              "doubles": 0,
+              "triples": 0,
+              "homeRuns": 0,
+              "rbi": 0,
+              "stolenBases": 0,
+              "baseOnBalls": 0,
+              "strikeOuts": 0
+            },
+            "pitching": {}
+          }
+        }
+      }
+    }
+  }
+}
