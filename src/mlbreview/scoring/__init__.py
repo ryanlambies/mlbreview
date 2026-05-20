@@ -24,17 +24,26 @@ from mlbreview.scoring.hype import (
     select_most_hyped,
 )
 from mlbreview.scoring.leaderboards import (
+    LeaderboardHitter,
+    LeaderboardPitcher,
+    Leaderboards,
+    LuckStatus,
     RollingCloserStats,
     RollingHitterStats,
     RollingStarterStats,
     RollingStats,
     compute_rolling_stats,
+    score_leaderboards,
 )
 from mlbreview.scoring.variety import apply_variety_rule
 
 __all__ = [
     "Category",
     "GameContext",
+    "LeaderboardHitter",
+    "LeaderboardPitcher",
+    "Leaderboards",
+    "LuckStatus",
     "RollingCloserStats",
     "RollingHitterStats",
     "RollingStarterStats",
@@ -48,6 +57,7 @@ __all__ = [
     "hype_score",
     "load_star_ids",
     "score_games",
+    "score_leaderboards",
     "score_tonight_games",
     "select_most_hyped",
 ]

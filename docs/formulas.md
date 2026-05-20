@@ -240,3 +240,113 @@ The MLB API uses a special notation for innings pitched: `"6.1"` means 6 and 1/3
 | Show more players per leaderboard | Increase `LEADERBOARD_SIZE` |
 | Use a longer hot/cold window | Increase `ROLLING_WINDOW_DAYS` |
 | Require a longer breakout confirmation | Increase `BREAKOUT_WINDOW_DAYS` |
+
+---
+
+## Leaderboard scoring (composite ranking)
+
+Each qualified player receives a composite score on a [0, 1] scale that determines their position on the hot/cold leaderboards. Hot = top N by composite (descending); cold = bottom N (ascending).
+
+### Hitter composite
+
+```
+hitter_composite = 0.40 × norm_avg + 0.30 × norm_hr + 0.30 × norm_rbi
+```
+
+| Component | Normalization | Ceiling |
+|-----------|--------------|---------|
+| `norm_avg` | AVG / 0.500 | A .500 7-day average saturates the signal |
+| `norm_hr` | HR / 5 | 5 HR in a week saturates the signal |
+| `norm_rbi` | RBI / 12 | 12 RBI in a week saturates the signal |
+
+Each component is clamped to [0, 1]. AVG is the primary signal (a hitter who gets on base consistently); HR and RBI capture power production and run-driving in counting form — fantasy managers think in total HR/RBI over a week, not per-PA rates.
+
+### Starter composite
+
+```
+starter_composite = 0.40 × (1 − ERA/6.0) + 0.35 × (K/9 / 15.0) + 0.25 × (1 − WHIP/2.0)
+```
+
+ERA and WHIP are inverted: lower values produce a higher composite. A starter with ERA ≥ 6.0 or WHIP ≥ 2.0 scores 0 for that component. K/9 rewards dominant strikeout pitchers.
+
+### Closer composite
+
+```
+closer_composite = 0.35 × (1 − ERA/6.0) + 0.40 × SV% + 0.25 × (K/9 / 15.0)
+```
+
+Save percentage is the primary signal for closers — a reliable closer converting opportunities is the most valuable fantasy trait. K/9 is computed inline (strikeouts × 9 / IP) since `RollingCloserStats` tracks the raw inputs. ERA uses the same ceiling as starters.
+
+Starters and closers are merged onto a single "pitchers" leaderboard. Both composites map to [0, 1], making scores directly comparable.
+
+### Why counting stats for hitters, rate stats for pitchers?
+
+Fantasy managers evaluate hitters over a 7-day window by accumulation: "he hit 4 HR and drove in 10 runs." They evaluate pitchers by quality: "his ERA was 1.50 over two starts." The composite formulas reflect these natural evaluation frames.
+
+---
+
+## Luck filter (Statcast confirmation)
+
+The luck filter answers: **should I trust this streak?** It compares a player's short-window traditional stats against their season-level Statcast metrics.
+
+### How it works
+
+Season-level Statcast data from FanGraphs (fetched via `pybaseball`) provides a baseline measure of a player's true quality — how hard they hit the ball, or how well they suppress contact. The 7-day rolling stats show current form. The luck filter compares the two:
+
+| Rolling streak | Statcast quality | Status | Meaning |
+|---------------|-----------------|--------|---------|
+| Hot (high composite) | ✅ Good | `CONFIRMED` | Streak aligns with underlying quality — sustainable |
+| Hot (high composite) | ❌ Poor | `LUCKY` | Overperforming underlying quality — may regress |
+| Cold (low composite) | ✅ Good | `UNLUCKY` | Underperforming underlying quality — expect bounce-back |
+| Cold (low composite) | ❌ Poor | `CONFIRMED` | Streak aligns with underlying quality — truly struggling |
+| Any | Missing | `UNCONFIRMED` | No Statcast data available for this player |
+
+### Quality thresholds
+
+**Hitters:** A hitter is considered a quality contact-maker if their season xwOBA ≥ 0.320 (`LUCK_XWOBA_THRESHOLD`). xwOBA (expected weighted on-base average) combines exit velocity, launch angle, and expected outcomes — the best single predictor of future offensive production.
+
+**Pitchers:** A pitcher is considered quality if their season FIP ≤ 4.00 (`LUCK_FIP_THRESHOLD`). FIP (Fielding Independent Pitching) strips out balls in play (which are more luck-dependent) and focuses on what the pitcher controls: strikeouts, walks, and home runs.
+
+### Name-matching limitation
+
+Statcast data is keyed by player name (from FanGraphs), while rolling stats use MLB Stats API player IDs with a `full_name` field. The lookup matches on `full_name`. Edge cases where names differ between sources (accent marks, periods in initials) result in `UNCONFIRMED` status. This is acceptable for V2 — affected players still appear on leaderboards, just without luck annotation.
+
+### Graceful degradation
+
+If `pybaseball` fails (import error, scraping failure, rate limit), both Statcast fetch functions return empty dicts. All players receive `UNCONFIRMED` status. The leaderboards still render with traditional stats — the luck column simply shows "—" instead of a badge.
+
+---
+
+## Breakout detection
+
+A breakout player is someone sustaining elevated performance, not just having a single hot week.
+
+### Algorithm
+
+1. Identify 7-day hot players (top N by composite).
+2. For each hot player, check if they also appear in the 15-day qualified pool.
+3. Compute the 15-day composite for all qualified players in the 15-day window.
+4. Calculate the median 15-day composite across all qualified players.
+5. If the hot player's 15-day composite ≥ the median → **breakout**.
+
+The median serves as a self-calibrating threshold: during a league-wide hitting surge (e.g., warm summer months), the bar rises naturally. During a cold stretch, it drops.
+
+### Breakout entries
+
+Breakout entries carry the 15-day rolling stats (not the 7-day stats), since the point of the breakout label is sustained performance over the longer window. The luck filter is applied with `is_hot=True` — a breakout is a confirmed hot streak by definition.
+
+### Overlap with hot list
+
+A player can appear on both the hot list and the breakout list. The hot list says "who's performing best right now"; the breakout list says "who's sustaining it." They serve different purposes even with overlap.
+
+### Tuning guide
+
+| Want to... | Change in `config.py` |
+|------------|----------------------|
+| Require more contact quality to be "confirmed" | Increase `LUCK_XWOBA_THRESHOLD` |
+| Require better pitching quality to be "confirmed" | Decrease `LUCK_FIP_THRESHOLD` |
+| Weight batting average more in hitter ranking | Increase `HITTER_W_AVG`, decrease others |
+| Weight strikeouts more for starters | Increase `STARTER_W_K9` |
+| Weight save percentage more for closers | Increase `CLOSER_W_SV_PCT` |
+| Adjust what ERA/WHIP/K9 "caps the signal" | Change `PITCHER_CEILING_ERA` / `_K9` / `_WHIP` |
+| Require higher HR output for top hitter scores | Decrease `HITTER_CEILING_HR` |

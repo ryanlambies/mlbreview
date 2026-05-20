@@ -105,6 +105,40 @@ MIN_SV_OPP_CLOSER: int = 2    # save opportunities for closers
 # Number of players shown per leaderboard section.
 LEADERBOARD_SIZE: int = 10
 
+# -- Hitter composite scoring -------------------------------------------------
+# hitter_composite = W_AVG * (AVG / ceiling) + W_HR * (HR / ceiling) + W_RBI * (RBI / ceiling)
+# All components are normalized to [0, 1] and clamped.
+HITTER_W_AVG: float = 0.40
+HITTER_W_HR: float = 0.30
+HITTER_W_RBI: float = 0.30
+HITTER_CEILING_AVG: float = 0.500     # a .500 7-day AVG caps the signal
+HITTER_CEILING_HR: int = 5            # 5 HR in 7 days caps the signal
+HITTER_CEILING_RBI: int = 12          # 12 RBI in 7 days caps the signal
+
+# -- Starter composite scoring ------------------------------------------------
+# starter_composite = W_ERA * (1 - ERA/ceil) + W_K9 * (K9/ceil) + W_WHIP * (1 - WHIP/ceil)
+STARTER_W_ERA: float = 0.40
+STARTER_W_K9: float = 0.35
+STARTER_W_WHIP: float = 0.25
+
+# -- Closer composite scoring -------------------------------------------------
+# closer_composite = W_ERA * (1 - ERA/ceil) + W_SV_PCT * SV% + W_K9 * (K9/ceil)
+CLOSER_W_ERA: float = 0.35
+CLOSER_W_SV_PCT: float = 0.40
+CLOSER_W_K9: float = 0.25
+
+# -- Shared pitcher ceilings --------------------------------------------------
+PITCHER_CEILING_ERA: float = 6.0      # ERA worse than this scores 0
+PITCHER_CEILING_K9: float = 15.0      # K/9 above this caps the signal
+PITCHER_CEILING_WHIP: float = 2.0     # WHIP worse than this scores 0
+
+# -- Luck filter thresholds ---------------------------------------------------
+# Season-level Statcast metrics above/below these thresholds indicate
+# "quality" underlying performance.  Compared against rolling traditional
+# stats to flag streaks as sustainable or fluky.
+LUCK_XWOBA_THRESHOLD: float = 0.320   # season xwOBA ≥ this = quality contact
+LUCK_FIP_THRESHOLD: float = 4.00      # season FIP ≤ this = quality pitching
+
 
 # ---------------------------------------------------------------------------
 # Pipeline behavior
