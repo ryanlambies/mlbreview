@@ -17,6 +17,7 @@ dependencies = [
     "jinja2>=3.1",
     "MLB-StatsAPI>=1.9",
     "python-dateutil>=2.9",
+    "pybaseball>=2.2",
 ]
 
 [project.optional-dependencies]
