@@ -211,15 +211,19 @@ class TestStarterComposite:
         expected = 0.40 * norm_era + 0.35 * norm_k9 + 0.25 * norm_whip
         assert _starter_composite(s) == pytest.approx(expected)
 
-    def test_zero_ip_scores_zero(self):
+    def test_zero_ip_does_not_crash(self):
+        """Zero IP produces a non-zero composite due to ERA/WHIP division guards.
+
+        ERA and WHIP return 0.0 when IP=0, which normalizes to maximum
+        "good" values (norm_era=1.0, norm_whip=1.0).  In practice the
+        qualification filter (MIN_IP_PITCHER=7.0) prevents this case
+        from reaching leaderboards.
+        """
         s = _rolling_starter(outs_recorded=0, earned_runs=5, strikeouts=0,
                              hits_allowed=3, walks=2)
-        # ERA = 0 (division guard), WHIP = 0 (division guard), K/9 = 0
-        # norm_era = 1 - 0/6 = 1.0, norm_whip = 1 - 0/2 = 1.0, norm_k9 = 0
-        # This is a quirk: zero IP gives ERA=0 and WHIP=0 which look "good"
-        # In practice the qualification filter prevents this case.
         composite = _starter_composite(s)
-        assert composite >= 0.0  # just verify it doesn't crash
+        # 0.40 * 1.0 + 0.35 * 0.0 + 0.25 * 1.0 = 0.65 (quirk, see docstring)
+        assert composite == pytest.approx(0.65)
 
 
 class TestCloserComposite:
@@ -622,25 +626,29 @@ class TestBreakoutHitters:
                                      at_bats=20, hits=10, home_runs=4, rbi=10)
         hitters_7d = {1: hot_hitter}
 
-        # 15-day: same hitter has mediocre stats; other hitters are better
-        mediocre = _rolling_hitter(player_id=1, full_name="Flash",
-                                   at_bats=50, hits=8, home_runs=1, rbi=3)
-        elite = _rolling_hitter(player_id=2, full_name="Star",
-                                at_bats=50, hits=20, home_runs=5, rbi=12)
-        hitters_15d = {1: mediocre, 2: elite}
+        # 15-day: Flash is terrible; two other hitters are much better.
+        # With 3 players, median is the middle value.  Flash's composite
+        # must be strictly below it.
+        flash_15d = _rolling_hitter(player_id=1, full_name="Flash",
+                                    at_bats=50, hits=5, home_runs=0, rbi=1)
+        star_15d = _rolling_hitter(player_id=2, full_name="Star",
+                                   at_bats=50, hits=20, home_runs=5, rbi=12)
+        other_15d = _rolling_hitter(player_id=3, full_name="Other",
+                                    at_bats=50, hits=18, home_runs=4, rbi=10)
+        hitters_15d = {1: flash_15d, 2: star_15d, 3: other_15d}
+
+        # Sanity: Flash's 15-day composite is below the others
+        flash_c = _hitter_composite(flash_15d)
+        star_c = _hitter_composite(star_15d)
+        other_c = _hitter_composite(other_15d)
+        assert flash_c < min(star_c, other_c), "fixture should make Flash worst"
 
         r7 = _rolling_stats(hitters=hitters_7d)
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters_15d)
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=1)
 
-        # Flash is on the 7-day hot list but below the 15-day median
-        # (elite's composite > mediocre's composite, so median includes elite's)
-        flash_composites_15d = _hitter_composite(mediocre)
-        elite_composite_15d = _hitter_composite(elite)
-        # Median of [flash, elite] composites; flash should be below it
-        # if elite is significantly better
-        if flash_composites_15d < (flash_composites_15d + elite_composite_15d) / 2:
-            assert len(lb.breakout_hitters) == 0
+        # Flash is 7-day hot but 15-day below median → not a breakout
+        assert len(lb.breakout_hitters) == 0
 
     def test_no_breakout_when_15d_data_empty(self):
         """No 15-day data → no breakouts."""
@@ -662,10 +670,10 @@ class TestBreakoutHitters:
         r15 = _rolling_stats(snapshots_used=15, hitters={1: h15})
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=1)
 
-        if lb.breakout_hitters:
-            b = lb.breakout_hitters[0]
-            # Should use 15-day PA, not 7-day
-            assert b.plate_appearances == 55
+        # Single player: always >= median of [self], so always a breakout
+        assert len(lb.breakout_hitters) == 1
+        # Should use 15-day PA, not 7-day
+        assert lb.breakout_hitters[0].plate_appearances == 55
 
     def test_breakout_hitter_gets_luck_status(self):
         """Breakout hitters get the hot-side luck filter applied."""
@@ -678,8 +686,23 @@ class TestBreakoutHitters:
         r15 = _rolling_stats(snapshots_used=15, hitters={1: h15})
         lb = score_leaderboards(r7, r15, sc, {}, leaderboard_size=1)
 
-        if lb.breakout_hitters:
-            assert lb.breakout_hitters[0].luck_status == LuckStatus.LUCKY
+        assert len(lb.breakout_hitters) == 1
+        assert lb.breakout_hitters[0].luck_status == LuckStatus.LUCKY
+
+    def test_no_breakout_when_7d_hot_absent_from_15d(self):
+        """A 7-day hot player not in the 15-day pool is skipped for breakout."""
+        # Player 1 is hot in 7d but not in 15d at all (e.g., recent callup)
+        h7 = _rolling_hitter(player_id=1, full_name="Callup",
+                             at_bats=20, hits=10, home_runs=4, rbi=10)
+        # Player 2 is only in the 15d pool (provides a non-empty pool)
+        h15_other = _rolling_hitter(player_id=2, full_name="Veteran",
+                                    at_bats=50, hits=15, home_runs=3, rbi=8)
+        r7 = _rolling_stats(hitters={1: h7})
+        r15 = _rolling_stats(snapshots_used=15, hitters={2: h15_other})
+        lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=1)
+
+        # Callup is 7d hot but absent from 15d → no breakout
+        assert len(lb.breakout_hitters) == 0
 
 
 class TestBreakoutPitchers:
@@ -731,8 +754,8 @@ class TestBreakoutPitchers:
         r15 = _rolling_stats(snapshots_used=15, starters={100: s15})
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=1)
 
-        if lb.breakout_pitchers:
-            assert lb.breakout_pitchers[0].starts == 3
+        assert len(lb.breakout_pitchers) == 1
+        assert lb.breakout_pitchers[0].starts == 3
 
 
 # ===========================================================================
@@ -752,7 +775,7 @@ class TestEdgeCases:
         assert lb.hot_hitters[0].player_id == lb.cold_hitters[0].player_id
 
     def test_all_same_composite(self):
-        """When all hitters have identical composites, all are returned."""
+        """When all hitters have identical composites, hot and cold are disjoint."""
         hitters = {
             i: _rolling_hitter(player_id=i, full_name=f"Clone {i}",
                                at_bats=20, hits=6, home_runs=2, rbi=5)
@@ -762,7 +785,11 @@ class TestEdgeCases:
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=3)
         assert len(lb.hot_hitters) == 3
-        assert len(lb.cold_hitters) == 3
+        # Cold gets the 2 players NOT on the hot list
+        assert len(lb.cold_hitters) == 2
+        hot_ids = {h.player_id for h in lb.hot_hitters}
+        cold_ids = {h.player_id for h in lb.cold_hitters}
+        assert hot_ids.isdisjoint(cold_ids)
 
     def test_hitters_only_no_pitchers(self):
         hitters = _build_hitter_pool(5)
@@ -815,6 +842,20 @@ class TestEdgeCases:
         assert hot_status == LuckStatus.CONFIRMED
         assert cold_status == LuckStatus.UNLUCKY
 
+
+    def test_hot_cold_disjoint_when_pool_barely_exceeds_size(self):
+        """11 hitters with size=10: hot and cold should NOT share players."""
+        hitters = _build_hitter_pool(11)
+        r7 = _rolling_stats(hitters=hitters)
+        r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
+        lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=10)
+
+        hot_ids = {h.player_id for h in lb.hot_hitters}
+        cold_ids = {h.player_id for h in lb.cold_hitters}
+        assert len(lb.hot_hitters) == 10
+        # Cold list should only have the 1 player not on the hot list
+        assert len(lb.cold_hitters) == 1
+        assert hot_ids.isdisjoint(cold_ids)
 
     def test_cold_pitcher_confirmed_via_full_pipeline(self):
         """Cold pitcher with high FIP gets CONFIRMED status through score_leaderboards."""
