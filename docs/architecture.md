@@ -506,7 +506,7 @@ Sub-signals:
 
 **`select_most_hyped(games, contexts, stars)`** returns the single highest-scoring `ScoredTonightGame`, or `None`.
 
-The star list (`config/stars.json`) is a manually curated set of ~30 MLBAM player IDs, refreshed pre-season. It is league-neutral by design.
+The star list (`config/stars.json`) contains ~30 MLBAM player IDs, refreshable via `scripts/refresh_stars.py`. It is league-neutral by design — selection is purely WAR-based with no team caps.
 
 #### `scoring/variety.py` — Variety rule
 
@@ -844,6 +844,36 @@ gh-pages branch root
 ---
 
 ## Key design decisions
+
+### Star-player refresh (`scripts/refresh_stars.py`)
+
+Standalone script that refreshes `config/stars.json` with current-season WAR leaders. Designed to run weekly (manually or via a workflow step) to keep the hype-score star-density sub-signal current as player performance shifts.
+
+**Data source:** Baseball Reference WAR via `pybaseball` (`bwar_bat` / `bwar_pitch`). These functions cache historical data locally and don't rely on FanGraphs scraping (which can be blocked).
+
+**Flow:**
+1. Fetch all-time batter WAR data; filter to target season and position players (`pitcher == "N"`)
+2. Fetch all-time pitcher WAR data; filter to target season
+3. Apply `--min-war` threshold (default: 2.0)
+4. Merge, deduplicate (Ohtani appears in both tables), sort by WAR descending
+5. Trim to `--top` N players (default: 30)
+6. Enrich with position abbreviations via MLB Stats API batch `/people` lookup
+7. Write `config/stars.json` in the same format `load_star_ids()` expects
+
+**CLI flags:**
+
+| Flag | Default | Purpose |
+|------|---------|---------|
+| `--season` | Current year | MLB season to query |
+| `--top` | 30 | Number of players in the output |
+| `--min-war` | 2.0 | Minimum WAR threshold |
+| `--dry-run` | off | Print output without writing to disk |
+
+**Graceful degradation:** Position-lookup failure → batters get "DH", pitchers get "P". pybaseball failure → script exits with code 1 and stars.json is not modified.
+
+**League-neutral guarantee:** WAR is the only selection criterion. Multiple players from the same team is expected when warranted by performance.
+
+---
 
 ### Why static HTML, not a JS framework?
 
