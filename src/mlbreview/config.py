@@ -90,6 +90,23 @@ LLM_RETRY_DELAY: float = 2.0
 
 
 # ---------------------------------------------------------------------------
+# V2 leaderboards (rolling stats + luck filter)
+# ---------------------------------------------------------------------------
+# Rolling window sizes (days) for hot/cold and breakout detection.
+ROLLING_WINDOW_DAYS: int = 7
+BREAKOUT_WINDOW_DAYS: int = 15
+
+# Minimum activity thresholds over the 7-day rolling window.  Players below
+# these are excluded from leaderboards (not enough data to be meaningful).
+MIN_PA_HITTER: int = 15       # plate appearances (≈ 2 PA/day)
+MIN_IP_PITCHER: float = 7.0   # innings pitched for starters (≈ 1 start)
+MIN_SV_OPP_CLOSER: int = 2    # save opportunities for closers
+
+# Number of players shown per leaderboard section.
+LEADERBOARD_SIZE: int = 10
+
+
+# ---------------------------------------------------------------------------
 # Pipeline behavior
 # ---------------------------------------------------------------------------
 # Phrasing surfaced when there were no MLB games the prior day.

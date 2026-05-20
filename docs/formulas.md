@@ -173,3 +173,70 @@ Result: **[walkoff, feat A, comeback]** — three different types of stories.
 | Force more category variety | Increase `VARIETY_THRESHOLD` (e.g., 0.20 = 20%) |
 | Allow same-category duplicates more freely | Decrease `VARIETY_THRESHOLD` |
 | Change how many storylines the digest surfaces | Adjust `MAX_STORYLINES` |
+
+---
+
+## Rolling stats (V2 leaderboard foundation)
+
+Rolling stats power the V2 hot/cold/breakout leaderboards. Each day's pipeline writes a snapshot of every player's game stats, and the leaderboard code loads the most recent N snapshots to compute aggregates.
+
+### Data flow
+
+1. **Boxscore fetch** (`data/gamelogs.py`): For each completed game, fetch `/game/{gamePk}/boxscore` and extract per-player stats.
+2. **Snapshot write** (`data/snapshots.py`): Combine all players' stats into a `DailySnapshot` and persist as JSON.
+3. **Snapshot load** (`data/snapshots.py`): Load the most recent 7 (or 15) day-named JSON files.
+4. **Rolling aggregation** (`scoring/leaderboards.py`): Sum counting stats across snapshots, compute rate stats, and apply qualification filters.
+
+### Player roles
+
+Stats are tracked separately for three roles:
+
+| Role | Tracked stats | Qualification threshold |
+|------|--------------|------------------------|
+| **Hitters** | PA, AB, H, 2B, 3B, HR, RBI, SB, BB, SO | `MIN_PA_HITTER = 15` PA over the window |
+| **Starters** | Starts, outs recorded, H, ER, BB, K, HR, pitches | `MIN_IP_PITCHER = 7.0` IP over the window |
+| **Closers** | Appearances, outs, ER, SV, BS, HLD, K, BB | `MIN_SV_OPP_CLOSER = 2` save opportunities |
+
+### Computed rate stats
+
+From the summed counting stats, these rate stats are derived:
+
+**Hitters:**
+- AVG = H / AB
+- OBP = (H + BB) / PA
+- SLG = TB / AB (where TB = 1B + 2×2B + 3×3B + 4×HR)
+
+**Starters:**
+- ERA = (ER × 9) / IP
+- WHIP = (BB + H) / IP
+- K/9 = (K × 9) / IP
+
+**Closers:**
+- ERA = (ER × 9) / IP
+- SV% = SV / (SV + BS)
+
+Note: closer WHIP is not computed because `CloserDayStats` does not track hits allowed (only walks). Closers are evaluated by ERA and SV% for the V2 leaderboards.
+
+### Window sizes
+
+- **Hot/cold:** 7-day rolling window (`ROLLING_WINDOW_DAYS = 7`)
+- **Breakout:** 15-day rolling window (`BREAKOUT_WINDOW_DAYS = 15`)
+
+Both windows count calendar days of available snapshots. Off-days (no games) produce no snapshot, so a 7-day window during a week with one off-day contains 6 days of data.
+
+### Starter classification
+
+A pitcher is classified as a starter if their `gamesStarted` field equals 1 in the boxscore pitching stats. All other pitchers with save, blown save, or hold activity are classified as closers. Middle relievers without any of these are excluded from V2 leaderboards.
+
+### Innings pitched encoding
+
+The MLB API uses a special notation for innings pitched: `"6.1"` means 6 and 1/3 innings (19 outs), not 6.1 innings. The fractional digit is always 0, 1, or 2 (representing additional outs beyond full innings). We convert this to total outs for accurate arithmetic and derive IP as `outs / 3`.
+
+### Tuning guide
+
+| Want to... | Change in `config.py` |
+|------------|----------------------|
+| Require more playing time to qualify | Increase `MIN_PA_HITTER` / `MIN_IP_PITCHER` |
+| Show more players per leaderboard | Increase `LEADERBOARD_SIZE` |
+| Use a longer hot/cold window | Increase `ROLLING_WINDOW_DAYS` |
+| Require a longer breakout confirmation | Increase `BREAKOUT_WINDOW_DAYS` |
