@@ -48,6 +48,16 @@ OFF-FIELD
 • {{ txn.description }}
 {% endfor %}
 {% endif %}
+{% if digest.leaderboards and digest.leaderboards.hot_hitters %}
+PLAYER LEADERBOARDS
+-------------------
+{% set top = digest.leaderboards.hot_hitters[0] %}
+Hottest hitter: {{ top.full_name }} ({{ top.avg | format_avg }} AVG, {{ top.home_runs }} HR, {{ top.rbi }} RBI)
+{% if digest.leaderboards.hot_pitchers %}{% set top_p = digest.leaderboards.hot_pitchers[0] %}
+Hottest pitcher: {{ top_p.full_name }} ({{ top_p.era | format_era }} ERA, {{ top_p.strikeouts }} K)
+{% endif %}
+See full leaderboards: {{ digest.dashboard_url }}
+{% endif %}
 {% endif %}
 --
 {{ digest.dashboard_url }}

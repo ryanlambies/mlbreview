@@ -32,6 +32,12 @@ from mlbreview.render.pages import (
 )
 from mlbreview.scoring.drama import ScoredGame
 from mlbreview.scoring.hype import ScoredTonightGame
+from mlbreview.scoring.leaderboards import (
+    LeaderboardHitter,
+    LeaderboardPitcher,
+    Leaderboards,
+    LuckStatus,
+)
 
 
 def _game(
@@ -153,6 +159,55 @@ def _full_digest() -> Digest:
     )
 
 
+def _sample_leaderboards() -> Leaderboards:
+    """Build a minimal Leaderboards for render tests."""
+    hot_h = LeaderboardHitter(
+        player_id=1, full_name="Aaron Judge", team_abbr="NYY",
+        games=7, plate_appearances=30, avg=0.412, obp=0.480, slg=0.824,
+        home_runs=4, rbi=10, stolen_bases=1,
+        composite_score=0.85, luck_status=LuckStatus.CONFIRMED,
+        xwoba=0.420, barrel_pct=18.5,
+    )
+    cold_h = LeaderboardHitter(
+        player_id=2, full_name="Cody Bellinger", team_abbr="CHC",
+        games=6, plate_appearances=24, avg=0.125, obp=0.200, slg=0.167,
+        home_runs=0, rbi=1, stolen_bases=0,
+        composite_score=0.12, luck_status=LuckStatus.UNLUCKY,
+        xwoba=0.340, barrel_pct=12.0,
+    )
+    hot_p = LeaderboardPitcher(
+        player_id=3, full_name="Zack Wheeler", team_abbr="PHI",
+        role="starter", era=1.50, innings_pitched=12.0, strikeouts=15,
+        composite_score=0.90, luck_status=LuckStatus.CONFIRMED,
+        whip=0.83, k_per_9=11.25, starts=2, fip=2.10, xera=2.30,
+    )
+    cold_p = LeaderboardPitcher(
+        player_id=4, full_name="Marcus Stroman", team_abbr="NYM",
+        role="starter", era=7.20, innings_pitched=10.0, strikeouts=5,
+        composite_score=0.15, luck_status=LuckStatus.CONFIRMED,
+        whip=1.90, k_per_9=4.50, starts=2, fip=5.50, xera=5.80,
+    )
+    return Leaderboards(
+        hot_hitters=[hot_h], cold_hitters=[cold_h],
+        hot_pitchers=[hot_p], cold_pitchers=[cold_p],
+        breakout_hitters=[], breakout_pitchers=[],
+        snapshots_7d=7, snapshots_15d=12,
+    )
+
+
+def _full_digest_with_leaderboards() -> Digest:
+    """A game-day digest with V2 leaderboards attached."""
+    base = _full_digest()
+    return Digest(
+        digest_date=base.digest_date,
+        games=base.games,
+        storylines=base.storylines,
+        tonight=base.tonight,
+        transactions=base.transactions,
+        leaderboards=_sample_leaderboards(),
+    )
+
+
 def _off_day_digest() -> Digest:
     return Digest(
         digest_date=date(2025, 8, 16),
@@ -223,6 +278,22 @@ class TestRenderEmailHtml:
         html = render_email_html(_full_digest())
         assert len(html.encode("utf-8")) < GMAIL_CLIP_THRESHOLD
 
+    def test_leaderboard_teaser_in_email(self) -> None:
+        html = render_email_html(_full_digest_with_leaderboards())
+        assert "Hottest hitter" in html
+        assert "Aaron Judge" in html
+        assert ".412" in html
+        assert "Hottest pitcher" in html
+        assert "Zack Wheeler" in html
+
+    def test_no_leaderboard_teaser_without_data(self) -> None:
+        html = render_email_html(_full_digest())
+        assert "Hottest hitter" not in html
+
+    def test_leaderboard_teaser_links_to_dashboard(self) -> None:
+        html = render_email_html(_full_digest_with_leaderboards())
+        assert "full leaderboards on the dashboard" in html
+
 
 # ---------------------------------------------------------------------------
 # Email text
@@ -246,6 +317,17 @@ class TestRenderEmailText:
         assert "No games last night" in text
         assert "SCORES" not in text
 
+    def test_leaderboard_teaser_in_text(self) -> None:
+        text = render_email_text(_full_digest_with_leaderboards())
+        assert "Hottest hitter" in text
+        assert "Aaron Judge" in text
+        assert "Hottest pitcher" in text
+        assert "Zack Wheeler" in text
+
+    def test_no_leaderboard_teaser_in_text_without_data(self) -> None:
+        text = render_email_text(_full_digest())
+        assert "PLAYER LEADERBOARDS" not in text
+
 
 # ---------------------------------------------------------------------------
 # Dashboard day
@@ -268,9 +350,29 @@ class TestRenderDashboardDay:
         html = render_dashboard_day(_off_day_digest())
         assert "No games last night" in html
 
-    def test_v2_placeholder_comment(self) -> None:
+    def test_no_leaderboard_section_without_data(self) -> None:
         html = render_dashboard_day(_full_digest())
-        assert "V2" in html
+        assert "Player Leaderboards" not in html
+
+    def test_leaderboard_section_renders(self) -> None:
+        html = render_dashboard_day(_full_digest_with_leaderboards())
+        assert "Player Leaderboards" in html
+        assert "Aaron Judge" in html
+        assert "Cody Bellinger" in html
+        assert "Zack Wheeler" in html
+        assert "Hot Hitters" in html
+        assert "Cold Pitchers" in html
+
+    def test_leaderboard_luck_badges(self) -> None:
+        html = render_dashboard_day(_full_digest_with_leaderboards())
+        assert "Confirmed" in html
+        assert "Unlucky" in html
+
+    def test_leaderboard_tabs_and_sort_js(self) -> None:
+        html = render_dashboard_day(_full_digest_with_leaderboards())
+        assert "lb-tab" in html
+        assert "data-sortable" in html
+        assert "<script>" in html
 
 
 # ---------------------------------------------------------------------------

@@ -46,6 +46,27 @@
   .nav a { color: var(--blue); text-decoration: none; font-size: 13px; }
   .nav a:hover { text-decoration: underline; }
   footer { text-align: center; padding: 24px; color: var(--gray-400); font-size: 12px; }
+  .leaderboard-notice { padding: 16px 24px; background: #fef3cd; border-radius: 8px; font-size: 14px; color: #856404; text-align: center; }
+  .lb-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .lb-tab { padding: 6px 14px; border: 1px solid var(--gray-200); border-radius: 6px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--gray-600); }
+  .lb-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lb-table th { text-align: left; padding: 8px 6px; border-bottom: 2px solid var(--gray-200); color: var(--gray-400); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; user-select: none; white-space: nowrap; }
+  .lb-table th:hover { color: var(--gray-800); }
+  .lb-table th .sort-arrow { font-size: 10px; margin-left: 2px; }
+  .lb-table td { padding: 7px 6px; border-bottom: 1px solid var(--gray-100); }
+  .lb-table tr.detail-row td { padding: 6px 6px 10px 24px; background: var(--gray-50); font-size: 12px; color: var(--gray-600); }
+  .lb-table .rank { color: var(--gray-400); width: 28px; }
+  .lb-table .player-name { font-weight: 600; }
+  .lb-table .team { color: var(--gray-400); font-size: 12px; }
+  .lb-table .stat { font-variant-numeric: tabular-nums; text-align: right; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.confirmed { background: #d1fae5; color: #065f46; }
+  .badge.lucky { background: #fef3cd; color: #856404; }
+  .badge.unlucky { background: #fee2e2; color: #991b1b; }
+  .lb-panel { display: none; }
+  .lb-panel.active { display: block; }
+  .expand-btn { cursor: pointer; color: var(--gray-400); font-size: 12px; }
   .off-day { padding: 32px 24px; text-align: center; }
   .off-day h2 { color: var(--navy); margin-bottom: 8px; }
   .off-day p { color: var(--gray-600); }
@@ -153,7 +174,282 @@
 
 {% endif %}
 
-<!-- V2 placeholder: hot/cold/breakout player leaderboards -->
+{# ── V2: Player Leaderboards ── #}
+{% if digest.leaderboards %}
+<div class="section">
+  <div class="section-title">Player Leaderboards</div>
+
+  {% if digest.leaderboards.snapshots_7d < 7 %}
+  <div class="leaderboard-notice">
+    Building up data — {{ digest.leaderboards.snapshots_7d }} of 7 days collected. Leaderboards become more accurate with a full week of data.
+  </div>
+  {% endif %}
+
+  <div class="lb-tabs">
+    <button class="lb-tab active" data-panel="hot-hitters">Hot Hitters</button>
+    <button class="lb-tab" data-panel="cold-hitters">Cold Hitters</button>
+    <button class="lb-tab" data-panel="hot-pitchers">Hot Pitchers</button>
+    <button class="lb-tab" data-panel="cold-pitchers">Cold Pitchers</button>
+    {% if digest.leaderboards.breakout_hitters %}
+    <button class="lb-tab" data-panel="breakout-hitters">Breakout Hitters</button>
+    {% endif %}
+    {% if digest.leaderboards.breakout_pitchers %}
+    <button class="lb-tab" data-panel="breakout-pitchers">Breakout Pitchers</button>
+    {% endif %}
+  </div>
+
+  {# -- Hot Hitters -- #}
+  <div class="lb-panel active" id="hot-hitters">
+  {% if digest.leaderboards.hot_hitters %}
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for h in digest.leaderboards.hot_hitters %}
+      <tr class="expand-btn" data-detail="hot-h-{{ loop.index }}">
+        <td class="rank">{{ loop.index }}</td>
+        <td><span class="player-name">{{ h.full_name }}</span> <span class="team">{{ h.team_abbr }}</span></td>
+        <td class="stat">{{ h.avg | format_avg }}</td>
+        <td class="stat">{{ h.home_runs }}</td>
+        <td class="stat">{{ h.rbi }}</td>
+        <td class="stat">{{ "%.3f" | format(h.obp + h.slg) }}</td>
+        <td>{% set badge = h.luck_status.value | luck_badge %}{% if badge %}<span class="badge {{ h.luck_status.value | luck_class }}">{{ badge }}</span>{% endif %}</td>
+      </tr>
+      <tr class="detail-row" id="hot-h-{{ loop.index }}" style="display:none;">
+        <td colspan="7">
+          {{ h.games }} G · {{ h.plate_appearances }} PA · {{ h.stolen_bases }} SB · OBP {{ h.obp | format_avg }} · SLG {{ h.slg | format_avg }}
+          {% if h.xwoba is not none %} · xwOBA {{ "%.3f" | format(h.xwoba) }}{% endif %}
+          {% if h.barrel_pct is not none %} · Barrel {{ "%.1f" | format(h.barrel_pct) }}%{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:var(--gray-400);font-size:14px;">No qualified hitters yet.</p>
+  {% endif %}
+  </div>
+
+  {# -- Cold Hitters -- #}
+  <div class="lb-panel" id="cold-hitters">
+  {% if digest.leaderboards.cold_hitters %}
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for h in digest.leaderboards.cold_hitters %}
+      <tr class="expand-btn" data-detail="cold-h-{{ loop.index }}">
+        <td class="rank">{{ loop.index }}</td>
+        <td><span class="player-name">{{ h.full_name }}</span> <span class="team">{{ h.team_abbr }}</span></td>
+        <td class="stat">{{ h.avg | format_avg }}</td>
+        <td class="stat">{{ h.home_runs }}</td>
+        <td class="stat">{{ h.rbi }}</td>
+        <td class="stat">{{ "%.3f" | format(h.obp + h.slg) }}</td>
+        <td>{% set badge = h.luck_status.value | luck_badge %}{% if badge %}<span class="badge {{ h.luck_status.value | luck_class }}">{{ badge }}</span>{% endif %}</td>
+      </tr>
+      <tr class="detail-row" id="cold-h-{{ loop.index }}" style="display:none;">
+        <td colspan="7">
+          {{ h.games }} G · {{ h.plate_appearances }} PA · {{ h.stolen_bases }} SB · OBP {{ h.obp | format_avg }} · SLG {{ h.slg | format_avg }}
+          {% if h.xwoba is not none %} · xwOBA {{ "%.3f" | format(h.xwoba) }}{% endif %}
+          {% if h.barrel_pct is not none %} · Barrel {{ "%.1f" | format(h.barrel_pct) }}%{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:var(--gray-400);font-size:14px;">No qualified hitters yet.</p>
+  {% endif %}
+  </div>
+
+  {# -- Hot Pitchers -- #}
+  <div class="lb-panel" id="hot-pitchers">
+  {% if digest.leaderboards.hot_pitchers %}
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in digest.leaderboards.hot_pitchers %}
+      <tr class="expand-btn" data-detail="hot-p-{{ loop.index }}">
+        <td class="rank">{{ loop.index }}</td>
+        <td><span class="player-name">{{ p.full_name }}</span> <span class="team">{{ p.team_abbr }}</span></td>
+        <td class="stat">{{ p.era | format_era }}</td>
+        <td class="stat">{{ p.innings_pitched | format_ip }}</td>
+        <td class="stat">{{ p.strikeouts }}</td>
+        <td class="stat" style="text-transform:capitalize;">{{ p.role }}</td>
+        <td>{% set badge = p.luck_status.value | luck_badge %}{% if badge %}<span class="badge {{ p.luck_status.value | luck_class }}">{{ badge }}</span>{% endif %}</td>
+      </tr>
+      <tr class="detail-row" id="hot-p-{{ loop.index }}" style="display:none;">
+        <td colspan="7">
+          {% if p.role == "starter" %}
+            {{ p.starts }} GS · WHIP {{ p.whip | format_era }} · K/9 {{ p.k_per_9 | format_era }}
+          {% else %}
+            {{ p.appearances }} APP · {{ p.saves }} SV · {{ p.blown_saves }} BS · SV% {{ "%.0f" | format((p.save_pct or 0) * 100) }}%
+          {% endif %}
+          {% if p.fip is not none %} · FIP {{ p.fip | format_era }}{% endif %}
+          {% if p.xera is not none %} · xERA {{ p.xera | format_era }}{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:var(--gray-400);font-size:14px;">No qualified pitchers yet.</p>
+  {% endif %}
+  </div>
+
+  {# -- Cold Pitchers -- #}
+  <div class="lb-panel" id="cold-pitchers">
+  {% if digest.leaderboards.cold_pitchers %}
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in digest.leaderboards.cold_pitchers %}
+      <tr class="expand-btn" data-detail="cold-p-{{ loop.index }}">
+        <td class="rank">{{ loop.index }}</td>
+        <td><span class="player-name">{{ p.full_name }}</span> <span class="team">{{ p.team_abbr }}</span></td>
+        <td class="stat">{{ p.era | format_era }}</td>
+        <td class="stat">{{ p.innings_pitched | format_ip }}</td>
+        <td class="stat">{{ p.strikeouts }}</td>
+        <td class="stat" style="text-transform:capitalize;">{{ p.role }}</td>
+        <td>{% set badge = p.luck_status.value | luck_badge %}{% if badge %}<span class="badge {{ p.luck_status.value | luck_class }}">{{ badge }}</span>{% endif %}</td>
+      </tr>
+      <tr class="detail-row" id="cold-p-{{ loop.index }}" style="display:none;">
+        <td colspan="7">
+          {% if p.role == "starter" %}
+            {{ p.starts }} GS · WHIP {{ p.whip | format_era }} · K/9 {{ p.k_per_9 | format_era }}
+          {% else %}
+            {{ p.appearances }} APP · {{ p.saves }} SV · {{ p.blown_saves }} BS · SV% {{ "%.0f" | format((p.save_pct or 0) * 100) }}%
+          {% endif %}
+          {% if p.fip is not none %} · FIP {{ p.fip | format_era }}{% endif %}
+          {% if p.xera is not none %} · xERA {{ p.xera | format_era }}{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:var(--gray-400);font-size:14px;">No qualified pitchers yet.</p>
+  {% endif %}
+  </div>
+
+  {# -- Breakout Hitters -- #}
+  {% if digest.leaderboards.breakout_hitters %}
+  <div class="lb-panel" id="breakout-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for h in digest.leaderboards.breakout_hitters %}
+      <tr class="expand-btn" data-detail="brk-h-{{ loop.index }}">
+        <td class="rank">{{ loop.index }}</td>
+        <td><span class="player-name">{{ h.full_name }}</span> <span class="team">{{ h.team_abbr }}</span></td>
+        <td class="stat">{{ h.avg | format_avg }}</td>
+        <td class="stat">{{ h.home_runs }}</td>
+        <td class="stat">{{ h.rbi }}</td>
+        <td class="stat">{{ "%.3f" | format(h.obp + h.slg) }}</td>
+        <td>{% set badge = h.luck_status.value | luck_badge %}{% if badge %}<span class="badge {{ h.luck_status.value | luck_class }}">{{ badge }}</span>{% endif %}</td>
+      </tr>
+      <tr class="detail-row" id="brk-h-{{ loop.index }}" style="display:none;">
+        <td colspan="7">
+          {{ h.games }} G · {{ h.plate_appearances }} PA · 15-day window
+          {% if h.xwoba is not none %} · xwOBA {{ "%.3f" | format(h.xwoba) }}{% endif %}
+          {% if h.barrel_pct is not none %} · Barrel {{ "%.1f" | format(h.barrel_pct) }}%{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% endif %}
+
+  {# -- Breakout Pitchers -- #}
+  {% if digest.leaderboards.breakout_pitchers %}
+  <div class="lb-panel" id="breakout-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in digest.leaderboards.breakout_pitchers %}
+      <tr class="expand-btn" data-detail="brk-p-{{ loop.index }}">
+        <td class="rank">{{ loop.index }}</td>
+        <td><span class="player-name">{{ p.full_name }}</span> <span class="team">{{ p.team_abbr }}</span></td>
+        <td class="stat">{{ p.era | format_era }}</td>
+        <td class="stat">{{ p.innings_pitched | format_ip }}</td>
+        <td class="stat">{{ p.strikeouts }}</td>
+        <td class="stat" style="text-transform:capitalize;">{{ p.role }}</td>
+        <td>{% set badge = p.luck_status.value | luck_badge %}{% if badge %}<span class="badge {{ p.luck_status.value | luck_class }}">{{ badge }}</span>{% endif %}</td>
+      </tr>
+      <tr class="detail-row" id="brk-p-{{ loop.index }}" style="display:none;">
+        <td colspan="7">
+          15-day window
+          {% if p.fip is not none %} · FIP {{ p.fip | format_era }}{% endif %}
+          {% if p.xera is not none %} · xERA {{ p.xera | format_era }}{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
 
 </div>
 
@@ -166,5 +462,58 @@
 </footer>
 
 </div>
+
+<script>
+/* Tab switching */
+document.querySelectorAll('.lb-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.lb-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.lb-panel').forEach(function(p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    var panel = document.getElementById(tab.getAttribute('data-panel'));
+    if (panel) panel.classList.add('active');
+  });
+});
+
+/* Expand/collapse detail rows */
+document.querySelectorAll('.expand-btn').forEach(function(row) {
+  row.addEventListener('click', function() {
+    var detailId = row.getAttribute('data-detail');
+    var detail = document.getElementById(detailId);
+    if (detail) {
+      detail.style.display = detail.style.display === 'none' ? '' : 'none';
+    }
+  });
+});
+
+/* Column sorting */
+document.querySelectorAll('.lb-table[data-sortable] th').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var table = th.closest('table');
+    var tbody = table.querySelector('tbody');
+    var idx = Array.from(th.parentNode.children).indexOf(th);
+    var rows = Array.from(tbody.querySelectorAll('tr:not(.detail-row)'));
+    var asc = th.getAttribute('data-sort-dir') !== 'asc';
+    th.parentNode.querySelectorAll('th').forEach(function(t) { t.removeAttribute('data-sort-dir'); });
+    th.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+    rows.sort(function(a, b) {
+      var av = a.children[idx] ? a.children[idx].textContent.trim() : '';
+      var bv = b.children[idx] ? b.children[idx].textContent.trim() : '';
+      var an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an) && !isNaN(bn)) {
+        return asc ? an - bn : bn - an;
+      }
+      return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(function(row) {
+      var detailId = row.getAttribute('data-detail');
+      var detail = detailId ? document.getElementById(detailId) : null;
+      tbody.appendChild(row);
+      if (detail) tbody.appendChild(detail);
+    });
+  });
+});
+</script>
+
 </body>
 </html>

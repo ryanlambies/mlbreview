@@ -24,10 +24,26 @@ import anthropic
 import httpx
 import resend
 
-from mlbreview.config import Config
+from mlbreview.config import (
+    BREAKOUT_WINDOW_DAYS,
+    ROLLING_WINDOW_DAYS,
+    Config,
+)
 from mlbreview.data.client import MlbApiError, make_client
 from mlbreview.data.game import GameFeed, fetch_game_feed
+from mlbreview.data.gamelogs import fetch_daily_gamelogs
 from mlbreview.data.schedule import Game, fetch_finals, fetch_tonight
+from mlbreview.data.snapshots import (
+    DailySnapshot,
+    load_snapshots,
+    write_snapshot,
+)
+from mlbreview.data.statcast import (
+    StatcastHitter,
+    StatcastPitcher,
+    fetch_statcast_hitters,
+    fetch_statcast_pitchers,
+)
 from mlbreview.data.stats import BatterSeasonStats, fetch_batter_season_stats
 from mlbreview.data.transactions import fetch_transactions
 from mlbreview.llm import write_preview, write_storyline
@@ -47,6 +63,11 @@ from mlbreview.scoring.hype import (
     ScoredTonightGame,
     load_star_ids,
     select_most_hyped,
+)
+from mlbreview.scoring.leaderboards import (
+    Leaderboards,
+    compute_rolling_stats,
+    score_leaderboards,
 )
 from mlbreview.scoring.variety import apply_variety_rule
 
@@ -151,6 +172,77 @@ def _generate_preview_prose(
         return None
     prose = write_preview(most_hyped, client=llm_client)
     return TonightPreview(scored=most_hyped, prose=prose)
+
+
+def _run_v2_leaderboards(
+    finals: list[Game],
+    target_date: date,
+    *,
+    mlb_client: httpx.Client,
+    out_path: Path,
+) -> Leaderboards | None:
+    """Run the V2 leaderboard pipeline: game logs → snapshot → rolling stats → score.
+
+    Returns ``None`` on any failure — V1 digest always ships regardless.
+    All steps are individually guarded so a partial failure (e.g., Statcast
+    down but game logs OK) preserves as much data as possible.
+    """
+    try:
+        # Step 1: Fetch daily game logs from boxscores
+        game_pks = [g.gamePk for g in finals]
+        hitters, starters, closers = fetch_daily_gamelogs(
+            game_pks, client=mlb_client, game_date=target_date.isoformat(),
+        )
+
+        # Step 2: Write today's snapshot
+        snapshot = DailySnapshot(
+            snapshot_date=target_date.isoformat(),
+            hitters=tuple(hitters),
+            starters=tuple(starters),
+            closers=tuple(closers),
+        )
+        write_snapshot(snapshot, base_dir=out_path)
+
+        # Step 3: Load rolling windows
+        snapshots_7d = load_snapshots(base_dir=out_path, n_days=ROLLING_WINDOW_DAYS)
+        snapshots_15d = load_snapshots(base_dir=out_path, n_days=BREAKOUT_WINDOW_DAYS)
+
+        # Step 4: Compute rolling stats
+        rolling_7d = compute_rolling_stats(snapshots_7d)
+        rolling_15d = compute_rolling_stats(snapshots_15d)
+
+        # Step 5: Fetch Statcast (graceful — empty dicts on failure)
+        statcast_hitters: dict[str, StatcastHitter] = {}
+        statcast_pitchers: dict[str, StatcastPitcher] = {}
+        try:
+            statcast_hitters = fetch_statcast_hitters(target_date.year)
+        except Exception:
+            logger.warning("Statcast hitter fetch failed; luck filter will use UNCONFIRMED", exc_info=True)
+        try:
+            statcast_pitchers = fetch_statcast_pitchers(target_date.year)
+        except Exception:
+            logger.warning("Statcast pitcher fetch failed; luck filter will use UNCONFIRMED", exc_info=True)
+
+        # Step 6: Score leaderboards
+        leaderboards = score_leaderboards(
+            rolling_7d, rolling_15d,
+            statcast_hitters, statcast_pitchers,
+        )
+        logger.info(
+            "V2 leaderboards: %d hot hitters, %d hot pitchers, %d breakout hitters "
+            "(7d=%d, 15d=%d snapshots)",
+            len(leaderboards.hot_hitters), len(leaderboards.hot_pitchers),
+            len(leaderboards.breakout_hitters),
+            leaderboards.snapshots_7d, leaderboards.snapshots_15d,
+        )
+        return leaderboards
+
+    except Exception:
+        logger.warning(
+            "V2 leaderboard pipeline failed; digest will ship without leaderboards",
+            exc_info=True,
+        )
+        return None
 
 
 def _write_dashboard(
@@ -331,6 +423,12 @@ def _run_pipeline(
         logger.warning("Failed to fetch transactions: %s", exc)
         transactions = []
 
+    # --- V2: leaderboards (game logs → snapshot → rolling → score) ---
+    leaderboards = _run_v2_leaderboards(
+        finals, target_date,
+        mlb_client=mlb_client, out_path=out_path,
+    )
+
     # --- Build digest and render ---
     digest = Digest(
         digest_date=target_date,
@@ -340,6 +438,7 @@ def _run_pipeline(
         tonight=preview,
         transactions=transactions,
         tonight_games=tonight_games,
+        leaderboards=leaderboards,
     )
 
     _write_dashboard(digest, out_path)

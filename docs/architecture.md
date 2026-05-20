@@ -107,6 +107,20 @@ The full sequence from cron trigger to delivered email:
        |                      |                       |──write_preview() ×1────────>
        |                      |                       |<───prose (or fallback)─────
        |                      |                       |
+       |                      |                       |
+       |                      |                       |        V2 Leaderboards (try/except)
+       |                      |                       |        ──────────────────────────
+       |                      |                       |──GET /game/{pk}/boxscore ×N───>
+       |                      |                       |<───daily player stats────────
+       |                      |                       |──write snapshot to public/snapshots/
+       |                      |                       |──load last 7 + 15 snapshots
+       |                      |                       |──compute_rolling_stats()
+       |                      |                       |──fetch Statcast (pybaseball)──>
+       |                      |                       |<───season xwOBA, FIP data────
+       |                      |                       |──score_leaderboards()
+       |                      |                       |──attach Leaderboards to Digest
+       |                      |                       |  (None on any failure)
+       |                      |                       |
        |                      |                       |──build Digest dataclass
        |                      |                       |──render dashboard HTML (Jinja2)
        |                      |                       |──write to public/digests/YYYY-MM-DD/
@@ -213,6 +227,24 @@ Every tunable constant in the system lives here. Scoring modules import these di
 | `LLM_MAX_TOKENS` | 200 | Max tokens per LLM call |
 | `LLM_RETRY_DELAY` | 2.0 | Seconds to wait before retrying a failed LLM call |
 
+**V2 leaderboard constants:**
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `ROLLING_WINDOW_DAYS` | 7 | Rolling window for hot/cold lists |
+| `BREAKOUT_WINDOW_DAYS` | 15 | Rolling window for breakout detection |
+| `MIN_PA_HITTER` | 15 | Minimum plate appearances (7-day) |
+| `MIN_IP_PITCHER` | 7.0 | Minimum innings pitched for starters (7-day) |
+| `MIN_SV_OPP_CLOSER` | 2 | Minimum save opportunities for closers |
+| `LEADERBOARD_SIZE` | 10 | Players per leaderboard section |
+| `HITTER_W_AVG / W_HR / W_RBI` | 0.40 / 0.30 / 0.30 | Hitter composite weights |
+| `HITTER_CEILING_AVG / HR / RBI` | .500 / 5 / 12 | Hitter composite ceilings |
+| `STARTER_W_ERA / W_K9 / W_WHIP` | 0.40 / 0.35 / 0.25 | Starter composite weights |
+| `CLOSER_W_ERA / W_SV_PCT / W_K9` | 0.35 / 0.40 / 0.25 | Closer composite weights |
+| `PITCHER_CEILING_ERA / K9 / WHIP` | 6.0 / 15.0 / 2.0 | Shared pitcher ceilings |
+| `LUCK_XWOBA_THRESHOLD` | 0.320 | Season xwOBA for quality contact |
+| `LUCK_FIP_THRESHOLD` | 4.00 | Season FIP for quality pitching |
+
 **Runtime config (`Config` dataclass):**
 
 Loaded from environment variables at startup. `require_secrets=True` (production) raises `EnvironmentError` if any key is missing. `require_secrets=False` (dry run) tolerates missing keys.
@@ -264,6 +296,7 @@ The orchestrator wires the submodules together. It owns sequencing, not business
 | `_build_index_entries(out_dir)` | Scan `digests/` for existing date folders |
 | `_send_email(digest, config)` | Render and send via Resend |
 | `_print_dry_run(digest)` | Print email preview to stdout (dry-run mode) |
+| `_run_v2_leaderboards(finals, date, mlb_client, out_path)` | V2 pipeline: fetch game logs → write snapshot → load rolling windows → fetch Statcast → score leaderboards. Returns `Leaderboards` or `None` on failure |
 
 ---
 
@@ -488,6 +521,27 @@ Prevents the top 3 storylines from being the same category. Algorithm:
 
 **`apply_variety_rule(candidates)`** returns `list[ScoredGame]` of length `min(3, len(candidates))`.
 
+#### `scoring/leaderboards.py` — Rolling stats + leaderboard scoring (V2)
+
+Computes 7-day and 15-day rolling aggregates from daily snapshots, scores qualified players by composite formulas, applies a Statcast-based luck filter, and detects breakout players.
+
+**Rolling aggregation (U3):** Sums counting stats across daily snapshots for hitters, starters, and closers. Players below minimum-activity thresholds (15 PA / 7 IP / 2 save opportunities) are filtered out.
+
+**Composite scoring (U4):** Each player role has a weighted composite formula normalized to [0, 1]:
+- Hitters: 0.40 × norm_avg + 0.30 × norm_hr + 0.30 × norm_rbi
+- Starters: 0.40 × inv_era + 0.35 × norm_k9 + 0.25 × inv_whip
+- Closers: 0.35 × inv_era + 0.40 × sv_pct + 0.25 × norm_k9
+
+**Luck filter:** Compares rolling traditional stats against season-level Statcast metrics. Hot hitter with high xwOBA → CONFIRMED; hot hitter with low xwOBA → LUCKY. Mirror logic for cold (UNLUCKY vs CONFIRMED) and pitchers (using FIP threshold). No Statcast data → UNCONFIRMED.
+
+**Breakout detection:** Players who are 7-day hot AND have a 15-day composite above the qualified-player median. Uses 15-day rolling stats for the entry.
+
+**Six leaderboards:** hot hitters, cold hitters, hot pitchers (starters + closers merged), cold pitchers, breakout hitters, breakout pitchers.
+
+**`score_leaderboards(rolling_7d, rolling_15d, statcast_hitters, statcast_pitchers)`** returns a `Leaderboards` dataclass with all six lists plus snapshot counts.
+
+See [`formulas.md`](formulas.md) for the full formula reference and tuning guide.
+
 ---
 
 ### LLM integration (`llm.py`)
@@ -590,6 +644,7 @@ Digest
 │       └── prose: str
 ├── transactions: list[Transaction]      (Section 4: off-field)
 ├── tonight_games: list[TonightGame]     (tonight's full schedule)
+├── leaderboards: Leaderboards | None    (V2: player leaderboards)
 ├── off_day_headline (property)
 ├── off_day_body (property)
 └── dashboard_url (property)
@@ -600,7 +655,7 @@ Digest
 The environment is configured with:
 - `autoescape` enabled for HTML safety
 - `trim_blocks` and `lstrip_blocks` for readable templates
-- Custom filters: `format_date`, `ordinal`, `category_label`
+- Custom filters: `format_date`, `ordinal`, `category_label`, `format_avg`, `format_era`, `format_ip`, `luck_badge`, `luck_class`
 
 #### Templates
 
@@ -624,6 +679,19 @@ Each run writes two files:
 2. `public/index.html` — the archive index (rebuilt from all `digests/` subdirectories)
 
 The archive index is rebuilt on every run by scanning `public/digests/` for date-named directories, sorted newest-first.
+
+#### V2 dashboard features
+
+The leaderboard section on the dashboard includes:
+- **Tab navigation** — Hot Hitters, Cold Hitters, Hot Pitchers, Cold Pitchers, Breakout Hitters, Breakout Pitchers (breakout tabs only appear when breakout players exist)
+- **Sortable tables** — click any column header to sort ascending/descending (vanilla JS, no framework)
+- **Expandable detail rows** — click a player row to reveal advanced stats (xwOBA, barrel%, FIP, xERA) and the luck status context
+- **Luck status badges** — color-coded: Confirmed (green), Lucky (amber), Unlucky (red), Unconfirmed (no badge)
+- **"Building up data" notice** — shown when fewer than 7 snapshots have been collected
+
+#### V2 email teaser
+
+The email includes a brief leaderboard teaser section (hottest hitter + hottest pitcher with key stats) and a link to the full dashboard. The teaser is absent when leaderboards are unavailable.
 
 ---
 
@@ -706,6 +774,10 @@ Every LLM-generated prose string is checked for hallucinated player names before
 | Tonight's schedule fails | No "Tonight" section; storylines still render |
 | LLM call fails (both retries) | Deterministic template fallback is used |
 | LLM hallucinates a name | Grounding check catches it; fallback is used |
+| V2 game-log fetch fails | No snapshot written; leaderboard section absent; V1 digest ships normally |
+| V2 Statcast fetch fails | Leaderboards render with UNCONFIRMED luck status for all players |
+| V2 snapshot load fails | Leaderboard section absent; V1 digest ships normally |
+| V2 any unexpected error | Entire V2 pipeline returns None; V1 digest ships normally |
 
 The only hard failure is the schedule fetch for finals (`fetch_finals`). If that fails, the pipeline returns exit code 1 and no email is sent.
 
@@ -757,6 +829,10 @@ GitHub Pages serves the `gh-pages` branch at `https://ryanlambies.github.io/mlbr
 ```
 gh-pages branch root
 ├── index.html                     (archive listing, rebuilt daily)
+├── snapshots/                     (V2: daily player stat snapshots)
+│   ├── 2026-05-07.json
+│   ├── 2026-05-08.json
+│   └── ...
 └── digests/
     ├── 2026-05-07/
     │   └── index.html             (day page)

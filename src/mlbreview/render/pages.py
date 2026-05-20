@@ -23,6 +23,7 @@ from mlbreview.data.schedule import Game, InningLine, TonightGame
 from mlbreview.data.transactions import Transaction
 from mlbreview.scoring.drama import ScoredGame
 from mlbreview.scoring.hype import ScoredTonightGame
+from mlbreview.scoring.leaderboards import Leaderboards
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,9 @@ class Digest:
     # Tonight's full schedule (used on off-days and as supplemental)
     tonight_games: list[TonightGame] = field(default_factory=list)
 
+    # V2: player leaderboards (None when V2 data is unavailable or failed)
+    leaderboards: Leaderboards | None = None
+
     @property
     def off_day_headline(self) -> str:
         return OFF_DAY_HEADLINE
@@ -99,6 +103,11 @@ def _build_env() -> jinja2.Environment:
     env.filters["format_date"] = _format_date
     env.filters["ordinal"] = _ordinal
     env.filters["category_label"] = _category_label
+    env.filters["format_avg"] = _format_avg
+    env.filters["format_era"] = _format_era
+    env.filters["format_ip"] = _format_ip
+    env.filters["luck_badge"] = _luck_badge
+    env.filters["luck_class"] = _luck_class
     return env
 
 
@@ -124,6 +133,39 @@ def _category_label(cat: str) -> str:
         "default": "",
     }
     return labels.get(cat, "")
+
+
+def _format_avg(value: float) -> str:
+    """Format a batting average to .XXX (3 decimal places, no leading zero)."""
+    return f"{value:.3f}".lstrip("0") or ".000"
+
+
+def _format_era(value: float) -> str:
+    """Format ERA to 2 decimal places."""
+    return f"{value:.2f}"
+
+
+def _format_ip(value: float) -> str:
+    """Format innings pitched in baseball notation (e.g., 6.333... → 6.1)."""
+    full = int(value)
+    partial_outs = round((value - full) * 3)
+    return f"{full}.{partial_outs}"
+
+
+def _luck_badge(status: str) -> str:
+    """Return a short badge label for a luck status value."""
+    labels = {
+        "confirmed": "Confirmed",
+        "lucky": "Lucky",
+        "unlucky": "Unlucky",
+        "unconfirmed": "",
+    }
+    return labels.get(status, "")
+
+
+def _luck_class(status: str) -> str:
+    """Return a CSS class suffix for a luck status value."""
+    return status if status in ("confirmed", "lucky", "unlucky") else ""
 
 
 _env = _build_env()
