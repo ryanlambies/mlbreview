@@ -377,6 +377,52 @@ BatterSeasonStats
 
 On API failure, returns an empty dict — the pipeline continues without season stats and the LLM produces prose without tallies.
 
+#### `data/snapshots.py` — Daily stat snapshots (V2)
+
+Persistence layer for V2 rolling-window leaderboards. Each pipeline run writes a JSON snapshot of the day's player stats to `public/snapshots/YYYY-MM-DD.json`. The leaderboard code loads the last N snapshots and computes rolling aggregates.
+
+Snapshots are stored on the `gh-pages` branch alongside dashboard HTML. They are never pruned (~80KB/day, ~14MB/season).
+
+**Dataclasses:**
+
+```
+DailySnapshot
+├── snapshot_date: str (YYYY-MM-DD)
+├── hitters: tuple[HitterDayStats, ...]
+├── starters: tuple[StarterGameStats, ...]
+└── closers: tuple[CloserDayStats, ...]
+
+HitterDayStats
+├── player_id, full_name, team_abbr
+├── plate_appearances, at_bats, hits
+├── doubles, triples, home_runs
+├── rbi, stolen_bases, walks, strikeouts
+
+StarterGameStats (per-start, not per-day)
+├── player_id, full_name, team_abbr
+├── game_date, opponent_abbr
+├── outs_recorded (18 = 6.0 IP)
+├── hits_allowed, earned_runs, walks
+├── strikeouts, home_runs_allowed, pitches_thrown
+└── innings_pitched (property: outs / 3)
+
+CloserDayStats
+├── player_id, full_name, team_abbr
+├── outs_recorded, earned_runs
+├── saves, blown_saves, holds
+├── strikeouts, walks
+└── innings_pitched (property: outs / 3)
+```
+
+**Functions:**
+
+| Function | Purpose |
+|----------|---------|
+| `write_snapshot(snapshot, base_dir)` | Write snapshot as compact JSON; creates `snapshots/` dir if needed |
+| `load_snapshot(path)` | Load a single snapshot from a JSON file |
+| `load_snapshots(base_dir, n_days)` | Load the most recent N snapshots, newest-first; skips corrupt files |
+| `snapshot_path(base_dir, date)` | Return canonical path for a snapshot file |
+
 ---
 
 ### Scoring layer (`scoring/`)
