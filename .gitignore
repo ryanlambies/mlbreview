@@ -10,6 +10,7 @@ __pycache__/
 *.pyc
 .vscode/
 .idea/
+.claude/
 
 # Python build / packaging
 build/
