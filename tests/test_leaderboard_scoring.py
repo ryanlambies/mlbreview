@@ -4,6 +4,10 @@ from __future__ import annotations
 
 import pytest
 
+from mlbreview.config import (
+    COLD_HITTER_COMPOSITE_MAX,
+    COLD_PITCHER_COMPOSITE_MAX,
+)
 from mlbreview.data.snapshots import (
     CloserDayStats,
     DailySnapshot,
@@ -446,25 +450,31 @@ class TestScoreLeaderboards:
         assert lb.snapshots_15d == 15
 
     def test_hitter_hot_cold_ordering(self):
-        """Hot hitters descend by composite; cold hitters ascend."""
+        """Hot hitters descend by composite; cold hitters ascend and are gated."""
         hitters = _build_hitter_pool(15)
         r7 = _rolling_stats(hitters=hitters)
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=5)
 
         assert len(lb.hot_hitters) == 5
-        assert len(lb.cold_hitters) == 5
 
         # Hot list is sorted descending by composite
         hot_scores = [h.composite_score for h in lb.hot_hitters]
         assert hot_scores == sorted(hot_scores, reverse=True)
 
-        # Cold list is sorted ascending by composite
+        # Cold list ascends and every entry clears the absolute cold gate.
         cold_scores = [h.composite_score for h in lb.cold_hitters]
+        assert len(lb.cold_hitters) > 0
         assert cold_scores == sorted(cold_scores)
+        assert all(s <= COLD_HITTER_COMPOSITE_MAX for s in cold_scores)
+
+        # Hot and cold never share a player.
+        hot_ids = {h.player_id for h in lb.hot_hitters}
+        cold_ids = {h.player_id for h in lb.cold_hitters}
+        assert hot_ids.isdisjoint(cold_ids)
 
     def test_pitcher_hot_cold_ordering(self):
-        """Pitchers (starters + closers merged) are ranked correctly."""
+        """Pitchers (starters + closers merged) are ranked; cold is gated."""
         starters = _build_starter_pool(8)
         closers = _build_closer_pool(4)
         r7 = _rolling_stats(starters=starters, closers=closers)
@@ -475,9 +485,14 @@ class TestScoreLeaderboards:
         hot_scores = [p.composite_score for p in lb.hot_pitchers]
         assert hot_scores == sorted(hot_scores, reverse=True)
 
-        assert len(lb.cold_pitchers) == 5
         cold_scores = [p.composite_score for p in lb.cold_pitchers]
+        assert len(lb.cold_pitchers) > 0
         assert cold_scores == sorted(cold_scores)
+        assert all(s <= COLD_PITCHER_COMPOSITE_MAX for s in cold_scores)
+
+        hot_ids = {p.player_id for p in lb.hot_pitchers}
+        cold_ids = {p.player_id for p in lb.cold_pitchers}
+        assert hot_ids.isdisjoint(cold_ids)
 
     def test_leaderboard_size_limits(self):
         """Leaderboard never returns more than leaderboard_size entries."""
@@ -489,13 +504,14 @@ class TestScoreLeaderboards:
         assert len(lb.cold_hitters) == 3
 
     def test_fewer_than_leaderboard_size(self):
-        """When fewer players than leaderboard_size, return all of them."""
+        """Fewer players than size: all are hot, so none remain for cold."""
         hitters = _build_hitter_pool(3)
         r7 = _rolling_stats(hitters=hitters)
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=10)
         assert len(lb.hot_hitters) == 3
-        assert len(lb.cold_hitters) == 3
+        # Every hitter is on the hot list, so the cold list is empty (disjoint).
+        assert len(lb.cold_hitters) == 0
 
     def test_starters_and_closers_mixed_on_same_leaderboard(self):
         """Both starters and closers appear on the pitcher leaderboard."""
@@ -549,12 +565,19 @@ class TestScoreLeaderboardsLuck:
         assert lb.hot_hitters[0].xwoba == 0.380
 
     def test_cold_hitter_with_statcast_unlucky(self):
-        hitters = {1: _rolling_hitter(player_id=1, full_name="Snakebit",
-                                      at_bats=20, hits=2, home_runs=0, rbi=0)}
+        # A masher takes the single hot slot; the snakebit hitter (poor results
+        # but good xwOBA) is the cold one and reads UNLUCKY.
+        hitters = {
+            1: _rolling_hitter(player_id=1, full_name="Snakebit",
+                               at_bats=20, hits=2, home_runs=0, rbi=0),
+            2: _rolling_hitter(player_id=2, full_name="Masher",
+                               at_bats=20, hits=10, home_runs=4, rbi=10),
+        }
         sc = {"Snakebit": _statcast_hitter("Snakebit", xwoba=0.370)}
         r7 = _rolling_stats(hitters=hitters)
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
         lb = score_leaderboards(r7, r15, sc, {}, leaderboard_size=1)
+        assert lb.cold_hitters[0].full_name == "Snakebit"
         assert lb.cold_hitters[0].luck_status == LuckStatus.UNLUCKY
 
     def test_no_statcast_unconfirmed(self):
@@ -577,13 +600,21 @@ class TestScoreLeaderboardsLuck:
         assert lb.hot_pitchers[0].fip == 2.50
 
     def test_cold_pitcher_unlucky(self):
-        starters = {100: _rolling_starter(player_id=100, full_name="Unlucky",
-                                          outs_recorded=18, earned_runs=8,
-                                          strikeouts=3, hits_allowed=14, walks=5)}
+        # An ace takes the single hot slot; the struggling pitcher (poor results
+        # but good FIP) is the cold one and reads UNLUCKY.
+        starters = {
+            100: _rolling_starter(player_id=100, full_name="Unlucky",
+                                  outs_recorded=18, earned_runs=8,
+                                  strikeouts=3, hits_allowed=14, walks=5),
+            101: _rolling_starter(player_id=101, full_name="Ace",
+                                  outs_recorded=36, earned_runs=1,
+                                  strikeouts=18, hits_allowed=5, walks=1),
+        }
         sc = {"Unlucky": _statcast_pitcher("Unlucky", fip=3.20)}
         r7 = _rolling_stats(starters=starters)
         r15 = _rolling_stats(snapshots_used=15, starters=starters)
         lb = score_leaderboards(r7, r15, {}, sc, leaderboard_size=1)
+        assert lb.cold_pitchers[0].full_name == "Unlucky"
         assert lb.cold_pitchers[0].luck_status == LuckStatus.UNLUCKY
 
     def test_hot_pitcher_lucky(self):
@@ -765,17 +796,16 @@ class TestBreakoutPitchers:
 
 class TestEdgeCases:
     def test_single_hitter(self):
-        """One qualified hitter appears on both hot and cold lists."""
+        """A lone qualified hitter is hot; cold is empty (hot/cold are disjoint)."""
         hitters = {1: _rolling_hitter(player_id=1, full_name="Solo")}
         r7 = _rolling_stats(hitters=hitters)
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
         lb = score_leaderboards(r7, r15, {}, {})
         assert len(lb.hot_hitters) == 1
-        assert len(lb.cold_hitters) == 1
-        assert lb.hot_hitters[0].player_id == lb.cold_hitters[0].player_id
+        assert len(lb.cold_hitters) == 0
 
     def test_all_same_composite(self):
-        """When all hitters have identical composites, hot and cold are disjoint."""
+        """Identical good composites: top N are hot; leftovers fail the cold gate."""
         hitters = {
             i: _rolling_hitter(player_id=i, full_name=f"Clone {i}",
                                at_bats=20, hits=6, home_runs=2, rbi=5)
@@ -785,11 +815,8 @@ class TestEdgeCases:
         r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
         lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=3)
         assert len(lb.hot_hitters) == 3
-        # Cold gets the 2 players NOT on the hot list
-        assert len(lb.cold_hitters) == 2
-        hot_ids = {h.player_id for h in lb.hot_hitters}
-        cold_ids = {h.player_id for h in lb.cold_hitters}
-        assert hot_ids.isdisjoint(cold_ids)
+        # The 2 leftover clones score above the cold gate, so cold is empty.
+        assert len(lb.cold_hitters) == 0
 
     def test_hitters_only_no_pitchers(self):
         hitters = _build_hitter_pool(5)
@@ -862,10 +889,14 @@ class TestEdgeCases:
         bad = _rolling_starter(player_id=100, full_name="Bad Pitcher",
                                outs_recorded=18, earned_runs=8,
                                strikeouts=3, hits_allowed=14, walks=5)
+        ace = _rolling_starter(player_id=101, full_name="Ace",
+                               outs_recorded=36, earned_runs=1,
+                               strikeouts=18, hits_allowed=5, walks=1)
         sc = {"Bad Pitcher": _statcast_pitcher("Bad Pitcher", fip=5.50)}
-        r7 = _rolling_stats(starters={100: bad})
-        r15 = _rolling_stats(snapshots_used=15, starters={100: bad})
+        r7 = _rolling_stats(starters={100: bad, 101: ace})
+        r15 = _rolling_stats(snapshots_used=15, starters={100: bad, 101: ace})
         lb = score_leaderboards(r7, r15, {}, sc, leaderboard_size=1)
+        assert lb.cold_pitchers[0].full_name == "Bad Pitcher"
         assert lb.cold_pitchers[0].luck_status == LuckStatus.CONFIRMED
 
     def test_breakout_two_players_one_below_median(self):
@@ -901,6 +932,89 @@ class TestEdgeCases:
         hot_ids = {h.player_id for h in lb.hot_hitters}
         cold_ids = {h.player_id for h in lb.cold_hitters}
         assert hot_ids.isdisjoint(cold_ids)
+
+
+class TestColdSelectionGate:
+    """Cold lists must be disjoint from hot and gated by an absolute floor.
+
+    These cover the fix for the bug where a genuinely hot pitcher (e.g. a
+    1.89-ERA ace) appeared on both the hot and cold pitcher boards because a
+    thin qualified pool triggered a full-pool fallback.
+    """
+
+    def test_hot_pitcher_not_cold_in_thin_pool(self):
+        """A hot pitcher never lands on cold, even when the pool is smaller
+        than the leaderboard size (the old fallback used to dump him there)."""
+        starters = {300: _rolling_starter(player_id=300, full_name="Chris Sale",
+                                          outs_recorded=21, earned_runs=1,
+                                          strikeouts=8, hits_allowed=4, walks=0)}
+        for i in range(5):
+            starters[100 + i] = _rolling_starter(
+                player_id=100 + i, full_name=f"Starter {i}",
+                outs_recorded=21, earned_runs=i + 1,
+                strikeouts=max(8 - i, 2), hits_allowed=5, walks=1,
+            )
+        r7 = _rolling_stats(starters=starters)
+        r15 = _rolling_stats(snapshots_used=15, starters=starters)
+        # Pool (6) < leaderboard_size (10): used to trigger the full-pool fallback.
+        lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=10)
+
+        hot_names = {p.full_name for p in lb.hot_pitchers}
+        cold_names = {p.full_name for p in lb.cold_pitchers}
+        assert "Chris Sale" in hot_names
+        assert "Chris Sale" not in cold_names
+        assert hot_names.isdisjoint(cold_names)
+
+    def test_cold_empty_when_no_one_is_actually_cold(self):
+        """A thin pool of good pitchers yields an empty cold list, not false colds."""
+        starters = {
+            100 + i: _rolling_starter(player_id=100 + i, full_name=f"Good {i}",
+                                      outs_recorded=21, earned_runs=1,
+                                      strikeouts=8, hits_allowed=4, walks=0)
+            for i in range(3)
+        }
+        r7 = _rolling_stats(starters=starters)
+        r15 = _rolling_stats(snapshots_used=15, starters=starters)
+        lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=10)
+        assert len(lb.hot_pitchers) == 3
+        assert lb.cold_pitchers == []
+
+    def test_swingman_listed_once(self):
+        """A pitcher who both starts and relieves in the window appears once,
+        not twice, on the merged pitcher leaderboard (kept on his better role)."""
+        starter = _rolling_starter(player_id=300, full_name="Swingman",
+                                   outs_recorded=21, earned_runs=1, strikeouts=8,
+                                   hits_allowed=4, walks=0)
+        closer = _rolling_closer(player_id=300, full_name="Swingman",
+                                 outs_recorded=3, earned_runs=4, saves=0,
+                                 blown_saves=2, holds=0, strikeouts=1, walks=1)
+        r7 = _rolling_stats(starters={300: starter}, closers={300: closer})
+        r15 = _rolling_stats(snapshots_used=15, starters={300: starter},
+                             closers={300: closer})
+        lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=10)
+
+        all_pitchers = lb.hot_pitchers + lb.cold_pitchers
+        swingman_entries = [p for p in all_pitchers if p.full_name == "Swingman"]
+        assert len(swingman_entries) == 1
+        # Collapsed to the higher-scoring (starter) role.
+        assert swingman_entries[0].role == "starter"
+
+    def test_cold_hitter_gate_excludes_mediocre_in_thin_pool(self):
+        """Only genuinely cold hitters make the cold list; mediocre ones don't."""
+        hitters = {
+            1: _rolling_hitter(player_id=1, full_name="Masher",
+                               at_bats=20, hits=10, home_runs=4, rbi=10),
+            2: _rolling_hitter(player_id=2, full_name="Average",
+                               at_bats=20, hits=6, home_runs=2, rbi=5),
+            3: _rolling_hitter(player_id=3, full_name="Frozen",
+                               at_bats=20, hits=1, home_runs=0, rbi=0),
+        }
+        r7 = _rolling_stats(hitters=hitters)
+        r15 = _rolling_stats(snapshots_used=15, hitters=hitters)
+        lb = score_leaderboards(r7, r15, {}, {}, leaderboard_size=1)
+        # Masher is hot; only Frozen clears the cold gate (Average is excluded).
+        cold_names = {h.full_name for h in lb.cold_hitters}
+        assert cold_names == {"Frozen"}
 
 
 class TestLuckStatusEnum:

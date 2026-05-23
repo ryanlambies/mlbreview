@@ -27,6 +27,8 @@ from mlbreview.config import (
     CLOSER_W_ERA,
     CLOSER_W_K9,
     CLOSER_W_SV_PCT,
+    COLD_HITTER_COMPOSITE_MAX,
+    COLD_PITCHER_COMPOSITE_MAX,
     HITTER_CEILING_AVG,
     HITTER_CEILING_HR,
     HITTER_CEILING_RBI,
@@ -747,11 +749,15 @@ def _score_and_rank_hitters(
     statcast: dict[str, StatcastHitter],
     *,
     size: int,
+    cold_max: float = COLD_HITTER_COMPOSITE_MAX,
 ) -> tuple[list[LeaderboardHitter], list[LeaderboardHitter]]:
     """Score all qualified hitters and return (hot, cold) lists.
 
     Hot = top *size* by composite (descending).
-    Cold = top *size* by composite (ascending = worst performers).
+    Cold = worst *size* by composite (ascending), restricted to hitters NOT on
+    the hot list whose composite is at or below ``cold_max``.  The absolute gate
+    means "cold" reflects genuinely poor performance rather than the relative
+    bottom of a thin pool; the cold list may be shorter than *size* or empty.
     """
     scored: list[tuple[float, RollingHitterStats]] = [
         (_hitter_composite(h), h) for h in hitters.values()
@@ -765,17 +771,16 @@ def _score_and_rank_hitters(
 
     hot_ids = {e.player_id for e in hot}
 
-    # Cold list: worst performers who are NOT already on the hot list.
-    # When the pool is small enough that everyone is on the hot list,
-    # fall back to the full pool (a single player is both hottest and coldest).
-    cold: list[LeaderboardHitter] = []
+    # Cold list: worst performers not already on the hot list AND genuinely cold
+    # (composite at or below the absolute gate).  No fallback to the full pool —
+    # hot and cold are disjoint by construction, and a player can only be cold if
+    # their line is actually poor.
     cold_candidates = [
-        (c, h) for c, h in scored if h.player_id not in hot_ids
+        (c, h) for c, h in scored
+        if h.player_id not in hot_ids and c <= cold_max
     ]
-    if not cold_candidates:
-        # Pool <= leaderboard size: everyone is "hot", reuse full list for cold
-        cold_candidates = list(scored)
     cold_candidates.sort(key=lambda x: x[0])  # ascending = worst first
+    cold: list[LeaderboardHitter] = []
     for composite, h in cold_candidates[:size]:
         status, xwoba, barrel_pct = _hitter_luck(h.full_name, statcast, is_hot=False)
         cold.append(_build_hitter_entry(h, composite, status, xwoba, barrel_pct))
@@ -789,50 +794,68 @@ def _score_and_rank_pitchers(
     statcast: dict[str, StatcastPitcher],
     *,
     size: int,
+    cold_max: float = COLD_PITCHER_COMPOSITE_MAX,
 ) -> tuple[list[LeaderboardPitcher], list[LeaderboardPitcher]]:
     """Score all qualified pitchers (starters + closers) and return (hot, cold).
 
-    Starters and closers use different composite formulas but the scores
-    are on the same [0, 1] scale, allowing a merged ranking.
+    Starters and closers use different composite formulas but the scores are on
+    the same [0, 1] scale, allowing a merged ranking.
+
+    A swingman can appear in both the starter and closer pools for the same
+    rolling window (a start one day, a save/hold in relief another).  Those are
+    collapsed to a single entry per ``player_id`` — the higher-scoring role,
+    which best represents the pitcher's contribution — so nobody is listed
+    twice.  Cold = worst *size* not on the hot list whose composite is at or
+    below ``cold_max``; the gate keeps genuinely good pitchers off the cold
+    board in thin pools.  The cold list may be shorter than *size* or empty.
     """
-    scored: list[tuple[float, LeaderboardPitcher]] = []
+    # Build one (hot-luck, cold-luck) entry pair per player_id, keeping the
+    # higher-scoring role for swingmen.  The composite is identical regardless
+    # of is_hot (only the luck label differs), so the role choice is stable.
+    best: dict[int, tuple[float, LeaderboardPitcher, LeaderboardPitcher]] = {}
+
+    def _consider(
+        player_id: int,
+        composite: float,
+        hot_entry: LeaderboardPitcher,
+        cold_entry: LeaderboardPitcher,
+    ) -> None:
+        existing = best.get(player_id)
+        if existing is None or composite > existing[0]:
+            best[player_id] = (composite, hot_entry, cold_entry)
 
     for s in starters.values():
         composite = _starter_composite(s)
-        status, fip, xera = _pitcher_luck(s.full_name, statcast, is_hot=True)
-        entry = _build_starter_entry(s, composite, status, fip, xera)
-        scored.append((composite, entry))
+        hot_status, fip, xera = _pitcher_luck(s.full_name, statcast, is_hot=True)
+        cold_status, _, _ = _pitcher_luck(s.full_name, statcast, is_hot=False)
+        _consider(
+            s.player_id, composite,
+            _build_starter_entry(s, composite, hot_status, fip, xera),
+            _build_starter_entry(s, composite, cold_status, fip, xera),
+        )
 
     for c in closers.values():
         composite = _closer_composite(c)
-        status, fip, xera = _pitcher_luck(c.full_name, statcast, is_hot=True)
-        entry = _build_closer_entry(c, composite, status, fip, xera)
-        scored.append((composite, entry))
+        hot_status, fip, xera = _pitcher_luck(c.full_name, statcast, is_hot=True)
+        cold_status, _, _ = _pitcher_luck(c.full_name, statcast, is_hot=False)
+        _consider(
+            c.player_id, composite,
+            _build_closer_entry(c, composite, hot_status, fip, xera),
+            _build_closer_entry(c, composite, cold_status, fip, xera),
+        )
 
-    scored.sort(key=lambda x: x[0], reverse=True)
+    scored = sorted(best.values(), key=lambda x: x[0], reverse=True)
 
-    hot: list[LeaderboardPitcher] = [entry for _, entry in scored[:size]]
+    hot: list[LeaderboardPitcher] = [hot_entry for _, hot_entry, _ in scored[:size]]
     hot_ids = {e.player_id for e in hot}
 
-    # Cold pitchers: re-score with is_hot=False for correct luck assignment.
-    # Exclude players already on the hot list to avoid contradictory labels,
-    # unless the pool is too small for disjoint lists.
-    scored_cold: list[tuple[float, LeaderboardPitcher]] = []
-    for s in starters.values():
-        composite = _starter_composite(s)
-        status, fip, xera = _pitcher_luck(s.full_name, statcast, is_hot=False)
-        entry = _build_starter_entry(s, composite, status, fip, xera)
-        scored_cold.append((composite, entry))
-    for c in closers.values():
-        composite = _closer_composite(c)
-        status, fip, xera = _pitcher_luck(c.full_name, statcast, is_hot=False)
-        entry = _build_closer_entry(c, composite, status, fip, xera)
-        scored_cold.append((composite, entry))
-
-    # Filter out hot-list pitchers, fall back to full pool if all are hot
-    cold_candidates = [(c, e) for c, e in scored_cold if e.player_id not in hot_ids]
-    if not cold_candidates:
-        cold_candidates = scored_cold
+    # Cold pitchers: worst not already on the hot list AND genuinely cold
+    # (composite at or below the absolute gate).  No fallback to the full pool.
+    cold_candidates = [
+        (composite, cold_entry)
+        for composite, _, cold_entry in scored
+        if cold_entry.player_id not in hot_ids and composite <= cold_max
+    ]
     cold_candidates.sort(key=lambda x: x[0])  # ascending = worst first
     cold: list[LeaderboardPitcher] = [entry for _, entry in cold_candidates[:size]]
 

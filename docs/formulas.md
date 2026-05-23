@@ -245,7 +245,7 @@ The MLB API uses a special notation for innings pitched: `"6.1"` means 6 and 1/3
 
 ## Leaderboard scoring (composite ranking)
 
-Each qualified player receives a composite score on a [0, 1] scale that determines their position on the hot/cold leaderboards. Hot = top N by composite (descending); cold = bottom N (ascending).
+Each qualified player receives a composite score on a [0, 1] scale that determines their position on the hot/cold leaderboards. **Hot** = top N by composite (descending). **Cold** = the worst N by composite (ascending) — but with two guards described under [Cold-list selection](#cold-list-selection) below, so the cold list is never just "the relative bottom of a thin pool."
 
 ### Hitter composite
 
@@ -278,6 +278,18 @@ closer_composite = 0.35 × (1 − ERA/6.0) + 0.40 × SV% + 0.25 × (K/9 / 15.0)
 Save percentage is the primary signal for closers — a reliable closer converting opportunities is the most valuable fantasy trait. K/9 is computed inline (strikeouts × 9 / IP) since `RollingCloserStats` tracks the raw inputs. ERA uses the same ceiling as starters.
 
 Starters and closers are merged onto a single "pitchers" leaderboard. Both composites map to [0, 1], making scores directly comparable.
+
+A pitcher can qualify in **both** roles within one window — a swingman who makes a start and also records a save/hold in relief lands in the starter pool and the closer pool. Those are collapsed to a single entry per player, keeping the **higher-scoring role** (the one that best represents his contribution), so nobody is listed twice.
+
+### Cold-list selection
+
+"Cold" must mean *genuinely struggling*, not merely *relatively worst in whatever pool exists tonight*. Two guards enforce that:
+
+1. **Hot and cold are disjoint.** Anyone already on the hot list is removed from the cold candidates. There is no fallback that reuses the full pool — if removing the hot players leaves fewer than N candidates, the cold list is simply shorter (or empty). This prevents the failure mode where a thin slate put the single hottest pitcher in baseball onto the cold board.
+
+2. **Absolute cold gate.** A player only appears on the cold list if their composite is at or below an absolute threshold (`COLD_HITTER_COMPOSITE_MAX`, `COLD_PITCHER_COMPOSITE_MAX`). When nobody scores that low, the cold list is **empty** — the honest answer is "nobody's cold right now," not a manufactured list of good players who happened to rank lowest. The caps are role-specific because hitter and pitcher composites center on different values.
+
+The hitter cold list uses the identical two guards.
 
 ### Why counting stats for hitters, rate stats for pitchers?
 
@@ -350,3 +362,5 @@ A player can appear on both the hot list and the breakout list. The hot list say
 | Weight save percentage more for closers | Increase `CLOSER_W_SV_PCT` |
 | Adjust what ERA/WHIP/K9 "caps the signal" | Change `PITCHER_CEILING_ERA` / `_K9` / `_WHIP` |
 | Require higher HR output for top hitter scores | Decrease `HITTER_CEILING_HR` |
+| Make the cold list stricter (fewer, colder players) | Decrease `COLD_HITTER_COMPOSITE_MAX` / `COLD_PITCHER_COMPOSITE_MAX` |
+| Allow more borderline players onto the cold list | Increase `COLD_HITTER_COMPOSITE_MAX` / `COLD_PITCHER_COMPOSITE_MAX` |

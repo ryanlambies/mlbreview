@@ -139,6 +139,17 @@ PITCHER_CEILING_WHIP: float = 2.0     # WHIP worse than this scores 0
 LUCK_XWOBA_THRESHOLD: float = 0.320   # season xwOBA ≥ this = quality contact
 LUCK_FIP_THRESHOLD: float = 4.00      # season FIP ≤ this = quality pitching
 
+# -- Cold-list gate -----------------------------------------------------------
+# A player only qualifies for the cold leaderboard if their composite is at or
+# below this absolute threshold.  "Cold" must mean genuinely poor performance,
+# not merely the relative bottom of a thin pool — without this floor, a light
+# slate (or an early-season window with few qualified players) would brand good
+# players as cold.  When no qualified player scores this low, the cold list is
+# simply empty ("nobody's cold right now").  These caps are role-specific
+# because hitter and pitcher composites center on different values.
+COLD_HITTER_COMPOSITE_MAX: float = 0.30   # ≈ sub-.230 AVG with little power
+COLD_PITCHER_COMPOSITE_MAX: float = 0.35  # ≈ worse than a back-end starter
+
 
 # ---------------------------------------------------------------------------
 # Pipeline behavior
