@@ -7,6 +7,7 @@ Statcast) are mocked.  V1 tests remain in ``test_pipeline.py`` unchanged.
 
 from __future__ import annotations
 
+import json
 from datetime import date
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -495,6 +496,176 @@ class TestSnapshotIntegration:
         assert len(snap.starters) == 1
         assert len(snap.closers) == 1
         assert snap.snapshot_date == "2025-08-15"
+
+
+# ---------------------------------------------------------------------------
+# Tests — structured data layer wiring (U5)
+# ---------------------------------------------------------------------------
+
+
+def _run_full_pipeline(
+    tmp_path: Path,
+    target: date,
+    *,
+    finals: list | None = None,
+    hitters: list | None = None,
+    starters: list | None = None,
+    closers: list | None = None,
+) -> int:
+    """Run the full pipeline against fixtures, all external deps mocked.
+
+    Off-day is exercised by passing ``finals=[]``.
+    """
+    game = _make_game()
+    feed = _make_feed()
+    finals = [game] if finals is None else finals
+    hitters = [_hitter_day(1, "Aaron Judge", "NYY")] if hitters is None else hitters
+    starters = [_starter_day(10, "Gerrit Cole", "NYY")] if starters is None else starters
+    closers = [_closer_day(20, "Emmanuel Clase", "CLE")] if closers is None else closers
+
+    with patch("mlbreview.pipeline.make_client") as mock_make_client, \
+         patch("mlbreview.pipeline.fetch_finals", return_value=finals), \
+         patch("mlbreview.pipeline.fetch_tonight", return_value=[]), \
+         patch("mlbreview.pipeline.fetch_game_feed", return_value=feed), \
+         patch("mlbreview.pipeline.fetch_transactions", return_value=[]), \
+         patch("mlbreview.pipeline.fetch_batter_season_stats", return_value={}), \
+         patch("mlbreview.pipeline.load_star_ids", return_value=frozenset()), \
+         patch("mlbreview.pipeline.write_storyline", return_value="A great game."), \
+         patch("mlbreview.pipeline.write_preview", return_value="Preview."), \
+         patch("mlbreview.pipeline.anthropic") as mock_anthropic_mod, \
+         patch("mlbreview.pipeline.fetch_daily_gamelogs", return_value=(hitters, starters, closers)), \
+         patch("mlbreview.pipeline.fetch_statcast_hitters", return_value={}), \
+         patch("mlbreview.pipeline.fetch_statcast_pitchers", return_value={}):
+
+        mock_make_client.return_value = MagicMock()
+        mock_anthropic_mod.Anthropic.return_value = MagicMock()
+
+        return run(target, dry_run=True, out_dir=str(tmp_path), config=_stub_config())
+
+
+class TestDataLayerIntegration:
+    def test_writes_data_index_and_bundle(self, tmp_path):
+        """Happy path writes data.json, refreshes index.json, builds dashboard.json."""
+        target = date(2025, 8, 15)
+        _write_past_snapshots(tmp_path, 7, target)
+
+        assert _run_full_pipeline(tmp_path, target) == 0
+
+        data_path = tmp_path / "digests" / "2025-08-15" / "data.json"
+        index_path = tmp_path / "digests" / "index.json"
+        bundle_path = tmp_path / "dashboard" / "data" / "dashboard.json"
+        assert data_path.exists()
+        assert index_path.exists()
+        assert bundle_path.exists()
+
+        data = json.loads(data_path.read_text())
+        assert data["meta"]["date"] == "2025-08-15"
+        assert "leaderboards" in data
+
+        index = json.loads(index_path.read_text())
+        assert index["latest"] == "2025-08-15"
+        assert "2025-08-15" in index["dates"]
+
+        bundle = json.loads(bundle_path.read_text())
+        assert bundle["as_of"] == "2025-08-15"
+        assert set(bundle["boards"]) == {
+            "hot_hitters", "cold_hitters", "hot_pitchers",
+            "cold_pitchers", "breakout_hitters", "breakout_pitchers",
+        }
+
+    def test_bundle_validates_against_schema(self, tmp_path):
+        """The generated bundle conforms to schemas/dashboard.schema.json."""
+        jsonschema = pytest.importorskip("jsonschema")
+        target = date(2025, 8, 15)
+        _write_past_snapshots(tmp_path, 7, target)
+
+        assert _run_full_pipeline(tmp_path, target) == 0
+
+        bundle = json.loads(
+            (tmp_path / "dashboard" / "data" / "dashboard.json").read_text()
+        )
+        schema = json.loads(
+            (Path(__file__).resolve().parent.parent / "schemas" / "dashboard.schema.json").read_text()
+        )
+        jsonschema.validate(bundle, schema)
+
+    def test_existing_html_unchanged_by_data_layer(self, tmp_path):
+        """Golden: re-running the data-layer writes leaves the rendered HTML byte-identical."""
+        from mlbreview.pipeline import _load_write_bundle
+        from mlbreview.data.digest_data import write_index_json
+
+        target = date(2025, 8, 15)
+        _write_past_snapshots(tmp_path, 7, target)
+        assert _run_full_pipeline(tmp_path, target) == 0
+
+        day_html = (tmp_path / "digests" / "2025-08-15" / "index.html").read_bytes()
+        index_html = (tmp_path / "index.html").read_bytes()
+
+        # The data-layer writes target disjoint paths; re-invoking them must not
+        # perturb either rendered HTML file.
+        write_index_json(tmp_path, updated="2026-01-01T00:00:00Z")
+        _load_write_bundle()(tmp_path)
+
+        assert (tmp_path / "digests" / "2025-08-15" / "index.html").read_bytes() == day_html
+        assert (tmp_path / "index.html").read_bytes() == index_html
+
+    def test_idempotent_second_run_preserves_data_json(self, tmp_path):
+        """A second run for the same date early-exits and leaves data.json untouched."""
+        target = date(2025, 8, 15)
+        _write_past_snapshots(tmp_path, 7, target)
+
+        assert _run_full_pipeline(tmp_path, target) == 0
+        data_path = tmp_path / "digests" / "2025-08-15" / "data.json"
+        first = data_path.read_bytes()
+
+        # Second slot: index.html exists → run() guard returns 0 before re-writing.
+        assert _run_full_pipeline(tmp_path, target) == 0
+        assert data_path.read_bytes() == first
+
+    def test_off_day_produces_valid_data_and_empty_bundle(self, tmp_path):
+        """Off-day (zero finals) still writes a data.json and an empty-board bundle."""
+        target = date(2025, 8, 15)
+
+        assert _run_full_pipeline(tmp_path, target, finals=[]) == 0
+
+        data = json.loads(
+            (tmp_path / "digests" / "2025-08-15" / "data.json").read_text()
+        )
+        assert data["scores"] == []
+        assert data["leaderboards"]["hot_hitters"] == []
+
+        bundle = json.loads(
+            (tmp_path / "dashboard" / "data" / "dashboard.json").read_text()
+        )
+        assert bundle["as_of"] == "2025-08-15"
+        assert bundle["boards"]["hot_hitters"]["rows"] == []
+
+    def test_missing_static_asset_does_not_crash(self, tmp_path):
+        """Absent dashboard/index.html: run completes, nothing copied."""
+        target = date(2025, 8, 15)
+        _write_past_snapshots(tmp_path, 7, target)
+
+        missing = tmp_path / "nonexistent" / "index.html"
+        with patch("mlbreview.pipeline.DASHBOARD_ASSET", missing):
+            assert _run_full_pipeline(tmp_path, target) == 0
+
+        assert not (tmp_path / "dashboard" / "index.html").exists()
+
+    def test_static_asset_copied_when_present(self, tmp_path):
+        """Present dashboard/index.html is copied into the published tree."""
+        target = date(2025, 8, 15)
+        _write_past_snapshots(tmp_path, 7, target)
+
+        asset = tmp_path / "_src_dashboard" / "index.html"
+        asset.parent.mkdir(parents=True, exist_ok=True)
+        asset.write_text("<!doctype html><title>dash</title>", encoding="utf-8")
+
+        with patch("mlbreview.pipeline.DASHBOARD_ASSET", asset):
+            assert _run_full_pipeline(tmp_path, target) == 0
+
+        dest = tmp_path / "dashboard" / "index.html"
+        assert dest.exists()
+        assert dest.read_text() == "<!doctype html><title>dash</title>"
 
 
 # ---------------------------------------------------------------------------
