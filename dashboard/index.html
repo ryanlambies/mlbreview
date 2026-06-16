@@ -90,6 +90,46 @@
   .move-team { color: var(--gray-400); font-size: 12px; }
   .move-detail { color: var(--gray-600); }
 
+  /* Leaderboards tab */
+  .lb-subtabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+  .lb-subtab { padding: 6px 12px; border: 1px solid var(--gray-200); border-radius: 6px; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--gray-600); white-space: nowrap; }
+  .lb-subtab:hover { color: var(--gray-800); }
+  .lb-subtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .lb-board { display: none; }
+  /* Active board scrolls horizontally on narrow screens so the dense stat
+     table keeps full detail (all columns + the viz) without clipping. */
+  .lb-board.active { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .lb-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 13px; }
+  .lb-table th { text-align: right; padding: 6px 6px; border-bottom: 2px solid var(--gray-200); color: var(--gray-400); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  .lb-table th.col-trend { text-align: center; width: 48px; }
+  .lb-table th.col-player { text-align: left; }
+  .lb-table th.col-viz { text-align: center; width: 64px; }
+  .lb-table th.emph { color: var(--gray-600); }
+  .lb-table td { padding: 8px 6px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+  .lb-table tr:last-child td { border-bottom: none; }
+  .lb-cell-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .lb-cell-num.emph { font-weight: 700; }
+  .lb-cell-trend { text-align: center; }
+  .lb-cell-viz { text-align: center; }
+  .lb-rank { color: var(--gray-400); font-variant-numeric: tabular-nums; margin-right: 6px; }
+  .lb-player { font-weight: 600; color: var(--gray-800); }
+  .lb-team { color: var(--gray-400); font-size: 12px; margin-left: 4px; }
+  .lb-secondary { color: var(--gray-400); font-size: 11px; margin-top: 2px; }
+
+  /* Trend chips */
+  .trend-chip { display: inline-block; min-width: 30px; padding: 2px 6px; border-radius: 10px; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .trend-chip.up   { background: #d1fae5; color: #065f46; }
+  .trend-chip.down { background: #fee2e2; color: #991b1b; }
+  .trend-chip.flat { background: var(--gray-200); color: var(--gray-400); }
+  .trend-chip.new  { background: #dbeafe; color: #1e40af; }
+
+  /* Sparkline + meters */
+  .spark { display: inline-block; vertical-align: middle; }
+  .meter { display: inline-flex; align-items: center; gap: 4px; justify-content: center; }
+  .meter .segs { display: inline-flex; gap: 2px; }
+  .meter .seg { width: 6px; height: 14px; border-radius: 1px; background: var(--gray-200); }
+  .meter .glyph { font-size: 12px; line-height: 1; }
+
   footer { text-align: center; padding: 20px; color: var(--gray-400); font-size: 12px; }
 </style>
 </head>
@@ -157,6 +197,19 @@ var TXN_TYPE = {
 
 /* Sort order for grouping roster moves by type. */
 var TXN_ORDER = ["IL", "ACT", "REC", "OPT", "OTHER"];
+
+/* Leaderboard board order + short sub-tab labels (board.label is the long form). */
+var BOARD_ORDER = [
+  ["hot_hitters", "Hot Hitters"],
+  ["cold_hitters", "Cold Hitters"],
+  ["hot_pitchers", "Hot Pitchers"],
+  ["cold_pitchers", "Cold Pitchers"],
+  ["breakout_hitters", "Breakout H"],
+  ["breakout_pitchers", "Breakout P"]
+];
+
+/* Stat columns that read as rate stats (rendered .XXX, no leading zero). */
+var RATE_STATS = { avg: 1, ops: 1, obp: 1, slg: 1 };
 
 /* ------------------------------------------------------------------ *
  * Small DOM helpers
@@ -344,9 +397,216 @@ function moveRow(txn) {
   return row;
 }
 
+/* ------------------------------------------------------------------ *
+ * Leaderboards tab (U8) — six boards, config-driven viz switch.
+ * The front end stays dumb: it switches only on board.viz and renders
+ * columns straight from board.columns. No per-board special-casing.
+ * ------------------------------------------------------------------ */
 function renderLeaderboards(data, panel) {
   panel.innerHTML = "";
-  panel.appendChild(emptyState("Leaderboards will appear here."));
+  var boards = (data && data.boards) || {};
+  var present = BOARD_ORDER.filter(function (b) { return boards[b[0]]; });
+  if (present.length === 0) {
+    panel.appendChild(emptyState("No leaderboards available yet."));
+    return;
+  }
+
+  var subtabs = el("div", "lb-subtabs");
+  var holder = el("div", "lb-boards");
+
+  present.forEach(function (entry, i) {
+    var key = entry[0];
+    var board = boards[key];
+
+    var btn = el("button", "lb-subtab" + (i === 0 ? " active" : ""), entry[1]);
+    btn.setAttribute("data-board", key);
+    subtabs.appendChild(btn);
+
+    var boardEl = el("div", "lb-board" + (i === 0 ? " active" : ""));
+    boardEl.id = "lb-board-" + key;
+    boardEl.appendChild(renderBoard(board));
+    holder.appendChild(boardEl);
+
+    btn.addEventListener("click", function () {
+      subtabs.querySelectorAll(".lb-subtab").forEach(function (t) { t.classList.remove("active"); });
+      holder.querySelectorAll(".lb-board").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      boardEl.classList.add("active");
+    });
+  });
+
+  panel.appendChild(subtabs);
+  panel.appendChild(holder);
+}
+
+function renderBoard(board) {
+  var rows = board.rows || [];
+  if (rows.length === 0) {
+    return emptyState("No qualified players on this board yet.");
+  }
+  var columns = board.columns || [];
+  var metric = board.metric || null;  // emphasized stat column (e.g. "ops")
+  var viz = board.viz;
+
+  var table = el("table", "lb-table");
+
+  // Header: Trend · Player · <stat columns> · Viz
+  var thead = el("thead");
+  var htr = el("tr");
+  htr.appendChild(el("th", "col-trend", "Trend"));
+  htr.appendChild(el("th", "col-player", "Player"));
+  columns.forEach(function (c) {
+    var emph = metric && c.toLowerCase() === metric;
+    htr.appendChild(el("th", emph ? "emph" : null, c));
+  });
+  htr.appendChild(el("th", "col-viz", vizHeader(viz)));
+  thead.appendChild(htr);
+  table.appendChild(thead);
+
+  var tbody = el("tbody");
+  rows.forEach(function (row) {
+    tbody.appendChild(boardRow(row, columns, metric, viz));
+  });
+  table.appendChild(tbody);
+  return table;
+}
+
+function vizHeader(viz) {
+  return viz === "series" ? "OPS" : (viz === "heat" ? "Heat" : "Cold");
+}
+
+function boardRow(row, columns, metric, viz) {
+  var tr = el("tr");
+
+  // Trend chip (always, every board).
+  var trendTd = el("td", "lb-cell-trend");
+  trendTd.appendChild(trendChip(row));
+  tr.appendChild(trendTd);
+
+  // Rank + player + team, with the prebuilt secondary detail line beneath.
+  var pTd = el("td");
+  var line = el("div");
+  line.appendChild(el("span", "lb-rank", "#" + row.rank));
+  line.appendChild(el("span", "lb-player", row.player || ""));
+  if (row.team) line.appendChild(el("span", "lb-team", row.team));
+  pTd.appendChild(line);
+  if (row.secondary) pTd.appendChild(el("div", "lb-secondary", row.secondary));
+  tr.appendChild(pTd);
+
+  // Stat columns, straight from board.columns.
+  var stats = row.stats || {};
+  columns.forEach(function (c) {
+    var key = c.toLowerCase();
+    var emph = metric && key === metric;
+    var td = el("td", "lb-cell-num" + (emph ? " emph" : ""));
+    td.textContent = formatStat(key, stats[key]);
+    tr.appendChild(td);
+  });
+
+  // Right-column visual — the config-driven switch.
+  var vizTd = el("td", "lb-cell-viz");
+  vizTd.appendChild(vizCell(row, viz));
+  tr.appendChild(vizTd);
+
+  return tr;
+}
+
+/* The whole viz switch — no board-specific branching beyond this. */
+function vizCell(row, viz) {
+  if (viz === "series") return sparkline(row.series);
+  if (viz === "heat") return meter(row.rank, "heat");
+  if (viz === "freeze") return meter(row.rank, "freeze");
+  return el("span");
+}
+
+function trendChip(row) {
+  if (row.is_new) return el("span", "trend-chip new", "NEW");
+  var d = row.delta || 0;
+  if (d > 0) return el("span", "trend-chip up", "▲" + d);
+  if (d < 0) return el("span", "trend-chip down", "▼" + Math.abs(d));
+  return el("span", "trend-chip flat", "—");
+}
+
+function formatStat(key, value) {
+  if (value === null || value === undefined) return "—";
+  if (key === "role") return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+  if (RATE_STATS[key]) return fmt3(value);
+  if (key === "era") return Number(value).toFixed(2);
+  if (key === "ip") return Number(value).toFixed(1);
+  return String(value);
+}
+
+function fmt3(value) {
+  var s = Number(value).toFixed(3);
+  return s.charAt(0) === "0" ? s.slice(1) : s;  // .438, 1.474
+}
+
+/* Sparkline: inline SVG ~54x18, OPS chronological. Last point hollow/dotted;
+ * line green if last>=first else red. <2 points → NEW chip instead of a line. */
+function sparkline(series) {
+  if (!series || series.length < 2) {
+    return el("span", "trend-chip new", "NEW");
+  }
+  var W = 54, H = 18, pad = 2;
+  var min = Math.min.apply(null, series);
+  var max = Math.max.apply(null, series);
+  var span = (max - min) || 1;
+  var n = series.length;
+  var pts = series.map(function (v, i) {
+    var x = pad + (W - 2 * pad) * (n === 1 ? 0.5 : i / (n - 1));
+    var y = pad + (H - 2 * pad) * (1 - (v - min) / span);  // higher OPS → higher on chart
+    return [x, y];
+  });
+  var rising = series[n - 1] >= series[0];
+  var color = rising ? "#16a34a" : "#dc2626";
+
+  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "spark");
+  svg.setAttribute("width", W);
+  svg.setAttribute("height", H);
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+  var poly = document.createElementNS(svg.namespaceURI, "polyline");
+  poly.setAttribute("fill", "none");
+  poly.setAttribute("stroke", color);
+  poly.setAttribute("stroke-width", "1.5");
+  poly.setAttribute("stroke-linejoin", "round");
+  poly.setAttribute("stroke-linecap", "round");
+  poly.setAttribute("points", pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "));
+  svg.appendChild(poly);
+
+  var last = pts[n - 1];
+  var dot = document.createElementNS(svg.namespaceURI, "circle");
+  dot.setAttribute("cx", last[0].toFixed(1));
+  dot.setAttribute("cy", last[1].toFixed(1));
+  dot.setAttribute("r", "2");
+  dot.setAttribute("fill", "#fff");
+  dot.setAttribute("stroke", color);
+  dot.setAttribute("stroke-width", "1.2");
+  dot.setAttribute("stroke-dasharray", "1.5 1.5");  // dotted last point
+  svg.appendChild(dot);
+  return svg;
+}
+
+/* Heat/freeze meter: 5 segments, filled = 6 - ceil(rank/2) (rank 1 → 5, rank 10 → 1).
+ * Warm amber→red for heat, cool blues for freeze; a flame/snowflake glyph. */
+var HEAT_FILL = ["#fbbf24", "#fb923c", "#f97316", "#ef4444", "#dc2626"];
+var FREEZE_FILL = ["#bfdbfe", "#93c5fd", "#60a5fa", "#3b82f6", "#2563eb"];
+
+function meter(rank, kind) {
+  var filled = Math.max(0, Math.min(5, 6 - Math.ceil(rank / 2)));
+  var palette = kind === "heat" ? HEAT_FILL : FREEZE_FILL;
+
+  var wrap = el("span", "meter");
+  var segs = el("span", "segs");
+  for (var i = 0; i < 5; i++) {
+    var seg = el("span", "seg");
+    if (i < filled) seg.style.background = palette[i];
+    segs.appendChild(seg);
+  }
+  wrap.appendChild(segs);
+  wrap.appendChild(el("span", "glyph", kind === "heat" ? "🔥" : "❄️"));
+  return wrap;
 }
 
 /* ------------------------------------------------------------------ *
