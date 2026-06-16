@@ -1,7 +1,7 @@
 ---
 title: "feat: Dashboard data layer + visual multi-tab dashboard"
 type: feat
-status: active
+status: completed
 date: 2026-06-15
 origin: "Desktop/MLB_Review_Dashboard_Build_Plan.md (June 15, 2026 build plan)"
 depth: deep
