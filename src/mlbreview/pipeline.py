@@ -16,8 +16,10 @@ exists on gh-pages.
 
 from __future__ import annotations
 
+import importlib.util
 import logging
-from datetime import date, timedelta
+import shutil
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import anthropic
@@ -30,6 +32,7 @@ from mlbreview.config import (
     Config,
 )
 from mlbreview.data.client import MlbApiError, make_client
+from mlbreview.data.digest_data import write_data_json, write_index_json
 from mlbreview.data.game import GameFeed, fetch_game_feed
 from mlbreview.data.gamelogs import fetch_daily_gamelogs
 from mlbreview.data.schedule import Game, fetch_finals, fetch_tonight
@@ -72,6 +75,19 @@ from mlbreview.scoring.leaderboards import (
 from mlbreview.scoring.variety import apply_variety_rule
 
 logger = logging.getLogger(__name__)
+
+# Repo-root-relative locations resolved off this file (src/mlbreview/pipeline.py
+# → parents[2] is the repo root). Independent of the process working directory
+# so the run works the same locally and on the GitHub Actions checkout.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+# Static dashboard front end (created in U6). U5 wires the copy step and
+# tolerates its absence until then.
+DASHBOARD_ASSET = _REPO_ROOT / "dashboard" / "index.html"
+# The bundle builder is standalone by design (runnable/testable without the
+# digest generator), so it lives under scripts/ rather than the package.
+_BUNDLE_SCRIPT = _REPO_ROOT / "scripts" / "build_dashboard_bundle.py"
+
+_write_bundle_fn = None
 
 OPENING_DAY_MONTH = 3
 OPENING_DAY_DAY = 20
@@ -245,9 +261,68 @@ def _run_v2_leaderboards(
         return None
 
 
+def _load_write_bundle():
+    """Lazily import ``write_bundle`` from the standalone bundle-builder script.
+
+    Loaded on demand (not at module import) so importing the package never
+    depends on the scripts/ tree being present, and so a malformed script can
+    only degrade the data layer, never break ``import mlbreview.pipeline``.
+    """
+    global _write_bundle_fn
+    if _write_bundle_fn is None:
+        spec = importlib.util.spec_from_file_location(
+            "build_dashboard_bundle", _BUNDLE_SCRIPT
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        _write_bundle_fn = module.write_bundle
+    return _write_bundle_fn
+
+
+def _copy_dashboard_asset(out_dir: Path) -> None:
+    """Copy the static dashboard front end into the published tree.
+
+    Tolerates the asset's absence: U6 creates ``dashboard/index.html``; until
+    then (and if it is ever removed) the digest still publishes without it.
+    """
+    if not DASHBOARD_ASSET.exists():
+        logger.info(
+            "Static dashboard asset %s absent — skipping copy (created in U6).",
+            DASHBOARD_ASSET,
+        )
+        return
+    dest = out_dir / "dashboard" / "index.html"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(DASHBOARD_ASSET, dest)
+    logger.info("Copied dashboard asset to %s", dest)
+
+
+def _write_data_layer(digest: Digest, out_dir: Path, *, generated_at: str) -> None:
+    """Write the structured data layer alongside the rendered HTML.
+
+    Additive and isolated from the existing HTML/email output: it writes the
+    immutable per-day ``data.json``, rebuilds the ``index.json`` manifest, and
+    regenerates the derived ``dashboard.json`` bundle from whatever ``data.json``
+    history is present in the published tree. Guarded as a whole so a data-layer
+    hiccup degrades the dashboard data but never blocks the digest from shipping
+    (the V1 email and HTML are already written by the time this runs).
+    """
+    try:
+        write_data_json(digest, base_dir=out_dir, generated_at=generated_at)
+        write_index_json(out_dir, updated=generated_at)
+        _load_write_bundle()(out_dir)
+    except Exception:
+        logger.warning(
+            "Data layer write failed; digest still ships, dashboard data not refreshed",
+            exc_info=True,
+        )
+
+
 def _write_dashboard(
     digest: Digest,
     out_dir: Path,
+    *,
+    generated_at: str | None = None,
 ) -> None:
     day_dir = out_dir / "digests" / digest.digest_date.isoformat()
     day_dir.mkdir(parents=True, exist_ok=True)
@@ -260,6 +335,12 @@ def _write_dashboard(
     index_html = render_dashboard_index(entries)
     (out_dir / "index.html").write_text(index_html, encoding="utf-8")
     logger.info("Wrote dashboard index to %s", out_dir / "index.html")
+
+    # --- Structured data layer (U5): data.json → index.json → dashboard.json ---
+    if generated_at is None:
+        generated_at = datetime.now(timezone.utc).isoformat()
+    _write_data_layer(digest, out_dir, generated_at=generated_at)
+    _copy_dashboard_asset(out_dir)
 
 
 def _build_index_entries(out_dir: Path) -> list[IndexEntry]:
