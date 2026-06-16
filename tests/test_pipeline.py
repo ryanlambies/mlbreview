@@ -239,6 +239,7 @@ class TestHappyPath:
                 date="2025-08-15",
                 category=TransactionCategory.TRADE,
                 player_name="Juan Soto",
+                player_id=665742,
                 team_name="New York Mets",
                 description="Traded to the Mets",
             ),
