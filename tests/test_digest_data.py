@@ -16,8 +16,11 @@ from jsonschema import Draft7Validator
 
 from mlbreview.data.digest_data import (
     build_data_json,
+    build_index_json,
     data_json_path,
+    index_json_path,
     write_data_json,
+    write_index_json,
 )
 from mlbreview.data.game import GameFeed
 from mlbreview.data.schedule import (
@@ -40,14 +43,14 @@ from mlbreview.scoring.leaderboards import (
 
 GENERATED_AT = "2026-06-15T16:05:00Z"
 
-_SCHEMA = json.loads(
-    (Path(__file__).resolve().parent.parent / "schemas" / "data.schema.json").read_text()
-)
+_SCHEMA_DIR = Path(__file__).resolve().parent.parent / "schemas"
+_SCHEMA = json.loads((_SCHEMA_DIR / "data.schema.json").read_text())
+_INDEX_SCHEMA = json.loads((_SCHEMA_DIR / "index.schema.json").read_text())
 
 
-def _validate(payload: dict) -> None:
-    """Raise if payload violates the data.json schema (collects all errors)."""
-    errors = sorted(Draft7Validator(_SCHEMA).iter_errors(payload), key=str)
+def _validate(payload: dict, schema: dict = _SCHEMA) -> None:
+    """Raise if payload violates the schema (collects all errors)."""
+    errors = sorted(Draft7Validator(schema).iter_errors(payload), key=str)
     assert not errors, "\n".join(f"{list(e.path)}: {e.message}" for e in errors)
 
 
@@ -337,3 +340,73 @@ def test_written_data_json_validates_against_schema(tmp_path: Path) -> None:
     write_data_json(_full_digest(), base_dir=tmp_path, generated_at=GENERATED_AT)
     written = json.loads(data_json_path(tmp_path, "2026-06-14").read_text())
     _validate(written)
+
+
+# ---------------------------------------------------------------------------
+# index.json manifest (U3)
+# ---------------------------------------------------------------------------
+
+UPDATED = "2026-06-15T16:05:00Z"
+
+
+def _make_data_json_days(base_dir: Path, dates: list[str]) -> None:
+    """Create digests/<date>/data.json for each given date."""
+    for d in dates:
+        day_dir = base_dir / "digests" / d
+        day_dir.mkdir(parents=True, exist_ok=True)
+        (day_dir / "data.json").write_text("{}", encoding="utf-8")
+
+
+def test_build_index_json_newest_first(tmp_path: Path) -> None:
+    _make_data_json_days(tmp_path, ["2026-06-12", "2026-06-14", "2026-06-13"])
+    manifest = build_index_json(tmp_path, updated=UPDATED)
+    _validate(manifest, _INDEX_SCHEMA)
+    assert manifest["dates"] == ["2026-06-14", "2026-06-13", "2026-06-12"]
+    assert manifest["latest"] == "2026-06-14"
+    assert manifest["updated"] == UPDATED
+
+
+def test_build_index_json_tolerates_gaps(tmp_path: Path) -> None:
+    # An off-day gap (no 06-13) must not break ordering or imply continuity.
+    _make_data_json_days(tmp_path, ["2026-06-12", "2026-06-14"])
+    manifest = build_index_json(tmp_path, updated=UPDATED)
+    assert manifest["dates"] == ["2026-06-14", "2026-06-12"]
+    assert manifest["latest"] == "2026-06-14"
+
+
+def test_build_index_json_skips_dirs_without_data_json(tmp_path: Path) -> None:
+    _make_data_json_days(tmp_path, ["2026-06-14"])
+    # A legacy day rendered before the data layer: index.html only, no data.json.
+    legacy = tmp_path / "digests" / "2026-06-10"
+    legacy.mkdir(parents=True, exist_ok=True)
+    (legacy / "index.html").write_text("<html></html>", encoding="utf-8")
+    # A stray non-date directory must also be ignored.
+    (tmp_path / "digests" / "archive").mkdir(parents=True, exist_ok=True)
+
+    manifest = build_index_json(tmp_path, updated=UPDATED)
+    assert manifest["dates"] == ["2026-06-14"]
+
+
+def test_build_index_json_empty_when_no_digests(tmp_path: Path) -> None:
+    manifest = build_index_json(tmp_path, updated=UPDATED)
+    _validate(manifest, _INDEX_SCHEMA)
+    assert manifest["dates"] == []
+    assert manifest["latest"] is None
+
+
+def test_build_index_json_is_idempotent(tmp_path: Path) -> None:
+    _make_data_json_days(tmp_path, ["2026-06-12", "2026-06-13"])
+    first = build_index_json(tmp_path, updated="2026-06-15T00:00:00Z")
+    second = build_index_json(tmp_path, updated="2099-12-31T00:00:00Z")
+    # Only the timestamp differs; the data-derived fields are stable.
+    assert first["dates"] == second["dates"]
+    assert first["latest"] == second["latest"]
+
+
+def test_write_index_json_writes_and_validates(tmp_path: Path) -> None:
+    _make_data_json_days(tmp_path, ["2026-06-13", "2026-06-14"])
+    path = write_index_json(tmp_path, updated=UPDATED)
+    assert path == index_json_path(tmp_path)
+    written = json.loads(path.read_text())
+    _validate(written, _INDEX_SCHEMA)
+    assert written["dates"] == ["2026-06-14", "2026-06-13"]

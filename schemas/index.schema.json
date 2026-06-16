@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ryanlambies.github.io/mlbreview/schemas/index.schema.json",
+  "title": "mlbreview digest manifest index.json",
+  "description": "Machine-readable manifest of every day that has a data.json, newest first. Rebuilt from the filesystem every run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["updated", "latest", "dates"],
+  "properties": {
+    "updated": { "type": "string" },
+    "latest": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "dates": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+    }
+  }
+}

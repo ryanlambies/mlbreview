@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -269,4 +270,67 @@ def write_data_json(
     payload = build_data_json(digest, generated_at=generated_at)
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
     logger.info("Wrote data.json to %s", path)
+    return path
+
+
+# ---------------------------------------------------------------------------
+# index.json manifest
+# ---------------------------------------------------------------------------
+
+
+def index_json_path(base_dir: Path) -> Path:
+    """Canonical path for the machine-readable digest manifest."""
+    return base_dir / "digests" / "index.json"
+
+
+def _available_dates(base_dir: Path) -> list[str]:
+    """ISO dates of every ``digests/<date>/`` dir that has a ``data.json``.
+
+    Newest first. A digest dir without ``data.json`` (e.g. a legacy day
+    rendered before the data layer existed) is skipped — the manifest tracks
+    the data layer the bundle builder consumes, not the human archive.
+    """
+    digests_dir = base_dir / "digests"
+    if not digests_dir.exists():
+        return []
+
+    dates: list[str] = []
+    for day_dir in digests_dir.iterdir():
+        if not day_dir.is_dir():
+            continue
+        try:
+            date.fromisoformat(day_dir.name)
+        except ValueError:
+            continue
+        if (day_dir / "data.json").exists():
+            dates.append(day_dir.name)
+
+    dates.sort(reverse=True)  # ISO dates sort lexicographically == chronologically
+    return dates
+
+
+def build_index_json(base_dir: Path, *, updated: str) -> dict[str, Any]:
+    """Build the ``index.json`` manifest dict by scanning the digests dir.
+
+    Derived entirely from the filesystem, so it is idempotent: re-running over
+    the same set of ``data.json`` files yields identical ``dates``/``latest``
+    (only ``updated`` changes). Gaps in publishing are tolerated — the manifest
+    lists whatever dates exist, newest first, and does not assume consecutive
+    calendar dates.
+    """
+    dates = _available_dates(base_dir)
+    return {
+        "updated": updated,
+        "latest": dates[0] if dates else None,
+        "dates": dates,
+    }
+
+
+def write_index_json(base_dir: Path, *, updated: str) -> Path:
+    """Rebuild and write ``digests/index.json``. Overwrites every run."""
+    path = index_json_path(base_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = build_index_json(base_dir, updated=updated)
+    path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
+    logger.info("Wrote index.json manifest (%d dates) to %s", len(payload["dates"]), path)
     return path
