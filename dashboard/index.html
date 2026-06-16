@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Review — Dashboard</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --green: #16a34a;
+    --red: #dc2626;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--gray-100); color: var(--gray-800); line-height: 1.6; }
+  .container { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+  header { background: var(--navy); color: #fff; padding: 28px 24px; border-radius: 12px 12px 0 0; text-align: center; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .as-of { color: #a0c4e8; font-size: 14px; margin-top: 4px; }
+
+  /* Top-level tabs */
+  .tabs { display: flex; gap: 4px; background: #fff; padding: 12px 16px 0; border-bottom: 1px solid var(--gray-200); }
+  .tab { flex: 1; padding: 10px 8px; border: none; border-bottom: 3px solid transparent; background: transparent; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--gray-400); }
+  .tab:hover { color: var(--gray-800); }
+  .tab.active { color: var(--navy); border-bottom-color: var(--blue); }
+
+  .content { background: #fff; border-radius: 0 0 12px 12px; min-height: 200px; }
+  .panel { display: none; padding: 20px 16px; }
+  .panel.active { display: block; }
+
+  /* Notices / empty states */
+  .notice { padding: 14px 18px; background: #fef3cd; border-radius: 8px; font-size: 14px; color: #856404; text-align: center; margin-bottom: 16px; }
+  .empty-state { padding: 40px 24px; text-align: center; color: var(--gray-400); font-size: 14px; }
+  .error-state { padding: 40px 24px; text-align: center; color: var(--gray-600); font-size: 14px; }
+  .error-state .big { font-size: 32px; margin-bottom: 8px; }
+
+  /* Scoreboard cards */
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .game-card { border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; background: #fff; display: flex; }
+  .accent { width: 5px; flex: 0 0 5px; }
+  .game-body { flex: 1; padding: 10px 14px; }
+  .team-line { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 15px; }
+  .team-line .name { font-variant-numeric: tabular-nums; }
+  .team-line .runs { font-variant-numeric: tabular-nums; min-width: 24px; text-align: right; }
+  .team-line.winner { font-weight: 700; color: var(--gray-800); }
+  .team-line.loser { color: var(--gray-400); }
+  .game-footer { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--gray-100); }
+  .final-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-400); }
+
+  /* Chips (reuse the luck-badge color language) */
+  .chip { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .chip.walkoff   { background: #ede9fe; color: #5b21b6; }
+  .chip.comeback  { background: #d1fae5; color: #065f46; }
+  .chip.duel      { background: #dbeafe; color: #1e40af; }
+  .chip.shutout   { background: var(--gray-200); color: var(--gray-600); }
+  .chip.slugfest  { background: #fef3cd; color: #856404; }
+
+  footer { text-align: center; padding: 20px; color: var(--gray-400); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>⚾ MLB Review</h1>
+    <div class="as-of" id="as-of">Loading…</div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-panel="scoreboard" role="tab">Scoreboard</button>
+    <button class="tab" data-panel="recaps" role="tab">Recaps &amp; Moves</button>
+    <button class="tab" data-panel="leaderboards" role="tab">Leaderboards</button>
+  </div>
+
+  <div class="content">
+    <div class="panel active" id="scoreboard" role="tabpanel"></div>
+    <div class="panel" id="recaps" role="tabpanel"></div>
+    <div class="panel" id="leaderboards" role="tabpanel"></div>
+  </div>
+
+  <footer id="footer">mlbreview</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ *
+ * Team color accents — primary club color keyed by MLB abbreviation.
+ * Unknown abbreviations fall back to the brand navy.
+ * ------------------------------------------------------------------ */
+var TEAM_COLORS = {
+  ARI: "#A71930", ATL: "#CE1141", BAL: "#DF4601", BOS: "#BD3039",
+  CHC: "#0E3386", CWS: "#27251F", CIN: "#C6011F", CLE: "#00385D",
+  COL: "#333366", DET: "#0C2340", HOU: "#EB6E1F", KC:  "#004687",
+  LAA: "#BA0021", LAD: "#005A9C", MIA: "#00A3E0", MIL: "#12284B",
+  MIN: "#002B5C", NYM: "#FF5910", NYY: "#0C2340", OAK: "#003831",
+  ATH: "#003831", PHI: "#E81828", PIT: "#FDB827", SD:  "#2F241D",
+  SF:  "#FD5A1E", SEA: "#0C2C56", STL: "#C41E3A", TB:  "#092C5C",
+  TEX: "#003278", TOR: "#134A8E", WSH: "#AB0003", WSN: "#AB0003"
+};
+
+/* Storyline / scoreboard tag → chip CSS class. */
+var TAG_CLASS = {
+  "Walk-off": "walkoff",
+  "Comeback": "comeback",
+  "Pitchers' Duel": "duel",
+  "Shutout": "shutout",
+  "Slugfest": "slugfest"
+};
+
+/* ------------------------------------------------------------------ *
+ * Small DOM helpers
+ * ------------------------------------------------------------------ */
+function el(tag, cls, text) {
+  var node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined && text !== null) node.textContent = text;
+  return node;
+}
+
+function emptyState(message) {
+  var d = el("div", "empty-state");
+  d.textContent = message;
+  return d;
+}
+
+function tagChip(tag) {
+  if (!tag) return null;
+  var cls = TAG_CLASS[tag] || "shutout";
+  return el("span", "chip " + cls, tag);
+}
+
+/* ------------------------------------------------------------------ *
+ * Scoreboard tab (U6)
+ * ------------------------------------------------------------------ */
+function renderScoreboard(data, panel) {
+  panel.innerHTML = "";
+
+  // Thin-history notice: with only one day of data (no prior day to compare),
+  // mirror the digest's "building up data" convention. The bundle does not
+  // carry a snapshot count, so a null `prev` is the available proxy.
+  if (data && data.prev == null && data.as_of) {
+    panel.appendChild(
+      Object.assign(el("div", "notice"),
+        { textContent: "Building up data — this is the first day collected. The dashboard grows richer as history accumulates." })
+    );
+  }
+
+  var scores = (data && data.scores) || [];
+  if (scores.length === 0) {
+    panel.appendChild(emptyState("No completed games to show."));
+    return;
+  }
+
+  var grid = el("div", "score-grid");
+  scores.forEach(function (g) {
+    grid.appendChild(gameCard(g));
+  });
+  panel.appendChild(grid);
+}
+
+function gameCard(g) {
+  var awayWon = g.away_score > g.home_score;
+  var homeWon = g.home_score > g.away_score;
+
+  var card = el("div", "game-card");
+
+  var accent = el("div", "accent");
+  accent.style.background = TEAM_COLORS[homeWon ? g.home : g.away] || "var(--navy)";
+  card.appendChild(accent);
+
+  var body = el("div", "game-body");
+  body.appendChild(teamLine(g.away, g.away_score, awayWon, homeWon));
+  body.appendChild(teamLine(g.home, g.home_score, homeWon, awayWon));
+
+  var footer = el("div", "game-footer");
+  if (g.final) footer.appendChild(el("span", "final-label", "Final"));
+  var chip = tagChip(g.tag);
+  if (chip) footer.appendChild(chip);
+  body.appendChild(footer);
+
+  card.appendChild(body);
+  return card;
+}
+
+function teamLine(name, runs, won, oppWon) {
+  var cls = "team-line" + (won ? " winner" : (oppWon ? " loser" : ""));
+  var line = el("div", cls);
+  line.appendChild(el("span", "name", name));
+  line.appendChild(el("span", "runs", runs));
+  return line;
+}
+
+/* ------------------------------------------------------------------ *
+ * Recaps & Moves tab (placeholder — built in U7)
+ * Leaderboards tab (placeholder — built in U8)
+ * Kept as clean seams: U7/U8 replace only these two functions.
+ * ------------------------------------------------------------------ */
+function renderRecaps(data, panel) {
+  panel.innerHTML = "";
+  panel.appendChild(emptyState("Recaps & moves will appear here."));
+}
+
+function renderLeaderboards(data, panel) {
+  panel.innerHTML = "";
+  panel.appendChild(emptyState("Leaderboards will appear here."));
+}
+
+/* ------------------------------------------------------------------ *
+ * Shell: tab switching + load
+ * ------------------------------------------------------------------ */
+function wireTabs() {
+  document.querySelectorAll(".tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".tab").forEach(function (t) { t.classList.remove("active"); });
+      document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
+      tab.classList.add("active");
+      var panel = document.getElementById(tab.getAttribute("data-panel"));
+      if (panel) panel.classList.add("active");
+    });
+  });
+}
+
+function renderAll(data) {
+  var asOf = (data && data.as_of) || null;
+  document.getElementById("as-of").textContent = asOf
+    ? "Through " + formatDate(asOf)
+    : "No data yet";
+  if (asOf) document.getElementById("footer").textContent = "mlbreview · " + formatDate(asOf);
+
+  renderScoreboard(data, document.getElementById("scoreboard"));
+  renderRecaps(data, document.getElementById("recaps"));
+  renderLeaderboards(data, document.getElementById("leaderboards"));
+}
+
+function formatDate(iso) {
+  // iso = "YYYY-MM-DD"; render as "June 14, 2026" without timezone drift.
+  var parts = String(iso).split("-");
+  if (parts.length !== 3) return iso;
+  var months = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+  var m = parseInt(parts[1], 10) - 1;
+  var d = parseInt(parts[2], 10);
+  if (isNaN(m) || isNaN(d) || m < 0 || m > 11) return iso;
+  return months[m] + " " + d + ", " + parts[0];
+}
+
+function showError() {
+  document.getElementById("as-of").textContent = "Unavailable";
+  var panel = document.getElementById("scoreboard");
+  panel.innerHTML = "";
+  var box = el("div", "error-state");
+  box.appendChild(Object.assign(el("div", "big"), { textContent: "⚾" }));
+  box.appendChild(el("div", null, "Today's dashboard isn't available yet. Check back after the morning run."));
+  panel.appendChild(box);
+}
+
+function load() {
+  wireTabs();
+  fetch("./data/dashboard.json", { cache: "no-store" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(renderAll)
+    .catch(function (err) {
+      console.warn("dashboard.json load failed:", err);
+      showError();
+    });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", load);
+} else {
+  load();
+}
+</script>
+
+</body>
+</html>
