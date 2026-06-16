@@ -53,6 +53,7 @@ class Transaction:
     date: str  # ISO YYYY-MM-DD
     category: TransactionCategory
     player_name: str | None
+    player_id: int | None  # stable MLBAM id; None when the feed omits it
     team_name: str | None
     description: str
 
@@ -76,12 +77,15 @@ def parse_transactions(payload: dict[str, Any]) -> list[Transaction]:
         category = _classify(raw)
         if category is None:
             continue
+        person = raw.get("person") or {}
+        raw_player_id = person.get("id")
         out.append(
             Transaction(
                 transaction_id=int(raw.get("id") or 0),
                 date=str(raw.get("date") or ""),
                 category=category,
-                player_name=(raw.get("person") or {}).get("fullName"),
+                player_name=person.get("fullName"),
+                player_id=int(raw_player_id) if raw_player_id is not None else None,
                 team_name=(raw.get("toTeam") or {}).get("name"),
                 description=str(raw.get("description") or ""),
             )

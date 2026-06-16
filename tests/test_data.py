@@ -339,6 +339,40 @@ def test_parse_transactions_drops_unclassified_codes() -> None:
     assert txns[0].category == TransactionCategory.TRADE
 
 
+def test_parse_transactions_carries_player_id() -> None:
+    payload = _load("transactions_sample.json")
+    txns = parse_transactions(payload)
+
+    # Every surfaced transaction in the sample carries a person.id, so the
+    # join key for the dashboard data layer is populated end-to-end.
+    classified = [t for t in txns if t.player_name is not None]
+    assert classified, "expected at least one named transaction in the sample"
+    assert all(isinstance(t.player_id, int) for t in classified)
+
+    # Spot-check a known row: the call-up / IL names map to their MLBAM ids.
+    by_name = {t.player_name: t.player_id for t in txns}
+    assert by_name.get("Blake Perkins") == 663368
+
+
+def test_parse_transactions_player_id_none_when_feed_omits_it() -> None:
+    payload = {
+        "transactions": [
+            {
+                "id": 3,
+                "date": "2025-08-14",
+                "typeCode": "TR",
+                "description": "traded",
+                "person": {"fullName": "No Id Player"},  # no person.id
+                "toTeam": {"name": "Y"},
+            },
+        ]
+    }
+    txns = parse_transactions(payload)
+    assert len(txns) == 1
+    assert txns[0].player_name == "No Id Player"
+    assert txns[0].player_id is None
+
+
 def test_parse_transactions_empty_payload() -> None:
     assert parse_transactions({"transactions": []}) == []
     assert parse_transactions({}) == []
