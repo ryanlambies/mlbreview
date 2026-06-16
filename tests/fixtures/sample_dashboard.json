@@ -149,10 +149,12 @@
             "sb": 0
           },
           "secondary": "4 G \u00b7 17 PA \u00b7 OBP .412 \u00b7 SLG 1.062",
-          "prev_rank": null,
+          "prev_rank": 1,
           "delta": 0,
-          "is_new": true,
+          "is_new": false,
           "series": [
+            1.474,
+            1.474,
             1.474
           ],
           "intensity": null
@@ -174,10 +176,12 @@
             "sb": 0
           },
           "secondary": "4 G \u00b7 17 PA \u00b7 OBP .588 \u00b7 SLG 1.000",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 4,
+          "delta": 2,
+          "is_new": false,
           "series": [
+            1.408,
+            1.528,
             1.588
           ],
           "intensity": null
@@ -199,10 +203,12 @@
             "sb": 1
           },
           "secondary": "4 G \u00b7 20 PA \u00b7 OBP .500 \u00b7 SLG .765 \u00b7 1 SB",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 1,
+          "delta": -2,
+          "is_new": false,
           "series": [
+            1.445,
+            1.325,
             1.265
           ],
           "intensity": null
@@ -249,11 +255,137 @@
             "sb": 1
           },
           "secondary": "4 G \u00b7 16 PA \u00b7 OBP .500 \u00b7 SLG 1.000 \u00b7 1 SB",
+          "prev_rank": 6,
+          "delta": 1,
+          "is_new": false,
+          "series": [
+            1.45,
+            1.5
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 6,
+          "player_id": 621439,
+          "player": "Byron Buxton",
+          "team": "MIN",
+          "stats": {
+            "avg": 0.533,
+            "hr": 2,
+            "rbi": 3,
+            "ops": 1.696,
+            "obp": 0.562,
+            "slg": 1.133,
+            "games": 4,
+            "pa": 16,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 16 PA \u00b7 OBP .562 \u00b7 SLG 1.133",
           "prev_rank": null,
           "delta": 0,
           "is_new": true,
           "series": [
-            1.5
+            1.696
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 7,
+          "player_id": 687859,
+          "player": "Troy Johnston",
+          "team": "COL",
+          "stats": {
+            "avg": 0.467,
+            "hr": 1,
+            "rbi": 6,
+            "ops": 1.244,
+            "obp": 0.444,
+            "slg": 0.8,
+            "games": 4,
+            "pa": 18,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 18 PA \u00b7 OBP .444 \u00b7 SLG .800",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.244
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 8,
+          "player_id": 686527,
+          "player": "Dominic Canzone",
+          "team": "SEA",
+          "stats": {
+            "avg": 0.385,
+            "hr": 2,
+            "rbi": 4,
+            "ops": 1.4,
+            "obp": 0.4,
+            "slg": 1.0,
+            "games": 4,
+            "pa": 15,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 15 PA \u00b7 OBP .400 \u00b7 SLG 1.000",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.4
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 9,
+          "player_id": 660271,
+          "player": "Shohei Ohtani",
+          "team": "LAD",
+          "stats": {
+            "avg": 0.429,
+            "hr": 2,
+            "rbi": 2,
+            "ops": 1.952,
+            "obp": 0.667,
+            "slg": 1.286,
+            "games": 3,
+            "pa": 15,
+            "sb": 0
+          },
+          "secondary": "3 G \u00b7 15 PA \u00b7 OBP .667 \u00b7 SLG 1.286",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.952
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 10,
+          "player_id": 689414,
+          "player": "Liam Hicks",
+          "team": "MIA",
+          "stats": {
+            "avg": 0.438,
+            "hr": 1,
+            "rbi": 3,
+            "ops": 1.214,
+            "obp": 0.526,
+            "slg": 0.688,
+            "games": 4,
+            "pa": 19,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 19 PA \u00b7 OBP .526 \u00b7 SLG .688",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.214
           ],
           "intensity": null
         }
@@ -287,9 +419,9 @@
             "sb": 1
           },
           "secondary": "4 G \u00b7 18 PA \u00b7 OBP .111 \u00b7 SLG .062 \u00b7 1 SB",
-          "prev_rank": null,
+          "prev_rank": 1,
           "delta": 0,
-          "is_new": true,
+          "is_new": false,
           "series": null,
           "intensity": 1.0
         },
@@ -310,9 +442,9 @@
             "sb": 1
           },
           "secondary": "3 G \u00b7 15 PA \u00b7 OBP .133 \u00b7 SLG .133 \u00b7 1 SB",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 4,
+          "delta": 2,
+          "is_new": false,
           "series": null,
           "intensity": 0.9
         },
@@ -333,9 +465,9 @@
             "sb": 1
           },
           "secondary": "4 G \u00b7 15 PA \u00b7 OBP .267 \u00b7 SLG .154 \u00b7 1 SB",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 1,
+          "delta": -2,
+          "is_new": false,
           "series": null,
           "intensity": 0.8
         },
@@ -379,11 +511,126 @@
             "sb": 0
           },
           "secondary": "4 G \u00b7 18 PA \u00b7 OBP .167 \u00b7 SLG .167",
+          "prev_rank": 6,
+          "delta": 1,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.6
+        },
+        {
+          "rank": 6,
+          "player_id": 805300,
+          "player": "Jakob Marsee",
+          "team": "MIA",
+          "stats": {
+            "avg": 0.154,
+            "hr": 0,
+            "rbi": 1,
+            "ops": 0.497,
+            "obp": 0.267,
+            "slg": 0.231,
+            "games": 4,
+            "pa": 15,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 15 PA \u00b7 OBP .267 \u00b7 SLG .231 \u00b7 1 SB",
           "prev_rank": null,
           "delta": 0,
           "is_new": true,
           "series": null,
-          "intensity": 0.6
+          "intensity": 0.5
+        },
+        {
+          "rank": 7,
+          "player_id": 670156,
+          "player": "Miles Mastrobuoni",
+          "team": "SEA",
+          "stats": {
+            "avg": 0.154,
+            "hr": 0,
+            "rbi": 1,
+            "ops": 0.354,
+            "obp": 0.2,
+            "slg": 0.154,
+            "games": 4,
+            "pa": 15,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 15 PA \u00b7 OBP .200 \u00b7 SLG .154 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.4
+        },
+        {
+          "rank": 8,
+          "player_id": 691026,
+          "player": "Masyn Winn",
+          "team": "STL",
+          "stats": {
+            "avg": 0.154,
+            "hr": 0,
+            "rbi": 1,
+            "ops": 0.431,
+            "obp": 0.2,
+            "slg": 0.231,
+            "games": 4,
+            "pa": 15,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 15 PA \u00b7 OBP .200 \u00b7 SLG .231",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.3
+        },
+        {
+          "rank": 9,
+          "player_id": 621493,
+          "player": "Taylor Ward",
+          "team": "BAL",
+          "stats": {
+            "avg": 0.2,
+            "hr": 0,
+            "rbi": 0,
+            "ops": 0.516,
+            "obp": 0.316,
+            "slg": 0.2,
+            "games": 4,
+            "pa": 19,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 19 PA \u00b7 OBP .316 \u00b7 SLG .200",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.2
+        },
+        {
+          "rank": 10,
+          "player_id": 673962,
+          "player": "Josh Jung",
+          "team": "TEX",
+          "stats": {
+            "avg": 0.2,
+            "hr": 0,
+            "rbi": 0,
+            "ops": 0.478,
+            "obp": 0.278,
+            "slg": 0.2,
+            "games": 4,
+            "pa": 18,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 18 PA \u00b7 OBP .278 \u00b7 SLG .200",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.1
         }
       ]
     },
@@ -441,8 +688,8 @@
             "k9": 15.0
           },
           "secondary": "1 GS \u00b7 WHIP 0.11 \u00b7 K/9 15.0",
-          "prev_rank": 2,
-          "delta": 0,
+          "prev_rank": 4,
+          "delta": 2,
           "is_new": false,
           "series": null,
           "intensity": 0.9
@@ -466,9 +713,9 @@
             "k9": null
           },
           "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 1,
+          "delta": -2,
+          "is_new": false,
           "series": null,
           "intensity": 0.8
         },
@@ -491,9 +738,9 @@
             "k9": null
           },
           "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
-          "prev_rank": 3,
-          "delta": -1,
-          "is_new": false,
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
           "series": null,
           "intensity": 0.7
         },
@@ -516,11 +763,136 @@
             "k9": null
           },
           "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": 6,
+          "delta": 1,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.6
+        },
+        {
+          "rank": 6,
+          "player_id": 808967,
+          "player": "Yoshinobu Yamamoto",
+          "team": "LAD",
+          "stats": {
+            "era": 1.08,
+            "ip": 8.3,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.12,
+            "k9": 7.6
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.12 \u00b7 K/9 7.6",
+          "prev_rank": 4,
+          "delta": -2,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.5
+        },
+        {
+          "rank": 7,
+          "player_id": 647336,
+          "player": "Michael Soroka",
+          "team": "AZ",
+          "stats": {
+            "era": 1.29,
+            "ip": 7.0,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.29,
+            "k9": 9.0
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.29 \u00b7 K/9 9.0",
+          "prev_rank": 5,
+          "delta": -2,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.4
+        },
+        {
+          "rank": 8,
+          "player_id": 664126,
+          "player": "Pete Fairbanks",
+          "team": "MIA",
+          "stats": {
+            "era": 4.5,
+            "ip": 2.0,
+            "k": 4,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
           "prev_rank": null,
           "delta": 0,
           "is_new": true,
           "series": null,
-          "intensity": 0.6
+          "intensity": 0.3
+        },
+        {
+          "rank": 9,
+          "player_id": 657277,
+          "player": "Logan Webb",
+          "team": "SF",
+          "stats": {
+            "era": 0.0,
+            "ip": 8.0,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.88,
+            "k9": 7.9
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.88 \u00b7 K/9 7.9",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.2
+        },
+        {
+          "rank": 10,
+          "player_id": 592332,
+          "player": "Kevin Gausman",
+          "team": "TOR",
+          "stats": {
+            "era": 1.29,
+            "ip": 7.0,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.43,
+            "k9": 9.0
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.43 \u00b7 K/9 9.0",
+          "prev_rank": 6,
+          "delta": -4,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.1
         }
       ]
     },
@@ -588,10 +960,12 @@
             "sb": 0
           },
           "secondary": "4 G \u00b7 17 PA \u00b7 OBP .412 \u00b7 SLG 1.062",
-          "prev_rank": null,
+          "prev_rank": 1,
           "delta": 0,
-          "is_new": true,
+          "is_new": false,
           "series": [
+            1.474,
+            1.474,
             1.474
           ],
           "intensity": null
@@ -613,10 +987,12 @@
             "sb": 0
           },
           "secondary": "4 G \u00b7 17 PA \u00b7 OBP .588 \u00b7 SLG 1.000",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 4,
+          "delta": 2,
+          "is_new": false,
           "series": [
+            1.408,
+            1.528,
             1.588
           ],
           "intensity": null
@@ -638,10 +1014,12 @@
             "sb": 1
           },
           "secondary": "4 G \u00b7 20 PA \u00b7 OBP .500 \u00b7 SLG .765 \u00b7 1 SB",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 1,
+          "delta": -2,
+          "is_new": false,
           "series": [
+            1.445,
+            1.325,
             1.265
           ],
           "intensity": null
@@ -688,11 +1066,137 @@
             "sb": 1
           },
           "secondary": "4 G \u00b7 16 PA \u00b7 OBP .500 \u00b7 SLG 1.000 \u00b7 1 SB",
+          "prev_rank": 6,
+          "delta": 1,
+          "is_new": false,
+          "series": [
+            1.45,
+            1.5
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 6,
+          "player_id": 621439,
+          "player": "Byron Buxton",
+          "team": "MIN",
+          "stats": {
+            "avg": 0.533,
+            "hr": 2,
+            "rbi": 3,
+            "ops": 1.696,
+            "obp": 0.562,
+            "slg": 1.133,
+            "games": 4,
+            "pa": 16,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 16 PA \u00b7 OBP .562 \u00b7 SLG 1.133",
           "prev_rank": null,
           "delta": 0,
           "is_new": true,
           "series": [
-            1.5
+            1.696
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 7,
+          "player_id": 687859,
+          "player": "Troy Johnston",
+          "team": "COL",
+          "stats": {
+            "avg": 0.467,
+            "hr": 1,
+            "rbi": 6,
+            "ops": 1.244,
+            "obp": 0.444,
+            "slg": 0.8,
+            "games": 4,
+            "pa": 18,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 18 PA \u00b7 OBP .444 \u00b7 SLG .800",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.244
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 8,
+          "player_id": 686527,
+          "player": "Dominic Canzone",
+          "team": "SEA",
+          "stats": {
+            "avg": 0.385,
+            "hr": 2,
+            "rbi": 4,
+            "ops": 1.4,
+            "obp": 0.4,
+            "slg": 1.0,
+            "games": 4,
+            "pa": 15,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 15 PA \u00b7 OBP .400 \u00b7 SLG 1.000",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.4
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 9,
+          "player_id": 660271,
+          "player": "Shohei Ohtani",
+          "team": "LAD",
+          "stats": {
+            "avg": 0.429,
+            "hr": 2,
+            "rbi": 2,
+            "ops": 1.952,
+            "obp": 0.667,
+            "slg": 1.286,
+            "games": 3,
+            "pa": 15,
+            "sb": 0
+          },
+          "secondary": "3 G \u00b7 15 PA \u00b7 OBP .667 \u00b7 SLG 1.286",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.952
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 10,
+          "player_id": 689414,
+          "player": "Liam Hicks",
+          "team": "MIA",
+          "stats": {
+            "avg": 0.438,
+            "hr": 1,
+            "rbi": 3,
+            "ops": 1.214,
+            "obp": 0.526,
+            "slg": 0.688,
+            "games": 4,
+            "pa": 19,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 19 PA \u00b7 OBP .526 \u00b7 SLG .688",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.214
           ],
           "intensity": null
         }
@@ -753,8 +1257,8 @@
             "k9": 15.0
           },
           "secondary": "1 GS \u00b7 WHIP 0.11 \u00b7 K/9 15.0",
-          "prev_rank": 2,
-          "delta": 0,
+          "prev_rank": 4,
+          "delta": 2,
           "is_new": false,
           "series": null,
           "intensity": 0.9
@@ -778,9 +1282,9 @@
             "k9": null
           },
           "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
-          "prev_rank": null,
-          "delta": 0,
-          "is_new": true,
+          "prev_rank": 1,
+          "delta": -2,
+          "is_new": false,
           "series": null,
           "intensity": 0.8
         },
@@ -803,9 +1307,9 @@
             "k9": null
           },
           "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
-          "prev_rank": 3,
-          "delta": -1,
-          "is_new": false,
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
           "series": null,
           "intensity": 0.7
         },
@@ -828,11 +1332,111 @@
             "k9": null
           },
           "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": 6,
+          "delta": 1,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.6
+        },
+        {
+          "rank": 6,
+          "player_id": 808967,
+          "player": "Yoshinobu Yamamoto",
+          "team": "LAD",
+          "stats": {
+            "era": 1.08,
+            "ip": 8.3,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.12,
+            "k9": 7.6
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.12 \u00b7 K/9 7.6",
+          "prev_rank": 4,
+          "delta": -2,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.5
+        },
+        {
+          "rank": 7,
+          "player_id": 647336,
+          "player": "Michael Soroka",
+          "team": "AZ",
+          "stats": {
+            "era": 1.29,
+            "ip": 7.0,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.29,
+            "k9": 9.0
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.29 \u00b7 K/9 9.0",
+          "prev_rank": 5,
+          "delta": -2,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.4
+        },
+        {
+          "rank": 8,
+          "player_id": 664126,
+          "player": "Pete Fairbanks",
+          "team": "MIA",
+          "stats": {
+            "era": 4.5,
+            "ip": 2.0,
+            "k": 4,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
           "prev_rank": null,
           "delta": 0,
           "is_new": true,
           "series": null,
-          "intensity": 0.6
+          "intensity": 0.3
+        },
+        {
+          "rank": 9,
+          "player_id": 657277,
+          "player": "Logan Webb",
+          "team": "SF",
+          "stats": {
+            "era": 0.0,
+            "ip": 8.0,
+            "k": 7,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.88,
+            "k9": 7.9
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.88 \u00b7 K/9 7.9",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.2
         }
       ]
     }
