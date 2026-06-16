@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Review — Dashboard</title>
+<!-- Inline SVG favicon (baseball) so GitHub Pages serves no extra request and the console stays clean. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23fff' stroke='%231a3a5c' stroke-width='1.5'/%3E%3Cpath d='M7 6c4 4 4 16 0 20M25 6c-4 4-4 16 0 20' fill='none' stroke='%23d62828' stroke-width='1.5'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --green: #16a34a;
+    --red: #dc2626;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--gray-100); color: var(--gray-800); line-height: 1.6; }
+  .container { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+  header { background: var(--navy); color: #fff; padding: 28px 24px; border-radius: 12px 12px 0 0; text-align: center; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .as-of { color: #a0c4e8; font-size: 14px; margin-top: 4px; }
+
+  /* Top-level tabs */
+  .tabs { display: flex; gap: 4px; background: #fff; padding: 12px 16px 0; border-bottom: 1px solid var(--gray-200); }
+  .tab { flex: 1; padding: 10px 8px; border: none; border-bottom: 3px solid transparent; background: transparent; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--gray-400); }
+  .tab:hover { color: var(--gray-800); }
+  .tab.active { color: var(--navy); border-bottom-color: var(--blue); }
+
+  .content { background: #fff; border-radius: 0 0 12px 12px; min-height: 200px; }
+  .panel { display: none; padding: 20px 16px; }
+  .panel.active { display: block; }
+
+  /* Notices / empty states */
+  .notice { padding: 14px 18px; background: #fef3cd; border-radius: 8px; font-size: 14px; color: #856404; text-align: center; margin-bottom: 16px; }
+  .empty-state { padding: 40px 24px; text-align: center; color: var(--gray-400); font-size: 14px; }
+  .error-state { padding: 40px 24px; text-align: center; color: var(--gray-600); font-size: 14px; }
+  .error-state .big { font-size: 32px; margin-bottom: 8px; }
+
+  /* Scoreboard cards */
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .game-card { border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; background: #fff; display: flex; }
+  .accent { width: 5px; flex: 0 0 5px; }
+  .game-body { flex: 1; padding: 10px 14px; }
+  .team-line { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 15px; }
+  .team-line .name { font-variant-numeric: tabular-nums; }
+  .team-line .runs { font-variant-numeric: tabular-nums; min-width: 24px; text-align: right; }
+  .team-line.winner { font-weight: 700; color: var(--gray-800); }
+  .team-line.loser { color: var(--gray-400); }
+  .game-footer { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--gray-100); }
+  .final-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-400); }
+
+  /* Chips (reuse the luck-badge color language) */
+  .chip { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .chip.walkoff   { background: #ede9fe; color: #5b21b6; }
+  .chip.comeback  { background: #d1fae5; color: #065f46; }
+  .chip.duel      { background: #dbeafe; color: #1e40af; }
+  .chip.shutout   { background: var(--gray-200); color: var(--gray-600); }
+  .chip.slugfest  { background: #fef3cd; color: #856404; }
+
+  /* Recaps & Moves tab */
+  .recap-section { margin-bottom: 24px; }
+  .recap-section:last-child { margin-bottom: 0; }
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 12px; }
+  .story-card { margin-bottom: 12px; padding: 14px 16px; background: var(--gray-50); border-radius: 8px; border-left: 3px solid var(--blue); }
+  .story-card:last-child { margin-bottom: 0; }
+  .story-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--gray-600); font-weight: 600; margin-bottom: 6px; }
+  .story-meta .score { color: var(--gray-400); font-variant-numeric: tabular-nums; }
+  .story-body { font-size: 15px; color: var(--gray-800); }
+  .tonight-card { padding: 16px; background: #fef9ee; border-radius: 8px; border-left: 3px solid var(--amber); }
+  .tonight-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 6px; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #fde68a; color: #92400e; }
+  .tonight-body { font-size: 15px; color: var(--gray-800); }
+  .moves-list { list-style: none; }
+  .move-row { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+  .move-row:last-child { border-bottom: none; }
+  .move-tag { flex: 0 0 auto; min-width: 74px; text-align: center; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .move-tag.il    { background: #fee2e2; color: #991b1b; }
+  .move-tag.act   { background: #d1fae5; color: #065f46; }
+  .move-tag.rec   { background: #dbeafe; color: #1e40af; }
+  .move-tag.opt   { background: #fef3cd; color: #856404; }
+  .move-tag.other { background: var(--gray-200); color: var(--gray-600); }
+  .move-text { flex: 1; }
+  .move-player { font-weight: 600; color: var(--gray-800); }
+  .move-team { color: var(--gray-400); font-size: 12px; }
+  .move-detail { color: var(--gray-600); }
+
+  /* Leaderboards tab */
+  .lb-subtabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+  .lb-subtab { padding: 6px 12px; border: 1px solid var(--gray-200); border-radius: 6px; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--gray-600); white-space: nowrap; }
+  .lb-subtab:hover { color: var(--gray-800); }
+  .lb-subtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .lb-board { display: none; }
+  /* Active board scrolls horizontally on narrow screens so the dense stat
+     table keeps full detail (all columns + the viz) without clipping. */
+  .lb-board.active { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .lb-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 13px; }
+  .lb-table th { text-align: right; padding: 6px 6px; border-bottom: 2px solid var(--gray-200); color: var(--gray-400); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  .lb-table th.col-trend { text-align: center; width: 48px; }
+  .lb-table th.col-player { text-align: left; }
+  .lb-table th.col-viz { text-align: center; width: 64px; }
+  .lb-table th.emph { color: var(--gray-600); }
+  .lb-table td { padding: 8px 6px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+  .lb-table tr:last-child td { border-bottom: none; }
+  .lb-cell-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .lb-cell-num.emph { font-weight: 700; }
+  .lb-cell-trend { text-align: center; }
+  .lb-cell-viz { text-align: center; }
+  .lb-rank { color: var(--gray-400); font-variant-numeric: tabular-nums; margin-right: 6px; }
+  .lb-player { font-weight: 600; color: var(--gray-800); }
+  .lb-team { color: var(--gray-400); font-size: 12px; margin-left: 4px; }
+  .lb-secondary { color: var(--gray-400); font-size: 11px; margin-top: 2px; }
+
+  /* Trend chips */
+  .trend-chip { display: inline-block; min-width: 30px; padding: 2px 6px; border-radius: 10px; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .trend-chip.up   { background: #d1fae5; color: #065f46; }
+  .trend-chip.down { background: #fee2e2; color: #991b1b; }
+  .trend-chip.flat { background: var(--gray-200); color: var(--gray-400); }
+  .trend-chip.new  { background: #dbeafe; color: #1e40af; }
+
+  /* Sparkline + meters */
+  .spark { display: inline-block; vertical-align: middle; }
+  .meter { display: inline-flex; align-items: center; gap: 4px; justify-content: center; }
+  .meter .segs { display: inline-flex; gap: 2px; }
+  .meter .seg { width: 6px; height: 14px; border-radius: 1px; background: var(--gray-200); }
+  .meter .glyph { font-size: 12px; line-height: 1; }
+
+  footer { text-align: center; padding: 20px; color: var(--gray-400); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>⚾ MLB Review</h1>
+    <div class="as-of" id="as-of">Loading…</div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-panel="scoreboard" role="tab">Scoreboard</button>
+    <button class="tab" data-panel="recaps" role="tab">Recaps &amp; Moves</button>
+    <button class="tab" data-panel="leaderboards" role="tab">Leaderboards</button>
+  </div>
+
+  <div class="content">
+    <div class="panel active" id="scoreboard" role="tabpanel"></div>
+    <div class="panel" id="recaps" role="tabpanel"></div>
+    <div class="panel" id="leaderboards" role="tabpanel"></div>
+  </div>
+
+  <footer id="footer">mlbreview</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ *
+ * Team color accents — primary club color keyed by MLB abbreviation.
+ * Unknown abbreviations fall back to the brand navy.
+ * ------------------------------------------------------------------ */
+var TEAM_COLORS = {
+  ARI: "#A71930", ATL: "#CE1141", BAL: "#DF4601", BOS: "#BD3039",
+  CHC: "#0E3386", CWS: "#27251F", CIN: "#C6011F", CLE: "#00385D",
+  COL: "#333366", DET: "#0C2340", HOU: "#EB6E1F", KC:  "#004687",
+  LAA: "#BA0021", LAD: "#005A9C", MIA: "#00A3E0", MIL: "#12284B",
+  MIN: "#002B5C", NYM: "#FF5910", NYY: "#0C2340", OAK: "#003831",
+  ATH: "#003831", PHI: "#E81828", PIT: "#FDB827", SD:  "#2F241D",
+  SF:  "#FD5A1E", SEA: "#0C2C56", STL: "#C41E3A", TB:  "#092C5C",
+  TEX: "#003278", TOR: "#134A8E", WSH: "#AB0003", WSN: "#AB0003"
+};
+
+/* Storyline / scoreboard tag → chip CSS class. */
+var TAG_CLASS = {
+  "Walk-off": "walkoff",
+  "Comeback": "comeback",
+  "Pitchers' Duel": "duel",
+  "Shutout": "shutout",
+  "Slugfest": "slugfest"
+};
+
+/* Transaction type enum → {label, css class}. Every enum value the data layer
+ * emits (IL/ACT/REC/OPT/OTHER) maps to a tag; unknown values fall back to OTHER.
+ * Colors stay in the luck-badge palette family (IL red, Activated green,
+ * Recall blue, Optioned amber, other gray). */
+var TXN_TYPE = {
+  IL:    { label: "IL",        cls: "il" },
+  ACT:   { label: "Activated", cls: "act" },
+  REC:   { label: "Recalled",  cls: "rec" },
+  OPT:   { label: "Optioned",  cls: "opt" },
+  OTHER: { label: "Move",      cls: "other" }
+};
+
+/* Sort order for grouping roster moves by type. */
+var TXN_ORDER = ["IL", "ACT", "REC", "OPT", "OTHER"];
+
+/* Leaderboard board order + short sub-tab labels (board.label is the long form). */
+var BOARD_ORDER = [
+  ["hot_hitters", "Hot Hitters"],
+  ["cold_hitters", "Cold Hitters"],
+  ["hot_pitchers", "Hot Pitchers"],
+  ["cold_pitchers", "Cold Pitchers"],
+  ["breakout_hitters", "Breakout H"],
+  ["breakout_pitchers", "Breakout P"]
+];
+
+/* Stat columns that read as rate stats (rendered .XXX, no leading zero). */
+var RATE_STATS = { avg: 1, ops: 1, obp: 1, slg: 1 };
+
+/* ------------------------------------------------------------------ *
+ * Small DOM helpers
+ * ------------------------------------------------------------------ */
+function el(tag, cls, text) {
+  var node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined && text !== null) node.textContent = text;
+  return node;
+}
+
+function emptyState(message) {
+  var d = el("div", "empty-state");
+  d.textContent = message;
+  return d;
+}
+
+function tagChip(tag) {
+  if (!tag) return null;
+  var cls = TAG_CLASS[tag] || "shutout";
+  return el("span", "chip " + cls, tag);
+}
+
+/* ------------------------------------------------------------------ *
+ * Scoreboard tab (U6)
+ * ------------------------------------------------------------------ */
+function renderScoreboard(data, panel) {
+  panel.innerHTML = "";
+
+  // Thin-history notice: with only one day of data (no prior day to compare),
+  // mirror the digest's "building up data" convention. The bundle does not
+  // carry a snapshot count, so a null `prev` is the available proxy.
+  if (data && data.prev == null && data.as_of) {
+    panel.appendChild(
+      Object.assign(el("div", "notice"),
+        { textContent: "Building up data — this is the first day collected. The dashboard grows richer as history accumulates." })
+    );
+  }
+
+  var scores = (data && data.scores) || [];
+  if (scores.length === 0) {
+    panel.appendChild(emptyState("No completed games to show."));
+    return;
+  }
+
+  var grid = el("div", "score-grid");
+  scores.forEach(function (g) {
+    grid.appendChild(gameCard(g));
+  });
+  panel.appendChild(grid);
+}
+
+function gameCard(g) {
+  var awayWon = g.away_score > g.home_score;
+  var homeWon = g.home_score > g.away_score;
+
+  var card = el("div", "game-card");
+
+  var accent = el("div", "accent");
+  accent.style.background = TEAM_COLORS[homeWon ? g.home : g.away] || "var(--navy)";
+  card.appendChild(accent);
+
+  var body = el("div", "game-body");
+  body.appendChild(teamLine(g.away, g.away_score, awayWon, homeWon));
+  body.appendChild(teamLine(g.home, g.home_score, homeWon, awayWon));
+
+  var footer = el("div", "game-footer");
+  if (g.final) footer.appendChild(el("span", "final-label", "Final"));
+  var chip = tagChip(g.tag);
+  if (chip) footer.appendChild(chip);
+  body.appendChild(footer);
+
+  card.appendChild(body);
+  return card;
+}
+
+function teamLine(name, runs, won, oppWon) {
+  var cls = "team-line" + (won ? " winner" : (oppWon ? " loser" : ""));
+  var line = el("div", cls);
+  line.appendChild(el("span", "name", name));
+  line.appendChild(el("span", "runs", runs));
+  return line;
+}
+
+/* ------------------------------------------------------------------ *
+ * Recaps & Moves tab (U7) — storylines, a distinct Tonight card, moves.
+ * ------------------------------------------------------------------ */
+function renderRecaps(data, panel) {
+  panel.innerHTML = "";
+  var storylines = (data && data.storylines) || [];
+  var tonight = (data && data.tonight) || [];
+  var transactions = (data && data.transactions) || [];
+
+  if (storylines.length === 0 && tonight.length === 0 && transactions.length === 0) {
+    panel.appendChild(emptyState("No recaps or roster moves to show."));
+    return;
+  }
+
+  panel.appendChild(storylinesSection(storylines));
+  if (tonight.length > 0) panel.appendChild(tonightSection(tonight[0]));
+  panel.appendChild(movesSection(transactions));
+}
+
+function recapSection(title) {
+  var section = el("div", "recap-section");
+  section.appendChild(el("div", "section-title", title));
+  return section;
+}
+
+function storylinesSection(storylines) {
+  var section = recapSection("Recaps");
+  if (storylines.length === 0) {
+    section.appendChild(emptyState("No storylines today."));
+    return section;
+  }
+  storylines.forEach(function (s) {
+    var card = el("div", "story-card");
+    var meta = el("div", "story-meta");
+    meta.appendChild(el("span", "matchup", s.matchup || ""));
+    if (s.score) meta.appendChild(el("span", "score", s.score));
+    var chip = tagChip(s.tag);
+    if (chip) meta.appendChild(chip);
+    card.appendChild(meta);
+    card.appendChild(el("div", "story-body", s.body || ""));
+    section.appendChild(card);
+  });
+  return section;
+}
+
+function tonightSection(t) {
+  var section = recapSection("Tonight");
+  var card = el("div", "tonight-card");
+  var meta = el("div", "tonight-meta");
+  meta.appendChild(el("span", "matchup", t.matchup || ""));
+  if (t.broadcast) meta.appendChild(el("span", "pill", t.broadcast));
+  card.appendChild(meta);
+  card.appendChild(el("div", "tonight-body", t.note || ""));
+  section.appendChild(card);
+  return section;
+}
+
+function movesSection(transactions) {
+  var section = recapSection("Roster Moves");
+  if (transactions.length === 0) {
+    section.appendChild(emptyState("No roster moves today."));
+    return section;
+  }
+  // Group by type in a stable, meaningful order (IL → ACT → REC → OPT → OTHER),
+  // preserving feed order within each group.
+  var ordered = transactions.slice().sort(function (a, b) {
+    var ai = TXN_ORDER.indexOf(a.type); if (ai < 0) ai = TXN_ORDER.length;
+    var bi = TXN_ORDER.indexOf(b.type); if (bi < 0) bi = TXN_ORDER.length;
+    return ai - bi;
+  });
+  var list = el("ul", "moves-list");
+  ordered.forEach(function (txn) {
+    list.appendChild(moveRow(txn));
+  });
+  section.appendChild(list);
+  return section;
+}
+
+function moveRow(txn) {
+  var meta = TXN_TYPE[txn.type] || TXN_TYPE.OTHER;
+  var row = el("li", "move-row");
+  row.appendChild(el("span", "move-tag " + meta.cls, meta.label));
+
+  var text = el("span", "move-text");
+  if (txn.player) {
+    text.appendChild(el("span", "move-player", txn.player));
+    var teamBits = [];
+    if (txn.pos) teamBits.push(txn.pos);
+    if (txn.team) teamBits.push(txn.team);
+    if (teamBits.length) {
+      text.appendChild(document.createTextNode(" "));
+      text.appendChild(el("span", "move-team", "· " + teamBits.join(" · ")));
+    }
+    if (txn.detail) {
+      text.appendChild(el("div", "move-detail", txn.detail));
+    }
+  } else {
+    text.appendChild(el("span", "move-detail", txn.detail || txn.team || ""));
+  }
+  row.appendChild(text);
+  return row;
+}
+
+/* ------------------------------------------------------------------ *
+ * Leaderboards tab (U8) — six boards, config-driven viz switch.
+ * The front end stays dumb: it switches only on board.viz and renders
+ * columns straight from board.columns. No per-board special-casing.
+ * ------------------------------------------------------------------ */
+function renderLeaderboards(data, panel) {
+  panel.innerHTML = "";
+  var boards = (data && data.boards) || {};
+  var present = BOARD_ORDER.filter(function (b) { return boards[b[0]]; });
+  if (present.length === 0) {
+    panel.appendChild(emptyState("No leaderboards available yet."));
+    return;
+  }
+
+  var subtabs = el("div", "lb-subtabs");
+  var holder = el("div", "lb-boards");
+
+  present.forEach(function (entry, i) {
+    var key = entry[0];
+    var board = boards[key];
+
+    var btn = el("button", "lb-subtab" + (i === 0 ? " active" : ""), entry[1]);
+    btn.setAttribute("data-board", key);
+    subtabs.appendChild(btn);
+
+    var boardEl = el("div", "lb-board" + (i === 0 ? " active" : ""));
+    boardEl.id = "lb-board-" + key;
+    boardEl.appendChild(renderBoard(board));
+    holder.appendChild(boardEl);
+
+    btn.addEventListener("click", function () {
+      subtabs.querySelectorAll(".lb-subtab").forEach(function (t) { t.classList.remove("active"); });
+      holder.querySelectorAll(".lb-board").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      boardEl.classList.add("active");
+    });
+  });
+
+  panel.appendChild(subtabs);
+  panel.appendChild(holder);
+}
+
+function renderBoard(board) {
+  var rows = board.rows || [];
+  if (rows.length === 0) {
+    return emptyState("No qualified players on this board yet.");
+  }
+  var columns = board.columns || [];
+  var metric = board.metric || null;  // emphasized stat column (e.g. "ops")
+  var viz = board.viz;
+
+  var table = el("table", "lb-table");
+
+  // Header: Trend · Player · <stat columns> · Viz
+  var thead = el("thead");
+  var htr = el("tr");
+  htr.appendChild(el("th", "col-trend", "Trend"));
+  htr.appendChild(el("th", "col-player", "Player"));
+  columns.forEach(function (c) {
+    var emph = metric && c.toLowerCase() === metric;
+    htr.appendChild(el("th", emph ? "emph" : null, c));
+  });
+  htr.appendChild(el("th", "col-viz", vizHeader(viz)));
+  thead.appendChild(htr);
+  table.appendChild(thead);
+
+  var tbody = el("tbody");
+  rows.forEach(function (row) {
+    tbody.appendChild(boardRow(row, columns, metric, viz));
+  });
+  table.appendChild(tbody);
+  return table;
+}
+
+function vizHeader(viz) {
+  return viz === "series" ? "OPS" : (viz === "heat" ? "Heat" : "Cold");
+}
+
+function boardRow(row, columns, metric, viz) {
+  var tr = el("tr");
+
+  // Trend chip (always, every board).
+  var trendTd = el("td", "lb-cell-trend");
+  trendTd.appendChild(trendChip(row));
+  tr.appendChild(trendTd);
+
+  // Rank + player + team, with the prebuilt secondary detail line beneath.
+  var pTd = el("td");
+  var line = el("div");
+  line.appendChild(el("span", "lb-rank", "#" + row.rank));
+  line.appendChild(el("span", "lb-player", row.player || ""));
+  if (row.team) line.appendChild(el("span", "lb-team", row.team));
+  pTd.appendChild(line);
+  if (row.secondary) pTd.appendChild(el("div", "lb-secondary", row.secondary));
+  tr.appendChild(pTd);
+
+  // Stat columns, straight from board.columns.
+  var stats = row.stats || {};
+  columns.forEach(function (c) {
+    var key = c.toLowerCase();
+    var emph = metric && key === metric;
+    var td = el("td", "lb-cell-num" + (emph ? " emph" : ""));
+    td.textContent = formatStat(key, stats[key]);
+    tr.appendChild(td);
+  });
+
+  // Right-column visual — the config-driven switch.
+  var vizTd = el("td", "lb-cell-viz");
+  vizTd.appendChild(vizCell(row, viz));
+  tr.appendChild(vizTd);
+
+  return tr;
+}
+
+/* The whole viz switch — no board-specific branching beyond this. */
+function vizCell(row, viz) {
+  if (viz === "series") return sparkline(row.series);
+  if (viz === "heat") return meter(row.rank, "heat");
+  if (viz === "freeze") return meter(row.rank, "freeze");
+  return el("span");
+}
+
+function trendChip(row) {
+  if (row.is_new) return el("span", "trend-chip new", "NEW");
+  var d = row.delta || 0;
+  if (d > 0) return el("span", "trend-chip up", "▲" + d);
+  if (d < 0) return el("span", "trend-chip down", "▼" + Math.abs(d));
+  return el("span", "trend-chip flat", "—");
+}
+
+function formatStat(key, value) {
+  if (value === null || value === undefined) return "—";
+  if (key === "role") return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+  if (RATE_STATS[key]) return fmt3(value);
+  if (key === "era") return Number(value).toFixed(2);
+  if (key === "ip") return Number(value).toFixed(1);
+  return String(value);
+}
+
+function fmt3(value) {
+  var s = Number(value).toFixed(3);
+  return s.charAt(0) === "0" ? s.slice(1) : s;  // .438, 1.474
+}
+
+/* Sparkline: inline SVG ~54x18, OPS chronological. Last point hollow/dotted;
+ * line green if last>=first else red. <2 points → NEW chip instead of a line. */
+function sparkline(series) {
+  if (!series || series.length < 2) {
+    return el("span", "trend-chip new", "NEW");
+  }
+  var W = 54, H = 18, pad = 2;
+  var min = Math.min.apply(null, series);
+  var max = Math.max.apply(null, series);
+  var span = (max - min) || 1;
+  var n = series.length;
+  var pts = series.map(function (v, i) {
+    var x = pad + (W - 2 * pad) * (n === 1 ? 0.5 : i / (n - 1));
+    var y = pad + (H - 2 * pad) * (1 - (v - min) / span);  // higher OPS → higher on chart
+    return [x, y];
+  });
+  var rising = series[n - 1] >= series[0];
+  var color = rising ? "#16a34a" : "#dc2626";
+
+  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "spark");
+  svg.setAttribute("width", W);
+  svg.setAttribute("height", H);
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+  var poly = document.createElementNS(svg.namespaceURI, "polyline");
+  poly.setAttribute("fill", "none");
+  poly.setAttribute("stroke", color);
+  poly.setAttribute("stroke-width", "1.5");
+  poly.setAttribute("stroke-linejoin", "round");
+  poly.setAttribute("stroke-linecap", "round");
+  poly.setAttribute("points", pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "));
+  svg.appendChild(poly);
+
+  var last = pts[n - 1];
+  var dot = document.createElementNS(svg.namespaceURI, "circle");
+  dot.setAttribute("cx", last[0].toFixed(1));
+  dot.setAttribute("cy", last[1].toFixed(1));
+  dot.setAttribute("r", "2");
+  dot.setAttribute("fill", "#fff");
+  dot.setAttribute("stroke", color);
+  dot.setAttribute("stroke-width", "1.2");
+  dot.setAttribute("stroke-dasharray", "1.5 1.5");  // dotted last point
+  svg.appendChild(dot);
+  return svg;
+}
+
+/* Heat/freeze meter: 5 segments, filled = 6 - ceil(rank/2) (rank 1 → 5, rank 10 → 1).
+ * Warm amber→red for heat, cool blues for freeze; a flame/snowflake glyph. */
+var HEAT_FILL = ["#fbbf24", "#fb923c", "#f97316", "#ef4444", "#dc2626"];
+var FREEZE_FILL = ["#bfdbfe", "#93c5fd", "#60a5fa", "#3b82f6", "#2563eb"];
+
+function meter(rank, kind) {
+  var filled = Math.max(0, Math.min(5, 6 - Math.ceil(rank / 2)));
+  var palette = kind === "heat" ? HEAT_FILL : FREEZE_FILL;
+
+  var wrap = el("span", "meter");
+  var segs = el("span", "segs");
+  for (var i = 0; i < 5; i++) {
+    var seg = el("span", "seg");
+    if (i < filled) seg.style.background = palette[i];
+    segs.appendChild(seg);
+  }
+  wrap.appendChild(segs);
+  wrap.appendChild(el("span", "glyph", kind === "heat" ? "🔥" : "❄️"));
+  return wrap;
+}
+
+/* ------------------------------------------------------------------ *
+ * Shell: tab switching + load
+ * ------------------------------------------------------------------ */
+function wireTabs() {
+  document.querySelectorAll(".tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".tab").forEach(function (t) { t.classList.remove("active"); });
+      document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
+      tab.classList.add("active");
+      var panel = document.getElementById(tab.getAttribute("data-panel"));
+      if (panel) panel.classList.add("active");
+    });
+  });
+}
+
+function renderAll(data) {
+  var asOf = (data && data.as_of) || null;
+  document.getElementById("as-of").textContent = asOf
+    ? "Through " + formatDate(asOf)
+    : "No data yet";
+  if (asOf) document.getElementById("footer").textContent = "mlbreview · " + formatDate(asOf);
+
+  renderScoreboard(data, document.getElementById("scoreboard"));
+  renderRecaps(data, document.getElementById("recaps"));
+  renderLeaderboards(data, document.getElementById("leaderboards"));
+}
+
+function formatDate(iso) {
+  // iso = "YYYY-MM-DD"; render as "June 14, 2026" without timezone drift.
+  var parts = String(iso).split("-");
+  if (parts.length !== 3) return iso;
+  var months = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+  var m = parseInt(parts[1], 10) - 1;
+  var d = parseInt(parts[2], 10);
+  if (isNaN(m) || isNaN(d) || m < 0 || m > 11) return iso;
+  return months[m] + " " + d + ", " + parts[0];
+}
+
+function showError() {
+  document.getElementById("as-of").textContent = "Unavailable";
+  var panel = document.getElementById("scoreboard");
+  panel.innerHTML = "";
+  var box = el("div", "error-state");
+  box.appendChild(Object.assign(el("div", "big"), { textContent: "⚾" }));
+  box.appendChild(el("div", null, "Today's dashboard isn't available yet. Check back after the morning run."));
+  panel.appendChild(box);
+}
+
+function load() {
+  wireTabs();
+  fetch("./data/dashboard.json", { cache: "no-store" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(renderAll)
+    .catch(function (err) {
+      console.warn("dashboard.json load failed:", err);
+      showError();
+    });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", load);
+} else {
+  load();
+}
+</script>
+
+</body>
+</html>
