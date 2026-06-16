@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ryanlambies.github.io/mlbreview/schemas/dashboard.schema.json",
+  "title": "mlbreview rolling dashboard.json bundle",
+  "description": "Derived, regenerated-every-run bundle the dashboard fetches. Joins the trailing window of data.json by player_id and precomputes deltas, OPS series, and heat/freeze intensity. The front end stays dumb — it switches only on board.viz.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["as_of", "prev", "window_days", "scores", "storylines", "tonight", "transactions", "boards"],
+  "properties": {
+    "as_of": { "type": ["string", "null"] },
+    "prev": { "type": ["string", "null"] },
+    "window_days": { "type": "integer", "minimum": 1 },
+    "scores": { "type": "array", "items": { "type": "object" } },
+    "storylines": { "type": "array", "items": { "type": "object" } },
+    "tonight": { "type": "array", "items": { "type": "object" } },
+    "transactions": { "type": "array", "items": { "type": "object" } },
+    "boards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hot_hitters", "cold_hitters", "hot_pitchers",
+        "cold_pitchers", "breakout_hitters", "breakout_pitchers"
+      ],
+      "properties": {
+        "hot_hitters": { "$ref": "#/$defs/board" },
+        "cold_hitters": { "$ref": "#/$defs/board" },
+        "hot_pitchers": { "$ref": "#/$defs/board" },
+        "cold_pitchers": { "$ref": "#/$defs/board" },
+        "breakout_hitters": { "$ref": "#/$defs/board" },
+        "breakout_pitchers": { "$ref": "#/$defs/board" }
+      }
+    }
+  },
+  "$defs": {
+    "board": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "viz", "columns", "rows"],
+      "properties": {
+        "label": { "type": "string" },
+        "viz": { "type": "string", "enum": ["series", "heat", "freeze"] },
+        "metric": { "type": "string" },
+        "columns": { "type": "array", "items": { "type": "string" } },
+        "rows": { "type": "array", "items": { "$ref": "#/$defs/bundleRow" } }
+      }
+    },
+    "bundleRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank", "player_id", "player", "team", "stats",
+        "secondary", "prev_rank", "delta", "is_new", "series", "intensity"
+      ],
+      "properties": {
+        "rank": { "type": "integer", "minimum": 1 },
+        "player_id": { "type": "integer" },
+        "player": { "type": "string" },
+        "team": { "type": "string" },
+        "stats": { "type": "object" },
+        "secondary": { "type": "string" },
+        "prev_rank": { "type": ["integer", "null"], "minimum": 1 },
+        "delta": { "type": "integer" },
+        "is_new": { "type": "boolean" },
+        "series": {
+          "type": ["array", "null"],
+          "items": { "type": "number" }
+        },
+        "intensity": { "type": ["number", "null"] }
+      }
+    }
+  }
+}
