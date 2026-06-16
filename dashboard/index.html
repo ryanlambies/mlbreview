@@ -63,6 +63,33 @@
   .chip.shutout   { background: var(--gray-200); color: var(--gray-600); }
   .chip.slugfest  { background: #fef3cd; color: #856404; }
 
+  /* Recaps & Moves tab */
+  .recap-section { margin-bottom: 24px; }
+  .recap-section:last-child { margin-bottom: 0; }
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 12px; }
+  .story-card { margin-bottom: 12px; padding: 14px 16px; background: var(--gray-50); border-radius: 8px; border-left: 3px solid var(--blue); }
+  .story-card:last-child { margin-bottom: 0; }
+  .story-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--gray-600); font-weight: 600; margin-bottom: 6px; }
+  .story-meta .score { color: var(--gray-400); font-variant-numeric: tabular-nums; }
+  .story-body { font-size: 15px; color: var(--gray-800); }
+  .tonight-card { padding: 16px; background: #fef9ee; border-radius: 8px; border-left: 3px solid var(--amber); }
+  .tonight-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 6px; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #fde68a; color: #92400e; }
+  .tonight-body { font-size: 15px; color: var(--gray-800); }
+  .moves-list { list-style: none; }
+  .move-row { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+  .move-row:last-child { border-bottom: none; }
+  .move-tag { flex: 0 0 auto; min-width: 74px; text-align: center; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .move-tag.il    { background: #fee2e2; color: #991b1b; }
+  .move-tag.act   { background: #d1fae5; color: #065f46; }
+  .move-tag.rec   { background: #dbeafe; color: #1e40af; }
+  .move-tag.opt   { background: #fef3cd; color: #856404; }
+  .move-tag.other { background: var(--gray-200); color: var(--gray-600); }
+  .move-text { flex: 1; }
+  .move-player { font-weight: 600; color: var(--gray-800); }
+  .move-team { color: var(--gray-400); font-size: 12px; }
+  .move-detail { color: var(--gray-600); }
+
   footer { text-align: center; padding: 20px; color: var(--gray-400); font-size: 12px; }
 </style>
 </head>
@@ -115,6 +142,21 @@ var TAG_CLASS = {
   "Shutout": "shutout",
   "Slugfest": "slugfest"
 };
+
+/* Transaction type enum → {label, css class}. Every enum value the data layer
+ * emits (IL/ACT/REC/OPT/OTHER) maps to a tag; unknown values fall back to OTHER.
+ * Colors stay in the luck-badge palette family (IL red, Activated green,
+ * Recall blue, Optioned amber, other gray). */
+var TXN_TYPE = {
+  IL:    { label: "IL",        cls: "il" },
+  ACT:   { label: "Activated", cls: "act" },
+  REC:   { label: "Recalled",  cls: "rec" },
+  OPT:   { label: "Optioned",  cls: "opt" },
+  OTHER: { label: "Move",      cls: "other" }
+};
+
+/* Sort order for grouping roster moves by type. */
+var TXN_ORDER = ["IL", "ACT", "REC", "OPT", "OTHER"];
 
 /* ------------------------------------------------------------------ *
  * Small DOM helpers
@@ -200,13 +242,106 @@ function teamLine(name, runs, won, oppWon) {
 }
 
 /* ------------------------------------------------------------------ *
- * Recaps & Moves tab (placeholder — built in U7)
- * Leaderboards tab (placeholder — built in U8)
- * Kept as clean seams: U7/U8 replace only these two functions.
+ * Recaps & Moves tab (U7) — storylines, a distinct Tonight card, moves.
  * ------------------------------------------------------------------ */
 function renderRecaps(data, panel) {
   panel.innerHTML = "";
-  panel.appendChild(emptyState("Recaps & moves will appear here."));
+  var storylines = (data && data.storylines) || [];
+  var tonight = (data && data.tonight) || [];
+  var transactions = (data && data.transactions) || [];
+
+  if (storylines.length === 0 && tonight.length === 0 && transactions.length === 0) {
+    panel.appendChild(emptyState("No recaps or roster moves to show."));
+    return;
+  }
+
+  panel.appendChild(storylinesSection(storylines));
+  if (tonight.length > 0) panel.appendChild(tonightSection(tonight[0]));
+  panel.appendChild(movesSection(transactions));
+}
+
+function recapSection(title) {
+  var section = el("div", "recap-section");
+  section.appendChild(el("div", "section-title", title));
+  return section;
+}
+
+function storylinesSection(storylines) {
+  var section = recapSection("Recaps");
+  if (storylines.length === 0) {
+    section.appendChild(emptyState("No storylines today."));
+    return section;
+  }
+  storylines.forEach(function (s) {
+    var card = el("div", "story-card");
+    var meta = el("div", "story-meta");
+    meta.appendChild(el("span", "matchup", s.matchup || ""));
+    if (s.score) meta.appendChild(el("span", "score", s.score));
+    var chip = tagChip(s.tag);
+    if (chip) meta.appendChild(chip);
+    card.appendChild(meta);
+    card.appendChild(el("div", "story-body", s.body || ""));
+    section.appendChild(card);
+  });
+  return section;
+}
+
+function tonightSection(t) {
+  var section = recapSection("Tonight");
+  var card = el("div", "tonight-card");
+  var meta = el("div", "tonight-meta");
+  meta.appendChild(el("span", "matchup", t.matchup || ""));
+  if (t.broadcast) meta.appendChild(el("span", "pill", t.broadcast));
+  card.appendChild(meta);
+  card.appendChild(el("div", "tonight-body", t.note || ""));
+  section.appendChild(card);
+  return section;
+}
+
+function movesSection(transactions) {
+  var section = recapSection("Roster Moves");
+  if (transactions.length === 0) {
+    section.appendChild(emptyState("No roster moves today."));
+    return section;
+  }
+  // Group by type in a stable, meaningful order (IL → ACT → REC → OPT → OTHER),
+  // preserving feed order within each group.
+  var ordered = transactions.slice().sort(function (a, b) {
+    var ai = TXN_ORDER.indexOf(a.type); if (ai < 0) ai = TXN_ORDER.length;
+    var bi = TXN_ORDER.indexOf(b.type); if (bi < 0) bi = TXN_ORDER.length;
+    return ai - bi;
+  });
+  var list = el("ul", "moves-list");
+  ordered.forEach(function (txn) {
+    list.appendChild(moveRow(txn));
+  });
+  section.appendChild(list);
+  return section;
+}
+
+function moveRow(txn) {
+  var meta = TXN_TYPE[txn.type] || TXN_TYPE.OTHER;
+  var row = el("li", "move-row");
+  row.appendChild(el("span", "move-tag " + meta.cls, meta.label));
+
+  var text = el("span", "move-text");
+  if (txn.player) {
+    text.appendChild(el("span", "move-player", txn.player));
+    var teamBits = [];
+    if (txn.pos) teamBits.push(txn.pos);
+    if (txn.team) teamBits.push(txn.team);
+    if (teamBits.length) {
+      text.appendChild(document.createTextNode(" "));
+      text.appendChild(el("span", "move-team", "· " + teamBits.join(" · ")));
+    }
+    if (txn.detail) {
+      text.appendChild(el("div", "move-detail", txn.detail));
+    }
+  } else {
+    text.appendChild(el("span", "move-detail", txn.detail || txn.team || ""));
+  }
+  row.appendChild(text);
+  return row;
 }
 
 function renderLeaderboards(data, panel) {
