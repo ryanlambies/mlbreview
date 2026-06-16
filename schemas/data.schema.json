@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ryanlambies.github.io/mlbreview/schemas/data.schema.json",
+  "title": "mlbreview per-day digest data.json",
+  "description": "Immutable per-day snapshot of one rendered digest. No derived/trend values — those live in dashboard.json. Once written, a data.json file never changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "scores", "storylines", "tonight", "transactions", "leaderboards"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "generated_at", "season"],
+      "properties": {
+        "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "generated_at": { "type": "string" },
+        "season": { "type": "string" }
+      }
+    },
+    "scores": { "type": "array", "items": { "$ref": "#/$defs/score" } },
+    "storylines": { "type": "array", "items": { "$ref": "#/$defs/storyline" } },
+    "tonight": { "type": "array", "items": { "$ref": "#/$defs/tonight" } },
+    "transactions": { "type": "array", "items": { "$ref": "#/$defs/transaction" } },
+    "leaderboards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hot_hitters", "cold_hitters", "hot_pitchers",
+        "cold_pitchers", "breakout_hitters", "breakout_pitchers"
+      ],
+      "properties": {
+        "hot_hitters": { "type": "array", "items": { "$ref": "#/$defs/hitterRow" } },
+        "cold_hitters": { "type": "array", "items": { "$ref": "#/$defs/hitterRow" } },
+        "hot_pitchers": { "type": "array", "items": { "$ref": "#/$defs/pitcherRow" } },
+        "cold_pitchers": { "type": "array", "items": { "$ref": "#/$defs/pitcherRow" } },
+        "breakout_hitters": { "type": "array", "items": { "$ref": "#/$defs/hitterRow" } },
+        "breakout_pitchers": { "type": "array", "items": { "$ref": "#/$defs/pitcherRow" } }
+      }
+    }
+  },
+  "$defs": {
+    "scoreTag": {
+      "type": ["string", "null"],
+      "enum": ["Comeback", "Slugfest", "Pitchers' Duel", "Walk-off", "Shutout", null]
+    },
+    "window": { "type": "string", "enum": ["7-day", "15-day"] },
+    "score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["away", "away_score", "home", "home_score", "final", "tag"],
+      "properties": {
+        "away": { "type": "string" },
+        "away_score": { "type": "integer" },
+        "home": { "type": "string" },
+        "home_score": { "type": "integer" },
+        "final": { "type": "boolean" },
+        "tag": { "$ref": "#/$defs/scoreTag" }
+      }
+    },
+    "storyline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchup", "score", "tag", "body"],
+      "properties": {
+        "matchup": { "type": "string" },
+        "score": { "type": "string" },
+        "tag": { "$ref": "#/$defs/scoreTag" },
+        "body": { "type": "string" }
+      }
+    },
+    "tonight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchup", "broadcast", "note"],
+      "properties": {
+        "matchup": { "type": "string" },
+        "broadcast": { "type": ["string", "null"] },
+        "note": { "type": "string" }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["team", "type", "player_id", "player", "pos", "detail"],
+      "properties": {
+        "team": { "type": ["string", "null"] },
+        "type": { "type": "string", "enum": ["IL", "ACT", "REC", "OPT", "OTHER"] },
+        "player_id": { "type": ["integer", "null"] },
+        "player": { "type": ["string", "null"] },
+        "pos": { "type": ["string", "null"] },
+        "detail": { "type": "string" }
+      }
+    },
+    "hitterRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank", "player_id", "player", "team",
+        "avg", "hr", "rbi", "ops", "obp", "slg",
+        "games", "pa", "sb", "window"
+      ],
+      "properties": {
+        "rank": { "type": "integer", "minimum": 1 },
+        "player_id": { "type": "integer" },
+        "player": { "type": "string" },
+        "team": { "type": "string" },
+        "avg": { "type": "number" },
+        "hr": { "type": "integer" },
+        "rbi": { "type": "integer" },
+        "ops": { "type": "number" },
+        "obp": { "type": "number" },
+        "slg": { "type": "number" },
+        "games": { "type": "integer" },
+        "pa": { "type": "integer" },
+        "sb": { "type": "integer" },
+        "window": { "$ref": "#/$defs/window" }
+      }
+    },
+    "pitcherRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank", "player_id", "player", "team",
+        "era", "ip", "k", "role",
+        "appearances", "gs", "sv", "bs", "sv_pct", "whip", "k9", "window"
+      ],
+      "properties": {
+        "rank": { "type": "integer", "minimum": 1 },
+        "player_id": { "type": "integer" },
+        "player": { "type": "string" },
+        "team": { "type": "string" },
+        "era": { "type": "number" },
+        "ip": { "type": "number" },
+        "k": { "type": "integer" },
+        "role": { "type": "string", "enum": ["starter", "closer"] },
+        "appearances": { "type": ["integer", "null"] },
+        "gs": { "type": ["integer", "null"] },
+        "sv": { "type": ["integer", "null"] },
+        "bs": { "type": ["integer", "null"] },
+        "sv_pct": { "type": ["number", "null"] },
+        "whip": { "type": ["number", "null"] },
+        "k9": { "type": ["number", "null"] },
+        "window": { "$ref": "#/$defs/window" }
+      }
+    }
+  }
+}
