@@ -693,6 +693,23 @@ The leaderboard section on the dashboard includes:
 
 The email includes a brief leaderboard teaser section (hottest hitter + hottest pitcher with key stats) and a link to the full dashboard. The teaser is absent when leaderboards are unavailable.
 
+#### Structured data layer + single-file dashboard
+
+Alongside the per-day Jinja digest pages, each run also writes a **structured JSON data layer** that powers a standalone, single-file dashboard at `public/dashboard/`. This is a separate surface from the per-day `digests/` HTML: it reads its own JSON and is published as part of the same whole-`public/` deploy.
+
+Two-layer data contract (`data/digest_data.py` + `scripts/build_dashboard_bundle.py`):
+
+1. **`public/digests/YYYY-MM-DD/data.json`** — the *dumb, immutable* per-day record (scores, storylines, tonight, transactions, and the six leaderboards with a stable `player_id` on every row). **Write-once**: the writer refuses to overwrite an existing day, so the historical record never mutates. Carries no day-over-day trends.
+2. **`public/digests/index.json`** — the manifest: every date that has a `data.json`, newest-first, plus `latest`. Rebuilt from the filesystem each run, so it is deterministic and idempotent across the three cron slots.
+3. **`public/dashboard/data/dashboard.json`** — the *derived* bundle, regenerated every run from the trailing window of `data.json` files. It owns **all** trend logic: per-row `prev_rank`/`delta`/`is_new`, the OPS `series` sparkline points, and the `intensity` heat/freeze level. The invariant `delta = prev_rank - rank` (0 when `is_new`) holds for every row. Players are joined across days by `player_id` and deduped, reusing the cold-list disjoint guards.
+
+The dashboard front end (`dashboard/index.html`) is a **single static file** — vanilla JS, no framework, no build step — copied verbatim into `public/dashboard/index.html` each run. On load it `fetch`es `./data/dashboard.json` and renders three tabs:
+- **Scoreboard** — winner-accented game cards with `Comeback`/`Slugfest`/`Walk-off`/`Pitchers' Duel` tags. Shows a "Building up data" notice on a thin-history day (`prev == null`).
+- **Recaps & Moves** — storyline cards, the tonight preview (with national-broadcast pill), and factual roster moves grouped by transaction type.
+- **Leaderboards** — six boards behind a sub-tab switcher, each row rendered by a single **config-driven viz switch** on `board.viz`: `series` → OPS sparkline (hot/breakout hitters), `heat` → flame meter (hot/breakout pitchers), `freeze` → snowflake meter (cold hitters/pitchers). All six show rank-trend chips (▲/▼/—/NEW).
+
+The bundle is validated against `schemas/dashboard.schema.json` (jsonschema Draft-07); a committed `tests/fixtures/sample_dashboard.json` conforms to the same contract for front-end development. The whole data layer is written inside `_write_dashboard` under a guard, so a data-layer hiccup degrades dashboard freshness but never blocks the digest email from shipping.
+
 ---
 
 ## Data model
@@ -829,17 +846,26 @@ GitHub Pages serves the `gh-pages` branch at `https://ryanlambies.github.io/mlbr
 ```
 gh-pages branch root
 ├── index.html                     (archive listing, rebuilt daily)
+├── dashboard/
+│   ├── index.html                 (single-file structured dashboard)
+│   └── data/
+│       └── dashboard.json         (derived rolling bundle, regenerated daily)
 ├── snapshots/                     (V2: daily player stat snapshots)
 │   ├── 2026-05-07.json
 │   ├── 2026-05-08.json
 │   └── ...
 └── digests/
+    ├── index.json                 (manifest: all dates, newest-first, + latest)
     ├── 2026-05-07/
-    │   └── index.html             (day page)
+    │   ├── index.html             (day page)
+    │   └── data.json              (immutable per-day record, write-once)
     ├── 2026-05-08/
-    │   └── index.html
+    │   ├── index.html
+    │   └── data.json
     └── ...
 ```
+
+The structured dashboard is published by the same whole-`public/` deploy as the per-day pages — no separate publish step. See [Structured data layer + single-file dashboard](#structured-data-layer--single-file-dashboard) for the data contract.
 
 ---
 
