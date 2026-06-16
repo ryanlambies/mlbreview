@@ -1,0 +1,840 @@
+{
+  "as_of": "2026-06-14",
+  "prev": "2026-06-13",
+  "window_days": 15,
+  "scores": [
+    {
+      "away": "NYY",
+      "away_score": 7,
+      "home": "BOS",
+      "home_score": 6,
+      "final": true,
+      "tag": "Comeback"
+    },
+    {
+      "away": "LAD",
+      "away_score": 2,
+      "home": "SF",
+      "home_score": 1,
+      "final": true,
+      "tag": "Pitchers' Duel"
+    },
+    {
+      "away": "TEX",
+      "away_score": 11,
+      "home": "HOU",
+      "home_score": 9,
+      "final": true,
+      "tag": "Slugfest"
+    },
+    {
+      "away": "ATL",
+      "away_score": 4,
+      "home": "NYM",
+      "home_score": 5,
+      "final": true,
+      "tag": "Walk-off"
+    },
+    {
+      "away": "CHC",
+      "away_score": 3,
+      "home": "MIL",
+      "home_score": 0,
+      "final": true,
+      "tag": "Shutout"
+    },
+    {
+      "away": "SD",
+      "away_score": 5,
+      "home": "ARI",
+      "home_score": 3,
+      "final": true,
+      "tag": null
+    }
+  ],
+  "storylines": [
+    {
+      "matchup": "NYY @ BOS",
+      "score": "7-6",
+      "tag": "Comeback",
+      "body": "Down five in the seventh, the Yankees stormed back to stun the Red Sox at Fenway."
+    },
+    {
+      "matchup": "ATL @ NYM",
+      "score": "4-5",
+      "tag": "Walk-off",
+      "body": "Francisco Lindor's ninth-inning single capped a tense one-run win for the Mets."
+    },
+    {
+      "matchup": "LAD @ SF",
+      "score": "2-1",
+      "tag": "Pitchers' Duel",
+      "body": "Two aces traded zeros into the eighth before a lone Dodgers run settled it."
+    }
+  ],
+  "tonight": [
+    {
+      "matchup": "HOU @ SEA",
+      "broadcast": "ESPN Sunday Night Baseball",
+      "note": "A division showdown with first place on the line under the lights in Seattle."
+    }
+  ],
+  "transactions": [
+    {
+      "team": "New York Yankees",
+      "type": "IL",
+      "player_id": 592450,
+      "player": "Aaron Judge",
+      "pos": "RF",
+      "detail": "Placed on 10-day IL (wrist)."
+    },
+    {
+      "team": "Los Angeles Dodgers",
+      "type": "ACT",
+      "player_id": 605141,
+      "player": "Mookie Betts",
+      "pos": "SS",
+      "detail": "Activated from the 10-day IL."
+    },
+    {
+      "team": "Baltimore Orioles",
+      "type": "REC",
+      "player_id": 683002,
+      "player": "Coby Mayo",
+      "pos": "3B",
+      "detail": "Recalled from Triple-A Norfolk."
+    },
+    {
+      "team": "Chicago Cubs",
+      "type": "OPT",
+      "player_id": 671131,
+      "player": "Ben Brown",
+      "pos": "P",
+      "detail": "Optioned to Triple-A Iowa."
+    },
+    {
+      "team": "Seattle Mariners",
+      "type": "OTHER",
+      "player_id": 677594,
+      "player": "Julio Rodriguez",
+      "pos": "CF",
+      "detail": "Reinstated; roster move pending."
+    }
+  ],
+  "boards": {
+    "hot_hitters": {
+      "label": "Hot Hitters",
+      "viz": "series",
+      "columns": [
+        "AVG",
+        "HR",
+        "RBI",
+        "OPS"
+      ],
+      "rows": [
+        {
+          "rank": 1,
+          "player_id": 666182,
+          "player": "Bo Bichette",
+          "team": "NYM",
+          "stats": {
+            "avg": 0.438,
+            "hr": 3,
+            "rbi": 8,
+            "ops": 1.474,
+            "obp": 0.412,
+            "slg": 1.062,
+            "games": 4,
+            "pa": 17,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 17 PA \u00b7 OBP .412 \u00b7 SLG 1.062",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.474
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 2,
+          "player_id": 624413,
+          "player": "Pete Alonso",
+          "team": "BAL",
+          "stats": {
+            "avg": 0.462,
+            "hr": 2,
+            "rbi": 6,
+            "ops": 1.588,
+            "obp": 0.588,
+            "slg": 1.0,
+            "games": 4,
+            "pa": 17,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 17 PA \u00b7 OBP .588 \u00b7 SLG 1.000",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.588
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 3,
+          "player_id": 650489,
+          "player": "Willi Castro",
+          "team": "COL",
+          "stats": {
+            "avg": 0.412,
+            "hr": 2,
+            "rbi": 7,
+            "ops": 1.265,
+            "obp": 0.5,
+            "slg": 0.765,
+            "games": 4,
+            "pa": 20,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 20 PA \u00b7 OBP .500 \u00b7 SLG .765 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.265
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 4,
+          "player_id": 665742,
+          "player": "Juan Soto",
+          "team": "NYM",
+          "stats": {
+            "avg": 0.571,
+            "hr": 2,
+            "rbi": 4,
+            "ops": 1.79,
+            "obp": 0.647,
+            "slg": 1.143,
+            "games": 4,
+            "pa": 17,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 17 PA \u00b7 OBP .647 \u00b7 SLG 1.143",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.79
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 5,
+          "player_id": 668904,
+          "player": "Royce Lewis",
+          "team": "MIN",
+          "stats": {
+            "avg": 0.5,
+            "hr": 2,
+            "rbi": 4,
+            "ops": 1.5,
+            "obp": 0.5,
+            "slg": 1.0,
+            "games": 4,
+            "pa": 16,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 16 PA \u00b7 OBP .500 \u00b7 SLG 1.000 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.5
+          ],
+          "intensity": null
+        }
+      ],
+      "metric": "ops"
+    },
+    "cold_hitters": {
+      "label": "Cold Hitters",
+      "viz": "freeze",
+      "columns": [
+        "AVG",
+        "HR",
+        "RBI",
+        "OPS"
+      ],
+      "rows": [
+        {
+          "rank": 1,
+          "player_id": 571448,
+          "player": "Nolan Arenado",
+          "team": "AZ",
+          "stats": {
+            "avg": 0.062,
+            "hr": 0,
+            "rbi": 1,
+            "ops": 0.174,
+            "obp": 0.111,
+            "slg": 0.062,
+            "games": 4,
+            "pa": 18,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 18 PA \u00b7 OBP .111 \u00b7 SLG .062 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 1.0
+        },
+        {
+          "rank": 2,
+          "player_id": 687263,
+          "player": "Zach Neto",
+          "team": "LAA",
+          "stats": {
+            "avg": 0.133,
+            "hr": 0,
+            "rbi": 0,
+            "ops": 0.267,
+            "obp": 0.133,
+            "slg": 0.133,
+            "games": 3,
+            "pa": 15,
+            "sb": 1
+          },
+          "secondary": "3 G \u00b7 15 PA \u00b7 OBP .133 \u00b7 SLG .133 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.9
+        },
+        {
+          "rank": 3,
+          "player_id": 621020,
+          "player": "Dansby Swanson",
+          "team": "CHC",
+          "stats": {
+            "avg": 0.154,
+            "hr": 0,
+            "rbi": 0,
+            "ops": 0.421,
+            "obp": 0.267,
+            "slg": 0.154,
+            "games": 4,
+            "pa": 15,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 15 PA \u00b7 OBP .267 \u00b7 SLG .154 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.8
+        },
+        {
+          "rank": 4,
+          "player_id": 681624,
+          "player": "Andy Pages",
+          "team": "LAD",
+          "stats": {
+            "avg": 0.158,
+            "hr": 0,
+            "rbi": 0,
+            "ops": 0.358,
+            "obp": 0.2,
+            "slg": 0.158,
+            "games": 4,
+            "pa": 20,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 20 PA \u00b7 OBP .200 \u00b7 SLG .158",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.7
+        },
+        {
+          "rank": 5,
+          "player_id": 677649,
+          "player": "Ezequiel Duran",
+          "team": "TEX",
+          "stats": {
+            "avg": 0.167,
+            "hr": 0,
+            "rbi": 0,
+            "ops": 0.333,
+            "obp": 0.167,
+            "slg": 0.167,
+            "games": 4,
+            "pa": 18,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 18 PA \u00b7 OBP .167 \u00b7 SLG .167",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.6
+        }
+      ]
+    },
+    "hot_pitchers": {
+      "label": "Hot Pitchers",
+      "viz": "heat",
+      "columns": [
+        "ERA",
+        "IP",
+        "K",
+        "Role"
+      ],
+      "rows": [
+        {
+          "rank": 1,
+          "player_id": 642207,
+          "player": "Devin Williams",
+          "team": "NYM",
+          "stats": {
+            "era": 0.0,
+            "ip": 2.3,
+            "k": 4,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": 1,
+          "delta": 0,
+          "is_new": false,
+          "series": null,
+          "intensity": 1.0
+        },
+        {
+          "rank": 2,
+          "player_id": 694819,
+          "player": "Jacob Misiorowski",
+          "team": "MIL",
+          "stats": {
+            "era": 0.0,
+            "ip": 9.0,
+            "k": 15,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.11,
+            "k9": 15.0
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.11 \u00b7 K/9 15.0",
+          "prev_rank": 2,
+          "delta": 0,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.9
+        },
+        {
+          "rank": 3,
+          "player_id": 656641,
+          "player": "Jacob Latz",
+          "team": "TEX",
+          "stats": {
+            "era": 0.0,
+            "ip": 3.3,
+            "k": 5,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.8
+        },
+        {
+          "rank": 4,
+          "player_id": 671922,
+          "player": "Cade Smith",
+          "team": "CLE",
+          "stats": {
+            "era": 0.0,
+            "ip": 2.3,
+            "k": 3,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": 3,
+          "delta": -1,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.7
+        },
+        {
+          "rank": 5,
+          "player_id": 623149,
+          "player": "Paul Sewald",
+          "team": "AZ",
+          "stats": {
+            "era": 0.0,
+            "ip": 2.0,
+            "k": 2,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.6
+        }
+      ]
+    },
+    "cold_pitchers": {
+      "label": "Cold Pitchers",
+      "viz": "freeze",
+      "columns": [
+        "ERA",
+        "IP",
+        "K",
+        "Role"
+      ],
+      "rows": [
+        {
+          "rank": 1,
+          "player_id": 608379,
+          "player": "Michael Wacha",
+          "team": "KC",
+          "stats": {
+            "era": 5.14,
+            "ip": 7.0,
+            "k": 2,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 1.43,
+            "k9": 2.6
+          },
+          "secondary": "1 GS \u00b7 WHIP 1.43 \u00b7 K/9 2.6",
+          "prev_rank": 1,
+          "delta": 0,
+          "is_new": false,
+          "series": null,
+          "intensity": 1.0
+        }
+      ]
+    },
+    "breakout_hitters": {
+      "label": "Breakout Hitters",
+      "viz": "series",
+      "columns": [
+        "AVG",
+        "HR",
+        "RBI",
+        "OPS"
+      ],
+      "rows": [
+        {
+          "rank": 1,
+          "player_id": 666182,
+          "player": "Bo Bichette",
+          "team": "NYM",
+          "stats": {
+            "avg": 0.438,
+            "hr": 3,
+            "rbi": 8,
+            "ops": 1.474,
+            "obp": 0.412,
+            "slg": 1.062,
+            "games": 4,
+            "pa": 17,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 17 PA \u00b7 OBP .412 \u00b7 SLG 1.062",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.474
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 2,
+          "player_id": 624413,
+          "player": "Pete Alonso",
+          "team": "BAL",
+          "stats": {
+            "avg": 0.462,
+            "hr": 2,
+            "rbi": 6,
+            "ops": 1.588,
+            "obp": 0.588,
+            "slg": 1.0,
+            "games": 4,
+            "pa": 17,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 17 PA \u00b7 OBP .588 \u00b7 SLG 1.000",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.588
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 3,
+          "player_id": 650489,
+          "player": "Willi Castro",
+          "team": "COL",
+          "stats": {
+            "avg": 0.412,
+            "hr": 2,
+            "rbi": 7,
+            "ops": 1.265,
+            "obp": 0.5,
+            "slg": 0.765,
+            "games": 4,
+            "pa": 20,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 20 PA \u00b7 OBP .500 \u00b7 SLG .765 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.265
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 4,
+          "player_id": 665742,
+          "player": "Juan Soto",
+          "team": "NYM",
+          "stats": {
+            "avg": 0.571,
+            "hr": 2,
+            "rbi": 4,
+            "ops": 1.79,
+            "obp": 0.647,
+            "slg": 1.143,
+            "games": 4,
+            "pa": 17,
+            "sb": 0
+          },
+          "secondary": "4 G \u00b7 17 PA \u00b7 OBP .647 \u00b7 SLG 1.143",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.79
+          ],
+          "intensity": null
+        },
+        {
+          "rank": 5,
+          "player_id": 668904,
+          "player": "Royce Lewis",
+          "team": "MIN",
+          "stats": {
+            "avg": 0.5,
+            "hr": 2,
+            "rbi": 4,
+            "ops": 1.5,
+            "obp": 0.5,
+            "slg": 1.0,
+            "games": 4,
+            "pa": 16,
+            "sb": 1
+          },
+          "secondary": "4 G \u00b7 16 PA \u00b7 OBP .500 \u00b7 SLG 1.000 \u00b7 1 SB",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": [
+            1.5
+          ],
+          "intensity": null
+        }
+      ],
+      "metric": "ops"
+    },
+    "breakout_pitchers": {
+      "label": "Breakout Pitchers",
+      "viz": "heat",
+      "columns": [
+        "ERA",
+        "IP",
+        "K",
+        "Role"
+      ],
+      "rows": [
+        {
+          "rank": 1,
+          "player_id": 642207,
+          "player": "Devin Williams",
+          "team": "NYM",
+          "stats": {
+            "era": 0.0,
+            "ip": 2.3,
+            "k": 4,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": 1,
+          "delta": 0,
+          "is_new": false,
+          "series": null,
+          "intensity": 1.0
+        },
+        {
+          "rank": 2,
+          "player_id": 694819,
+          "player": "Jacob Misiorowski",
+          "team": "MIL",
+          "stats": {
+            "era": 0.0,
+            "ip": 9.0,
+            "k": 15,
+            "role": "starter",
+            "appearances": null,
+            "gs": 1,
+            "sv": null,
+            "bs": null,
+            "sv_pct": null,
+            "whip": 0.11,
+            "k9": 15.0
+          },
+          "secondary": "1 GS \u00b7 WHIP 0.11 \u00b7 K/9 15.0",
+          "prev_rank": 2,
+          "delta": 0,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.9
+        },
+        {
+          "rank": 3,
+          "player_id": 656641,
+          "player": "Jacob Latz",
+          "team": "TEX",
+          "stats": {
+            "era": 0.0,
+            "ip": 3.3,
+            "k": 5,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.8
+        },
+        {
+          "rank": 4,
+          "player_id": 671922,
+          "player": "Cade Smith",
+          "team": "CLE",
+          "stats": {
+            "era": 0.0,
+            "ip": 2.3,
+            "k": 3,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": 3,
+          "delta": -1,
+          "is_new": false,
+          "series": null,
+          "intensity": 0.7
+        },
+        {
+          "rank": 5,
+          "player_id": 623149,
+          "player": "Paul Sewald",
+          "team": "AZ",
+          "stats": {
+            "era": 0.0,
+            "ip": 2.0,
+            "k": 2,
+            "role": "closer",
+            "appearances": 2,
+            "gs": null,
+            "sv": 2,
+            "bs": 0,
+            "sv_pct": 1.0,
+            "whip": null,
+            "k9": null
+          },
+          "secondary": "2 APP \u00b7 2 SV \u00b7 SV% 1.00",
+          "prev_rank": null,
+          "delta": 0,
+          "is_new": true,
+          "series": null,
+          "intensity": 0.6
+        }
+      ]
+    }
+  }
+}
