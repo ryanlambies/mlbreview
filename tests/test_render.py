@@ -236,7 +236,7 @@ class TestRenderEmailHtml:
         """AE5: dashboard CTA is in the email."""
         html = render_email_html(_full_digest())
         assert "Open in dashboard" in html
-        assert "ryanlambies.github.io/mlbreview/digests/2025-08-16" in html
+        assert "ryanlambies.github.io/mlbreview/dashboard/" in html
 
     def test_scores_show_team_abbreviations(self) -> None:
         html = render_email_html(_full_digest())
@@ -312,7 +312,7 @@ class TestRenderEmailText:
 
     def test_contains_dashboard_url(self) -> None:
         text = render_email_text(_full_digest())
-        assert "ryanlambies.github.io/mlbreview/digests/2025-08-16" in text
+        assert "ryanlambies.github.io/mlbreview/dashboard/" in text
 
     def test_off_day_text(self) -> None:
         text = render_email_text(_off_day_digest())
