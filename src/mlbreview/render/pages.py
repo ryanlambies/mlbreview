@@ -90,7 +90,12 @@ class Digest:
 
     @property
     def dashboard_url(self) -> str:
-        return f"{DASHBOARD_BASE_URL}/digests/{self.digest_date.isoformat()}/"
+        # Points at the rich, visual dashboard surface (the tabbed SPA backed by
+        # dashboard.json), NOT the per-day archive page under digests/<date>/.
+        # The SPA is an as-of-latest view and takes no date param, so the link
+        # is date-independent. The per-day digests/<date>/ pages remain as
+        # stable archive permalinks but are no longer the email's destination.
+        return f"{DASHBOARD_BASE_URL}/dashboard/"
 
 
 def _build_env() -> jinja2.Environment:
