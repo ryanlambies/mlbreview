@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Digest — August 3, 2026</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--gray-100); color: var(--gray-800); line-height: 1.6; }
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  header { background: var(--navy); color: #fff; padding: 32px 24px; border-radius: 12px 12px 0 0; text-align: center; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .date { color: #a0c4e8; font-size: 14px; margin-top: 4px; }
+  .content { background: #fff; padding: 0; border-radius: 0 0 12px 12px; }
+  .section { padding: 24px; border-bottom: 1px solid var(--gray-200); }
+  .section:last-child { border-bottom: none; }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 16px; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+  .score-row:last-child { border-bottom: none; }
+  .team { flex: 1; }
+  .team.winner { font-weight: 700; }
+  .score { text-align: center; min-width: 60px; font-variant-numeric: tabular-nums; }
+  .extra { color: var(--gray-400); font-size: 12px; margin-left: 4px; }
+  .storyline { margin-bottom: 16px; padding: 16px; background: var(--gray-50); border-radius: 8px; border-left: 3px solid var(--blue); }
+  .storyline:last-child { margin-bottom: 0; }
+  .storyline-meta { font-size: 12px; color: var(--gray-600); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+  .storyline-prose { font-size: 15px; }
+  .preview { padding: 16px; background: #fef9ee; border-radius: 8px; border-left: 3px solid var(--amber); }
+  .preview-meta { font-size: 12px; color: #92400e; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+  .preview-prose { font-size: 15px; }
+  .txn-list { list-style: none; }
+  .txn-list li { padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-600); }
+  .txn-list li:last-child { border-bottom: none; }
+  .nav { text-align: center; padding: 16px; }
+  .nav a { color: var(--blue); text-decoration: none; font-size: 13px; }
+  .nav a:hover { text-decoration: underline; }
+  footer { text-align: center; padding: 24px; color: var(--gray-400); font-size: 12px; }
+  .leaderboard-notice { padding: 16px 24px; background: #fef3cd; border-radius: 8px; font-size: 14px; color: #856404; text-align: center; }
+  .lb-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .lb-tab { padding: 6px 14px; border: 1px solid var(--gray-200); border-radius: 6px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--gray-600); }
+  .lb-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lb-table th { text-align: left; padding: 8px 6px; border-bottom: 2px solid var(--gray-200); color: var(--gray-400); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; user-select: none; white-space: nowrap; }
+  .lb-table th:hover { color: var(--gray-800); }
+  .lb-table th .sort-arrow { font-size: 10px; margin-left: 2px; }
+  .lb-table td { padding: 7px 6px; border-bottom: 1px solid var(--gray-100); }
+  .lb-table tr.detail-row td { padding: 6px 6px 10px 24px; background: var(--gray-50); font-size: 12px; color: var(--gray-600); }
+  .lb-table .rank { color: var(--gray-400); width: 28px; }
+  .lb-table .player-name { font-weight: 600; }
+  .lb-table .team { color: var(--gray-400); font-size: 12px; }
+  .lb-table .stat { font-variant-numeric: tabular-nums; text-align: right; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.confirmed { background: #d1fae5; color: #065f46; }
+  .badge.lucky { background: #fef3cd; color: #856404; }
+  .badge.unlucky { background: #fee2e2; color: #991b1b; }
+  .lb-panel { display: none; }
+  .lb-panel.active { display: block; }
+  .expand-btn { cursor: pointer; color: var(--gray-400); font-size: 12px; }
+  .off-day { padding: 32px 24px; text-align: center; }
+  .off-day h2 { color: var(--navy); margin-bottom: 8px; }
+  .off-day p { color: var(--gray-600); }
+  .tonight-schedule { margin-top: 20px; text-align: left; }
+  .tonight-schedule .game { padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>⚾ MLB Digest</h1>
+  <div class="date">August 3, 2026</div>
+</header>
+
+<div class="content">
+
+
+<div class="section">
+  <div class="section-title">Scores</div>
+  <div class="score-row">
+    <span class="team">WSH</span>
+    <span class="score">
+      <span>3</span>
+      –
+      <span style="font-weight:700">6</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      PHI
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">STL</span>
+    <span class="score">
+      <span style="font-weight:700">13</span>
+      –
+      <span>7</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      NYY
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">PIT</span>
+    <span class="score">
+      <span style="font-weight:700">4</span>
+      –
+      <span>3</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      MIL
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team">LAD</span>
+    <span class="score">
+      <span>5</span>
+      –
+      <span style="font-weight:700">10</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      CHC
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">SF</span>
+    <span class="score">
+      <span style="font-weight:700">5</span>
+      –
+      <span>1</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      TEX
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">TOR</span>
+    <span class="score">
+      <span style="font-weight:700">3</span>
+      –
+      <span>1</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      HOU
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">TB</span>
+    <span class="score">
+      <span style="font-weight:700">13</span>
+      –
+      <span>9</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      COL
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team">SD</span>
+    <span class="score">
+      <span>1</span>
+      –
+      <span style="font-weight:700">5</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      AZ
+    </span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Storylines</div>
+  <div class="storyline">
+    <div class="storyline-meta">
+      WSH @ PHI
+      · 3–6
+ · Comeback    </div>
+    <div class="storyline-prose">Washington Nationals 3, Philadelphia Phillies 6. Kyle Backhus earned the win. Key moment: Derek Hill hits a grand slam (9) to left center field. Bryan De La Cruz scores. Bryson Stott scores. Edmundo Sosa scores..</div>
+  </div>
+  <div class="storyline">
+    <div class="storyline-meta">
+      STL @ NYY
+      · 13–7
+ · Feat    </div>
+    <div class="storyline-prose">St. Louis Cardinals 13, New York Yankees 7. Gordon Graceffo earned the win. Key moment: Luis García Jr. homers (24) on a line drive to right center field. Trent Grisham scores..</div>
+  </div>
+  <div class="storyline">
+    <div class="storyline-meta">
+      PIT @ MIL
+      · 4–3
+    </div>
+    <div class="storyline-prose">The Pittsburgh Pirates edged the Milwaukee Brewers 4-3 behind Bubba Chandler&#39;s pitching and Mason Montgomery&#39;s save. Spencer Horwitz&#39;s two-out double in the third inning proved decisive, driving in three runs on a sharp grounder to right field as the Pirates broke open the game early. The Brewers mounted a comeback effort highlighted by Andrew Vaughn&#39;s line drive single in the sixth that scored two runs, but it fell just short as Montgomery recorded the final out with a strikeout of Brice Turang in the ninth.</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Tonight</div>
+  <div class="preview">
+    <div class="preview-meta">
+      LAD @ CHC
+ · National TV    </div>
+    <div class="preview-prose">Los Angeles Dodgers at Chicago Cubs. Tarik Skubal vs Javier Assad. National broadcast on TBS.</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Off-field</div>
+  <ul class="txn-list">
+    <li>Colorado Rockies placed LHP Sean Sullivan on the 15-day injured list retroactive to July 5, 2026.</li>
+    <li>Chicago White Sox activated LHP Tyler Gilbert from the 15-day injured list.</li>
+    <li>Chicago Cubs transferred RHP Ben Brown from the 15-day injured list to the 60-day injured list. Neck strain.</li>
+    <li>Atlanta Braves activated C Sean Murphy from the 60-day injured list.</li>
+    <li>Texas Rangers activated RHP Chris Martin from the 15-day injured list.</li>
+    <li>Kansas City Royals transferred RHP Connor Seabold from the 15-day injured list to the 60-day injured list. Right lat strain.</li>
+    <li>Cleveland Guardians transferred RHP Shawn Armstrong from the 15-day injured list to the 60-day injured list. Left calf strain.</li>
+    <li>Milwaukee Brewers placed LHP JoJo Romero on the 15-day injured list.</li>
+    <li>Pittsburgh Pirates placed RHP Mitch Keller on the 60-day injured list. Right arm teres major muscle injury.</li>
+    <li>Atlanta Braves activated SS Ha-Seong Kim from the 10-day injured list.</li>
+    <li>Arizona Diamondbacks transferred RHP Zac Gallen from the 15-day injured list to the 60-day injured list. Right elbow inflammation.</li>
+    <li>Miami Marlins activated RHP Josh Ekness from the 60-day injured list.</li>
+    <li>Los Angeles Dodgers placed C Dalton Rushing on the 10-day injured list. Right elbow inflammation.</li>
+    <li>Philadelphia Phillies traded RHP Nolan Hoffman to Kansas City Royals for RHP Manuel Colon.</li>
+    <li>Toronto Blue Jays traded RHP Jeff Hoffman and Other Considerations to Minnesota Twins for LHP Dasan Hill, 2B Dameury Pena, RHP John Klein and Other Considerations.</li>
+    <li>Toronto Blue Jays traded RHP Jeff Hoffman and Other Considerations to Minnesota Twins for LHP Dasan Hill, 2B Dameury Pena, RHP John Klein and Other Considerations.</li>
+    <li>Toronto Blue Jays traded RHP Jeff Hoffman and Other Considerations to Minnesota Twins for LHP Dasan Hill, 2B Dameury Pena, RHP John Klein and Other Considerations.</li>
+    <li>Toronto Blue Jays traded RHP Jeff Hoffman and Other Considerations to Minnesota Twins for LHP Dasan Hill, 2B Dameury Pena, RHP John Klein and Other Considerations.</li>
+    <li>Toronto Blue Jays traded RHP Jeff Hoffman and Other Considerations to Minnesota Twins for LHP Dasan Hill, 2B Dameury Pena, RHP John Klein and Other Considerations.</li>
+    <li>Toronto Blue Jays traded RHP Jeff Hoffman and Other Considerations to Minnesota Twins for LHP Dasan Hill, 2B Dameury Pena, RHP John Klein and Other Considerations.</li>
+    <li>San Francisco Giants recalled RHP Blade Tidwell from Sacramento River Cats.</li>
+    <li>Philadelphia Phillies traded RHP Seth Johnson to Athletics for RF Colby Thomas.</li>
+    <li>Philadelphia Phillies traded RHP Seth Johnson to Athletics for RF Colby Thomas.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Baltimore Orioles traded C Adley Rutschman, C Jake Rogers and cash to Boston Red Sox for RHP Kyson Witherspoon, CF Enddy Azocar, C Carlos Narváez, RHP Anthony Eyanson and Player To Be Named Later.</li>
+    <li>Colorado Rockies traded RHP Antonio Senzatela to Milwaukee Brewers for LHP Mark Manfredi and SS Juan Martinez.</li>
+    <li>Colorado Rockies traded RHP Antonio Senzatela to Milwaukee Brewers for LHP Mark Manfredi and SS Juan Martinez.</li>
+    <li>Colorado Rockies traded RHP Antonio Senzatela to Milwaukee Brewers for LHP Mark Manfredi and SS Juan Martinez.</li>
+    <li>Tampa Bay Rays traded C Hunter Feduccia and RHP Jacob Kmatz to Los Angeles Dodgers for CF Jack Suwinski and Other Considerations.</li>
+    <li>Tampa Bay Rays traded C Hunter Feduccia and RHP Jacob Kmatz to Los Angeles Dodgers for CF Jack Suwinski and Other Considerations.</li>
+    <li>Tampa Bay Rays traded C Hunter Feduccia and RHP Jacob Kmatz to Los Angeles Dodgers for CF Jack Suwinski and Other Considerations.</li>
+    <li>Tampa Bay Rays traded C Hunter Feduccia and RHP Jacob Kmatz to Los Angeles Dodgers for CF Jack Suwinski and Other Considerations.</li>
+    <li>Toronto Blue Jays recalled RHP Lazaro Estrada from Buffalo Bisons.</li>
+    <li>St. Louis Cardinals recalled RHP Hunter Dobbins from Memphis Redbirds.</li>
+    <li>Miami Marlins traded RHP Lake Bachar to Pittsburgh Pirates for RHP Brandan Bidois, LF Brian Sanchez and IF Hyun Seung Lee.</li>
+    <li>Miami Marlins traded RHP Lake Bachar to Pittsburgh Pirates for RHP Brandan Bidois, LF Brian Sanchez and IF Hyun Seung Lee.</li>
+    <li>Miami Marlins traded RHP Lake Bachar to Pittsburgh Pirates for RHP Brandan Bidois, LF Brian Sanchez and IF Hyun Seung Lee.</li>
+    <li>Miami Marlins traded RHP Lake Bachar to Pittsburgh Pirates for RHP Brandan Bidois, LF Brian Sanchez and IF Hyun Seung Lee.</li>
+    <li>Cincinnati Reds traded LHP Caleb Ferguson to St. Louis Cardinals for Other Considerations.</li>
+    <li>Cincinnati Reds traded LHP Caleb Ferguson to St. Louis Cardinals for Other Considerations.</li>
+    <li>New York Mets traded RHP Luke Weaver and cash to Pittsburgh Pirates for SS Sammy Stafura.</li>
+    <li>New York Mets traded RHP Luke Weaver and cash to Pittsburgh Pirates for SS Sammy Stafura.</li>
+    <li>New York Mets traded RHP Luke Weaver and cash to Pittsburgh Pirates for SS Sammy Stafura.</li>
+    <li>Atlanta Braves traded C Joey Bart to Chicago White Sox for RHP Duncan Davitt.</li>
+    <li>Atlanta Braves traded C Joey Bart to Chicago White Sox for RHP Duncan Davitt.</li>
+    <li>Colorado Rockies traded RHP Victor Vodnik to Miami Marlins for 1B Connor Norby and RHP Aiden May.</li>
+    <li>Colorado Rockies traded RHP Victor Vodnik to Miami Marlins for 1B Connor Norby and RHP Aiden May.</li>
+    <li>Colorado Rockies traded RHP Victor Vodnik to Miami Marlins for 1B Connor Norby and RHP Aiden May.</li>
+    <li>San Francisco Giants recalled LHP Reiver Sanmartin from Sacramento River Cats.</li>
+    <li>Los Angeles Angels traded RHP José Soriano to Toronto Blue Jays for SS Arjun Nimmala, RF Eddie Micheletti Jr. and RHP Angel Rivero.</li>
+    <li>Los Angeles Angels traded RHP José Soriano to Toronto Blue Jays for SS Arjun Nimmala, RF Eddie Micheletti Jr. and RHP Angel Rivero.</li>
+    <li>Los Angeles Angels traded RHP José Soriano to Toronto Blue Jays for SS Arjun Nimmala, RF Eddie Micheletti Jr. and RHP Angel Rivero.</li>
+    <li>Los Angeles Angels traded RHP José Soriano to Toronto Blue Jays for SS Arjun Nimmala, RF Eddie Micheletti Jr. and RHP Angel Rivero.</li>
+    <li>Washington Nationals traded LHP Foster Griffin to Cleveland Guardians for LHP Will Dion, LHP Josh Hartle, OF Nick Mitchell and RHP Kendeglys Virguez.</li>
+    <li>Washington Nationals traded LHP Foster Griffin to Cleveland Guardians for LHP Will Dion, LHP Josh Hartle, OF Nick Mitchell and RHP Kendeglys Virguez.</li>
+    <li>Washington Nationals traded LHP Foster Griffin to Cleveland Guardians for LHP Will Dion, LHP Josh Hartle, OF Nick Mitchell and RHP Kendeglys Virguez.</li>
+    <li>Washington Nationals traded LHP Foster Griffin to Cleveland Guardians for LHP Will Dion, LHP Josh Hartle, OF Nick Mitchell and RHP Kendeglys Virguez.</li>
+    <li>Washington Nationals traded LHP Foster Griffin to Cleveland Guardians for LHP Will Dion, LHP Josh Hartle, OF Nick Mitchell and RHP Kendeglys Virguez.</li>
+    <li>Miami Marlins traded RF Rece Hinds to Baltimore Orioles for cash.</li>
+    <li>Miami Marlins traded RF Rece Hinds to Baltimore Orioles for cash.</li>
+    <li>Milwaukee Brewers traded RHP Codi Heuer to Baltimore Orioles for cash.</li>
+    <li>Milwaukee Brewers traded RHP Codi Heuer to Baltimore Orioles for cash.</li>
+    <li>San Francisco Giants traded LHP Robbie Ray to San Diego Padres for RHP Miguel Mendez and SS Joniel Hernandez.</li>
+    <li>San Francisco Giants traded LHP Robbie Ray to San Diego Padres for RHP Miguel Mendez and SS Joniel Hernandez.</li>
+    <li>San Francisco Giants traded LHP Robbie Ray to San Diego Padres for RHP Miguel Mendez and SS Joniel Hernandez.</li>
+    <li>Pittsburgh Pirates traded RHP Hunter Stratton to San Diego Padres for RHP Andrew Moore.</li>
+    <li>Pittsburgh Pirates traded RHP Hunter Stratton to San Diego Padres for RHP Andrew Moore.</li>
+    <li>Miami Marlins traded LHP Braxton Garrett to Chicago Cubs for 3B Jonathon Long and RHP Jace Beck.</li>
+    <li>Miami Marlins traded LHP Braxton Garrett to Chicago Cubs for 3B Jonathon Long and RHP Jace Beck.</li>
+    <li>Miami Marlins traded LHP Braxton Garrett to Chicago Cubs for 3B Jonathon Long and RHP Jace Beck.</li>
+    <li>Chicago Cubs recalled DH Kevin Alcántara from Iowa Cubs.</li>
+    <li>Boston Red Sox traded 2B Marcelo Mayer to San Francisco Giants for LHP Erik Miller and CF Carlos Gutierrez.</li>
+    <li>Boston Red Sox traded 2B Marcelo Mayer to San Francisco Giants for LHP Erik Miller and CF Carlos Gutierrez.</li>
+    <li>Boston Red Sox traded 2B Marcelo Mayer to San Francisco Giants for LHP Erik Miller and CF Carlos Gutierrez.</li>
+    <li>Toronto Blue Jays traded CF Daulton Varsho and cash to Houston Astros for RHP Spencer Arrighetti.</li>
+    <li>Toronto Blue Jays traded CF Daulton Varsho and cash to Houston Astros for RHP Spencer Arrighetti.</li>
+    <li>Toronto Blue Jays traded CF Daulton Varsho and cash to Houston Astros for RHP Spencer Arrighetti.</li>
+    <li>St. Louis Cardinals traded LF Lars Nootbaar to Arizona Diamondbacks for RHP Daniel Eagen, LHP Sandro Santana and Player To Be Named Later.</li>
+    <li>St. Louis Cardinals traded LF Lars Nootbaar to Arizona Diamondbacks for RHP Daniel Eagen, LHP Sandro Santana and Player To Be Named Later.</li>
+    <li>St. Louis Cardinals traded LF Lars Nootbaar to Arizona Diamondbacks for RHP Daniel Eagen, LHP Sandro Santana and Player To Be Named Later.</li>
+    <li>St. Louis Cardinals traded LF Lars Nootbaar to Arizona Diamondbacks for RHP Daniel Eagen, LHP Sandro Santana and Player To Be Named Later.</li>
+    <li>Miami Marlins traded C Liam Hicks to Tampa Bay Rays for 3B Brayden Taylor, SS Adrian Santana and RHP Jacob Kisting.</li>
+    <li>Miami Marlins traded C Liam Hicks to Tampa Bay Rays for 3B Brayden Taylor, SS Adrian Santana and RHP Jacob Kisting.</li>
+    <li>Miami Marlins traded C Liam Hicks to Tampa Bay Rays for 3B Brayden Taylor, SS Adrian Santana and RHP Jacob Kisting.</li>
+    <li>Miami Marlins traded C Liam Hicks to Tampa Bay Rays for 3B Brayden Taylor, SS Adrian Santana and RHP Jacob Kisting.</li>
+    <li>Detroit Tigers traded RHP Casey Mize and 3B Gage Workman to San Diego Padres for LHP Kash Mayfield and LHP Jackson Wolf.</li>
+    <li>Detroit Tigers traded RHP Casey Mize and 3B Gage Workman to San Diego Padres for LHP Kash Mayfield and LHP Jackson Wolf.</li>
+    <li>Detroit Tigers traded RHP Casey Mize and 3B Gage Workman to San Diego Padres for LHP Kash Mayfield and LHP Jackson Wolf.</li>
+    <li>Detroit Tigers traded RHP Casey Mize and 3B Gage Workman to San Diego Padres for LHP Kash Mayfield and LHP Jackson Wolf.</li>
+    <li>Washington Nationals recalled LHP Andrew Alvarez from Rochester Red Wings.</li>
+    <li>New York Mets traded LHP Brooks Raley to Philadelphia Phillies for OF John Spikerman and RHP Luke Gabrysh.</li>
+    <li>New York Mets traded LHP Brooks Raley to Philadelphia Phillies for OF John Spikerman and RHP Luke Gabrysh.</li>
+    <li>New York Mets traded LHP Brooks Raley to Philadelphia Phillies for OF John Spikerman and RHP Luke Gabrysh.</li>
+    <li>Tampa Bay Rays traded RHP Michael Forret to Baltimore Orioles for RHP Tyler Wells.</li>
+    <li>Tampa Bay Rays traded RHP Michael Forret to Baltimore Orioles for RHP Tyler Wells.</li>
+    <li>Chicago Cubs traded SS Jefferson Rojas to New York Mets for RHP Clay Holmes and LF Tyrone Taylor.</li>
+    <li>Chicago Cubs traded SS Jefferson Rojas to New York Mets for RHP Clay Holmes and LF Tyrone Taylor.</li>
+    <li>Chicago Cubs traded SS Jefferson Rojas to New York Mets for RHP Clay Holmes and LF Tyrone Taylor.</li>
+    <li>New York Mets traded C Ben Rortvedt to Los Angeles Dodgers for RHP Chayce McDermott.</li>
+    <li>New York Mets traded C Ben Rortvedt to Los Angeles Dodgers for RHP Chayce McDermott.</li>
+    <li>New York Yankees recalled RHP Kervin Castro from Scranton/Wilkes-Barre RailRiders.</li>
+    <li>San Francisco Giants recalled RHP Carson Seymour from Sacramento River Cats.</li>
+    <li>Atlanta Braves traded RF Eli White to Boston Red Sox for RHP Tyler Uberstine.</li>
+    <li>Atlanta Braves traded RF Eli White to Boston Red Sox for RHP Tyler Uberstine.</li>
+    <li>St. Louis Cardinals traded RHP Dustin May and LHP JoJo Romero to Milwaukee Brewers for OF Alexander Frias and OF Josiah Ragsdale.</li>
+    <li>St. Louis Cardinals traded RHP Dustin May and LHP JoJo Romero to Milwaukee Brewers for OF Alexander Frias and OF Josiah Ragsdale.</li>
+    <li>St. Louis Cardinals traded RHP Dustin May and LHP JoJo Romero to Milwaukee Brewers for OF Alexander Frias and OF Josiah Ragsdale.</li>
+    <li>St. Louis Cardinals traded RHP Dustin May and LHP JoJo Romero to Milwaukee Brewers for OF Alexander Frias and OF Josiah Ragsdale.</li>
+    <li>Cincinnati Reds recalled RHP Chase Petty from Louisville Bats.</li>
+    <li>Kansas City Royals traded LHP Kris Bubic to Los Angeles Dodgers for RHP Carlos Duran.</li>
+    <li>Kansas City Royals traded LHP Kris Bubic to Los Angeles Dodgers for RHP Carlos Duran.</li>
+    <li>Los Angeles Angels traded LHP Brent Suter to Atlanta Braves for SS Nacho Alvarez Jr..</li>
+    <li>Los Angeles Angels traded LHP Brent Suter to Atlanta Braves for SS Nacho Alvarez Jr..</li>
+    <li>Los Angeles Angels traded RF Jo Adell to Cleveland Guardians for C Jacob Cozart.</li>
+    <li>Los Angeles Angels traded RF Jo Adell to Cleveland Guardians for C Jacob Cozart.</li>
+    <li>Washington Nationals traded LF Christian Franklin to Baltimore Orioles for RHP Joe Glassey.</li>
+    <li>Washington Nationals traded LF Christian Franklin to Baltimore Orioles for RHP Joe Glassey.</li>
+    <li>New York Mets recalled RHP Xzavion Curry from Syracuse Mets.</li>
+    <li>San Francisco Giants traded LF Heliot Ramos to New York Yankees for LHP Henry Lalane and SS Kaeden Kent.</li>
+    <li>San Francisco Giants traded LF Heliot Ramos to New York Yankees for LHP Henry Lalane and SS Kaeden Kent.</li>
+    <li>San Francisco Giants traded LF Heliot Ramos to New York Yankees for LHP Henry Lalane and SS Kaeden Kent.</li>
+    <li>Pittsburgh Pirates traded RHP Kyle Robinson to Los Angeles Angels for RHP Kirby Yates.</li>
+    <li>Pittsburgh Pirates traded RHP Kyle Robinson to Los Angeles Angels for RHP Kirby Yates.</li>
+    <li>New York Mets traded RHP Huascar Brazobán to Chicago White Sox for RHP Gabe Davis and RHP Zach Franklin.</li>
+    <li>New York Mets traded RHP Huascar Brazobán to Chicago White Sox for RHP Gabe Davis and RHP Zach Franklin.</li>
+    <li>New York Mets traded RHP Huascar Brazobán to Chicago White Sox for RHP Gabe Davis and RHP Zach Franklin.</li>
+    <li>Colorado Rockies traded CF Brenton Doyle to Chicago White Sox for RHP Mason Adams and SS Carlos Vielma.</li>
+    <li>Colorado Rockies traded CF Brenton Doyle to Chicago White Sox for RHP Mason Adams and SS Carlos Vielma.</li>
+    <li>Colorado Rockies traded CF Brenton Doyle to Chicago White Sox for RHP Mason Adams and SS Carlos Vielma.</li>
+    <li>Tampa Bay Rays recalled RHP Michael Grove from Durham Bulls.</li>
+    <li>Los Angeles Angels recalled RHP Ryan Johnson from Salt Lake Bees.</li>
+    <li>Cincinnati Reds traded DH Nathaniel Lowe and cash to Cleveland Guardians for RHP Alejandro Rivera and 2B Juan Brito.</li>
+    <li>Cincinnati Reds traded DH Nathaniel Lowe and cash to Cleveland Guardians for RHP Alejandro Rivera and 2B Juan Brito.</li>
+    <li>Cincinnati Reds traded DH Nathaniel Lowe and cash to Cleveland Guardians for RHP Alejandro Rivera and 2B Juan Brito.</li>
+    <li>Cincinnati Reds traded DH Nathaniel Lowe and cash to Cleveland Guardians for RHP Alejandro Rivera and 2B Juan Brito.</li>
+    <li>Texas Rangers traded 2B Josh Smith and RHP Josh Stephan to Toronto Blue Jays for LHP Adam Macko.</li>
+    <li>Texas Rangers traded 2B Josh Smith and RHP Josh Stephan to Toronto Blue Jays for LHP Adam Macko.</li>
+    <li>Texas Rangers traded 2B Josh Smith and RHP Josh Stephan to Toronto Blue Jays for LHP Adam Macko.</li>
+    <li>Washington Nationals recalled 1B Abimelec Ortiz from Rochester Red Wings.</li>
+    <li>Los Angeles Angels traded RHP Ryan Zeferjahn to Chicago Cubs for C Moisés Ballesteros and RHP Mason McGwire.</li>
+    <li>Los Angeles Angels traded RHP Ryan Zeferjahn to Chicago Cubs for C Moisés Ballesteros and RHP Mason McGwire.</li>
+    <li>Los Angeles Angels traded RHP Ryan Zeferjahn to Chicago Cubs for C Moisés Ballesteros and RHP Mason McGwire.</li>
+    <li>Colorado Rockies recalled LF Jordan Beck from Albuquerque Isotopes.</li>
+    <li>Colorado Rockies recalled RHP Nick Frasso from Albuquerque Isotopes.</li>
+    <li>San Francisco Giants traded 2B Luis Arraez and RHP Caleb Kilian to Philadelphia Phillies for RHP Marty Gair and RHP Ramon Marquez.</li>
+    <li>San Francisco Giants traded 2B Luis Arraez and RHP Caleb Kilian to Philadelphia Phillies for RHP Marty Gair and RHP Ramon Marquez.</li>
+    <li>San Francisco Giants traded 2B Luis Arraez and RHP Caleb Kilian to Philadelphia Phillies for RHP Marty Gair and RHP Ramon Marquez.</li>
+    <li>San Francisco Giants traded 2B Luis Arraez and RHP Caleb Kilian to Philadelphia Phillies for RHP Marty Gair and RHP Ramon Marquez.</li>
+    <li>Pittsburgh Pirates recalled LHP Brandon Eisert from Indianapolis Indians.</li>
+    <li>San Francisco Giants recalled RHP Tristan Beck from Sacramento River Cats.</li>
+    <li>Washington Nationals traded 1B Luis García Jr. to New York Yankees for RHP Ben Grable, RHP Yovanny Cruz, RHP Jack Cebert and RHP Jake Bird.</li>
+    <li>Washington Nationals traded 1B Luis García Jr. to New York Yankees for RHP Ben Grable, RHP Yovanny Cruz, RHP Jack Cebert and RHP Jake Bird.</li>
+    <li>Washington Nationals traded 1B Luis García Jr. to New York Yankees for RHP Ben Grable, RHP Yovanny Cruz, RHP Jack Cebert and RHP Jake Bird.</li>
+    <li>Washington Nationals traded 1B Luis García Jr. to New York Yankees for RHP Ben Grable, RHP Yovanny Cruz, RHP Jack Cebert and RHP Jake Bird.</li>
+    <li>Washington Nationals traded 1B Luis García Jr. to New York Yankees for RHP Ben Grable, RHP Yovanny Cruz, RHP Jack Cebert and RHP Jake Bird.</li>
+    <li>Baltimore Orioles traded LF Taylor Ward to Seattle Mariners for RHP Alex Hoppe, RHP Brock Moore and RHP Harrison Kreiling.</li>
+    <li>Baltimore Orioles traded LF Taylor Ward to Seattle Mariners for RHP Alex Hoppe, RHP Brock Moore and RHP Harrison Kreiling.</li>
+    <li>Baltimore Orioles traded LF Taylor Ward to Seattle Mariners for RHP Alex Hoppe, RHP Brock Moore and RHP Harrison Kreiling.</li>
+    <li>Baltimore Orioles traded LF Taylor Ward to Seattle Mariners for RHP Alex Hoppe, RHP Brock Moore and RHP Harrison Kreiling.</li>
+    <li>Philadelphia Phillies traded RHP Nolan Hoffman to Kansas City Royals for RHP Manuel Colon.</li>
+  </ul>
+</div>
+
+
+<div class="section">
+  <div class="section-title">Player Leaderboards</div>
+
+
+  <div class="lb-tabs">
+    <button class="lb-tab active" data-panel="hot-hitters">Hot Hitters</button>
+    <button class="lb-tab" data-panel="cold-hitters">Cold Hitters</button>
+    <button class="lb-tab" data-panel="hot-pitchers">Hot Pitchers</button>
+    <button class="lb-tab" data-panel="cold-pitchers">Cold Pitchers</button>
+    <button class="lb-tab" data-panel="breakout-hitters">Breakout Hitters</button>
+    <button class="lb-tab" data-panel="breakout-pitchers">Breakout Pitchers</button>
+  </div>
+
+  <div class="lb-panel active" id="hot-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="hot-h-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Ceddanne Rafaela</span> <span class="team">BOS</span></td>
+        <td class="stat">.444</td>
+        <td class="stat">4</td>
+        <td class="stat">7</td>
+        <td class="stat">1.407</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-1" style="display:none;">
+        <td colspan="7">
+          6 G · 27 PA · 2 SB · OBP .444 · SLG .963
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Eduardo Valencia</span> <span class="team">DET</span></td>
+        <td class="stat">.474</td>
+        <td class="stat">2</td>
+        <td class="stat">8</td>
+        <td class="stat">1.421</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-2" style="display:none;">
+        <td colspan="7">
+          5 G · 19 PA · 0 SB · OBP .474 · SLG .947
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Shohei Ohtani</span> <span class="team">LAD</span></td>
+        <td class="stat">.500</td>
+        <td class="stat">2</td>
+        <td class="stat">6</td>
+        <td class="stat">1.502</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-3" style="display:none;">
+        <td colspan="7">
+          6 G · 27 PA · 0 SB · OBP .593 · SLG .909
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Luis García Jr.</span> <span class="team">NYY</span></td>
+        <td class="stat">.360</td>
+        <td class="stat">3</td>
+        <td class="stat">7</td>
+        <td class="stat">1.240</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-4" style="display:none;">
+        <td colspan="7">
+          6 G · 25 PA · 0 SB · OBP .360 · SLG .880
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Matt Olson</span> <span class="team">ATL</span></td>
+        <td class="stat">.304</td>
+        <td class="stat">4</td>
+        <td class="stat">6</td>
+        <td class="stat">1.203</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-5" style="display:none;">
+        <td colspan="7">
+          6 G · 24 PA · 0 SB · OBP .333 · SLG .870
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Daniel Susac</span> <span class="team">SF</span></td>
+        <td class="stat">.333</td>
+        <td class="stat">3</td>
+        <td class="stat">7</td>
+        <td class="stat">1.389</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-6" style="display:none;">
+        <td colspan="7">
+          5 G · 18 PA · 0 SB · OBP .389 · SLG 1.000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Sal Stewart</span> <span class="team">CIN</span></td>
+        <td class="stat">.269</td>
+        <td class="stat">3</td>
+        <td class="stat">9</td>
+        <td class="stat">0.990</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-7" style="display:none;">
+        <td colspan="7">
+          7 G · 32 PA · 1 SB · OBP .375 · SLG .615
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Alec Burleson</span> <span class="team">STL</span></td>
+        <td class="stat">.346</td>
+        <td class="stat">3</td>
+        <td class="stat">6</td>
+        <td class="stat">1.182</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-8" style="display:none;">
+        <td colspan="7">
+          7 G · 31 PA · 0 SB · OBP .452 · SLG .731
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Yainer Diaz</span> <span class="team">HOU</span></td>
+        <td class="stat">.556</td>
+        <td class="stat">2</td>
+        <td class="stat">3</td>
+        <td class="stat">1.444</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-9" style="display:none;">
+        <td colspan="7">
+          4 G · 18 PA · 0 SB · OBP .556 · SLG .889
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Jeremy Peña</span> <span class="team">HOU</span></td>
+        <td class="stat">.357</td>
+        <td class="stat">2</td>
+        <td class="stat">7</td>
+        <td class="stat">1.069</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-10" style="display:none;">
+        <td colspan="7">
+          6 G · 31 PA · 0 SB · OBP .355 · SLG .714
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="cold-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="cold-h-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Jorge Polanco</span> <span class="team">NYM</span></td>
+        <td class="stat">.000</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.067</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-1" style="display:none;">
+        <td colspan="7">
+          4 G · 15 PA · 0 SB · OBP .067 · SLG .000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Riley Greene</span> <span class="team">DET</span></td>
+        <td class="stat">.000</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.263</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-2" style="display:none;">
+        <td colspan="7">
+          4 G · 19 PA · 1 SB · OBP .263 · SLG .000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Kyle Schwarber</span> <span class="team">PHI</span></td>
+        <td class="stat">.000</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.353</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-3" style="display:none;">
+        <td colspan="7">
+          4 G · 17 PA · 0 SB · OBP .353 · SLG .000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Nicky Lopez</span> <span class="team">TEX</span></td>
+        <td class="stat">.000</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.130</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-4" style="display:none;">
+        <td colspan="7">
+          7 G · 23 PA · 0 SB · OBP .130 · SLG .000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Victor Mesa Jr.</span> <span class="team">TB</span></td>
+        <td class="stat">.056</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.111</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-5" style="display:none;">
+        <td colspan="7">
+          5 G · 18 PA · 0 SB · OBP .056 · SLG .056
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Anthony Seigler</span> <span class="team">BOS</span></td>
+        <td class="stat">.071</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.205</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-6" style="display:none;">
+        <td colspan="7">
+          5 G · 15 PA · 0 SB · OBP .133 · SLG .071
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Nasim Nuñez</span> <span class="team">WSH</span></td>
+        <td class="stat">.048</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.135</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-7" style="display:none;">
+        <td colspan="7">
+          6 G · 23 PA · 2 SB · OBP .087 · SLG .048
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Ben Rice</span> <span class="team">NYY</span></td>
+        <td class="stat">.080</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.299</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-8" style="display:none;">
+        <td colspan="7">
+          7 G · 28 PA · 0 SB · OBP .179 · SLG .120
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Josh Rojas</span> <span class="team">KC</span></td>
+        <td class="stat">.083</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.283</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-9" style="display:none;">
+        <td colspan="7">
+          5 G · 15 PA · 1 SB · OBP .200 · SLG .083
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Tristan Peters</span> <span class="team">CWS</span></td>
+        <td class="stat">.053</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.195</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-10" style="display:none;">
+        <td colspan="7">
+          6 G · 21 PA · 1 SB · OBP .143 · SLG .053
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="hot-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="hot-p-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Brandyn Garcia</span> <span class="team">AZ</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.1</td>
+        <td class="stat">4</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-1" style="display:none;">
+        <td colspan="7">
+            3 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Aroldis Chapman</span> <span class="team">BOS</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">3</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-2" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Devin Williams</span> <span class="team">NYM</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">3</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-3" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Pete Fairbanks</span> <span class="team">MIA</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">4.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-4" style="display:none;">
+        <td colspan="7">
+            4 APP · 4 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Bryan Baker</span> <span class="team">TB</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">3</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-5" style="display:none;">
+        <td colspan="7">
+            3 APP · 3 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Gavin Williams</span> <span class="team">CLE</span></td>
+        <td class="stat">1.42</td>
+        <td class="stat">12.2</td>
+        <td class="stat">22</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-6" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 0.47 · K/9 15.63
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Josh Hader</span> <span class="team">HOU</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">1</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-7" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Raisel Iglesias</span> <span class="team">ATL</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">1</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-8" style="display:none;">
+        <td colspan="7">
+            3 APP · 3 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Mason Miller</span> <span class="team">SD</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.2</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-9" style="display:none;">
+        <td colspan="7">
+            2 APP · 1 SV · 1 BS · SV% 50%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Louis Varland</span> <span class="team">TOR</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">1</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-10" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="cold-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="cold-p-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Michael Lorenzen</span> <span class="team">COL</span></td>
+        <td class="stat">12.86</td>
+        <td class="stat">7.0</td>
+        <td class="stat">2</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-1" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 2.71 · K/9 2.57
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Landen Roupp</span> <span class="team">SF</span></td>
+        <td class="stat">9.72</td>
+        <td class="stat">8.1</td>
+        <td class="stat">7</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-2" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 2.04 · K/9 7.56
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">George Soriano</span> <span class="team">STL</span></td>
+        <td class="stat">10.80</td>
+        <td class="stat">1.2</td>
+        <td class="stat">2</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-3" style="display:none;">
+        <td colspan="7">
+            2 APP · 0 SV · 2 BS · SV% 0%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Seth Lugo</span> <span class="team">KC</span></td>
+        <td class="stat">4.91</td>
+        <td class="stat">11.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-4" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.64 · K/9 4.09
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Bubba Chandler</span> <span class="team">PIT</span></td>
+        <td class="stat">5.59</td>
+        <td class="stat">9.2</td>
+        <td class="stat">8</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-5" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.76 · K/9 7.45
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Justin Wrobleski</span> <span class="team">LAD</span></td>
+        <td class="stat">10.45</td>
+        <td class="stat">10.1</td>
+        <td class="stat">11</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-6" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.65 · K/9 9.58
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Michael King</span> <span class="team">SD</span></td>
+        <td class="stat">5.73</td>
+        <td class="stat">11.0</td>
+        <td class="stat">11</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-7" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.45 · K/9 9.00
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Sonny Gray</span> <span class="team">BOS</span></td>
+        <td class="stat">5.14</td>
+        <td class="stat">7.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-8" style="display:none;">
+        <td colspan="7">
+            1 GS · WHIP 1.29 · K/9 6.43
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Gage Jump</span> <span class="team">ATH</span></td>
+        <td class="stat">5.59</td>
+        <td class="stat">9.2</td>
+        <td class="stat">12</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-9" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.76 · K/9 11.17
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Jake Bennett</span> <span class="team">BOS</span></td>
+        <td class="stat">4.50</td>
+        <td class="stat">12.0</td>
+        <td class="stat">8</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-10" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.33 · K/9 6.00
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="breakout-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="brk-h-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Ceddanne Rafaela</span> <span class="team">BOS</span></td>
+        <td class="stat">.339</td>
+        <td class="stat">7</td>
+        <td class="stat">16</td>
+        <td class="stat">1.089</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-1" style="display:none;">
+        <td colspan="7">
+          13 G · 56 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Eduardo Valencia</span> <span class="team">DET</span></td>
+        <td class="stat">.474</td>
+        <td class="stat">2</td>
+        <td class="stat">8</td>
+        <td class="stat">1.421</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-2" style="display:none;">
+        <td colspan="7">
+          5 G · 19 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Shohei Ohtani</span> <span class="team">LAD</span></td>
+        <td class="stat">.319</td>
+        <td class="stat">2</td>
+        <td class="stat">7</td>
+        <td class="stat">0.953</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-3" style="display:none;">
+        <td colspan="7">
+          12 G · 55 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Luis García Jr.</span> <span class="team">NYY</span></td>
+        <td class="stat">.321</td>
+        <td class="stat">4</td>
+        <td class="stat">10</td>
+        <td class="stat">1.031</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-4" style="display:none;">
+        <td colspan="7">
+          13 G · 54 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Matt Olson</span> <span class="team">ATL</span></td>
+        <td class="stat">.245</td>
+        <td class="stat">5</td>
+        <td class="stat">10</td>
+        <td class="stat">0.899</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-5" style="display:none;">
+        <td colspan="7">
+          14 G · 60 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Daniel Susac</span> <span class="team">SF</span></td>
+        <td class="stat">.280</td>
+        <td class="stat">3</td>
+        <td class="stat">8</td>
+        <td class="stat">1.020</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-6" style="display:none;">
+        <td colspan="7">
+          10 G · 30 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Sal Stewart</span> <span class="team">CIN</span></td>
+        <td class="stat">.255</td>
+        <td class="stat">4</td>
+        <td class="stat">15</td>
+        <td class="stat">0.825</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-7" style="display:none;">
+        <td colspan="7">
+          13 G · 54 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Alec Burleson</span> <span class="team">STL</span></td>
+        <td class="stat">.356</td>
+        <td class="stat">3</td>
+        <td class="stat">8</td>
+        <td class="stat">0.992</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-8" style="display:none;">
+        <td colspan="7">
+          15 G · 65 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Yainer Diaz</span> <span class="team">HOU</span></td>
+        <td class="stat">.364</td>
+        <td class="stat">2</td>
+        <td class="stat">3</td>
+        <td class="stat">0.928</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-9" style="display:none;">
+        <td colspan="7">
+          8 G · 34 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Jeremy Peña</span> <span class="team">HOU</span></td>
+        <td class="stat">.407</td>
+        <td class="stat">7</td>
+        <td class="stat">15</td>
+        <td class="stat">1.251</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-10" style="display:none;">
+        <td colspan="7">
+          13 G · 62 PA · 15-day window
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="breakout-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="brk-p-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Brandyn Garcia</span> <span class="team">AZ</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.1</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-1" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Aroldis Chapman</span> <span class="team">BOS</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">6.0</td>
+        <td class="stat">10</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-2" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Devin Williams</span> <span class="team">NYM</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">3</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-3" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Pete Fairbanks</span> <span class="team">MIA</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">4.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-4" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Bryan Baker</span> <span class="team">TB</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">6.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-5" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Gavin Williams</span> <span class="team">CLE</span></td>
+        <td class="stat">0.92</td>
+        <td class="stat">19.2</td>
+        <td class="stat">33</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-6" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Josh Hader</span> <span class="team">HOU</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">4.2</td>
+        <td class="stat">4</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-7" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Raisel Iglesias</span> <span class="team">ATL</span></td>
+        <td class="stat">1.59</td>
+        <td class="stat">5.2</td>
+        <td class="stat">6</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-8" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Mason Miller</span> <span class="team">SD</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">4.2</td>
+        <td class="stat">7</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-9" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Louis Varland</span> <span class="team">TOR</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">5.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-10" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+</div>
+
+</div>
+
+<div class="nav">
+  <a href="../../">← All digests</a>
+</div>
+
+<footer>
+  mlbreview · August 3, 2026
+</footer>
+
+</div>
+
+<script>
+/* Tab switching */
+document.querySelectorAll('.lb-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.lb-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.lb-panel').forEach(function(p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    var panel = document.getElementById(tab.getAttribute('data-panel'));
+    if (panel) panel.classList.add('active');
+  });
+});
+
+/* Expand/collapse detail rows */
+document.querySelectorAll('.expand-btn').forEach(function(row) {
+  row.addEventListener('click', function() {
+    var detailId = row.getAttribute('data-detail');
+    var detail = document.getElementById(detailId);
+    if (detail) {
+      detail.style.display = detail.style.display === 'none' ? '' : 'none';
+    }
+  });
+});
+
+/* Column sorting */
+document.querySelectorAll('.lb-table[data-sortable] th').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var table = th.closest('table');
+    var tbody = table.querySelector('tbody');
+    var idx = Array.from(th.parentNode.children).indexOf(th);
+    var rows = Array.from(tbody.querySelectorAll('tr:not(.detail-row)'));
+    var asc = th.getAttribute('data-sort-dir') !== 'asc';
+    th.parentNode.querySelectorAll('th').forEach(function(t) { t.removeAttribute('data-sort-dir'); });
+    th.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+    rows.sort(function(a, b) {
+      var av = a.children[idx] ? a.children[idx].textContent.trim() : '';
+      var bv = b.children[idx] ? b.children[idx].textContent.trim() : '';
+      var an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an) && !isNaN(bn)) {
+        return asc ? an - bn : bn - an;
+      }
+      return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(function(row) {
+      var detailId = row.getAttribute('data-detail');
+      var detail = detailId ? document.getElementById(detailId) : null;
+      tbody.appendChild(row);
+      if (detail) tbody.appendChild(detail);
+    });
+  });
+});
+</script>
+
+</body>
+</html>
