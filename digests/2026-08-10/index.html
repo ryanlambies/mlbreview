@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Digest — August 10, 2026</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--gray-100); color: var(--gray-800); line-height: 1.6; }
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  header { background: var(--navy); color: #fff; padding: 32px 24px; border-radius: 12px 12px 0 0; text-align: center; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .date { color: #a0c4e8; font-size: 14px; margin-top: 4px; }
+  .content { background: #fff; padding: 0; border-radius: 0 0 12px 12px; }
+  .section { padding: 24px; border-bottom: 1px solid var(--gray-200); }
+  .section:last-child { border-bottom: none; }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-400); margin-bottom: 16px; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+  .score-row:last-child { border-bottom: none; }
+  .team { flex: 1; }
+  .team.winner { font-weight: 700; }
+  .score { text-align: center; min-width: 60px; font-variant-numeric: tabular-nums; }
+  .extra { color: var(--gray-400); font-size: 12px; margin-left: 4px; }
+  .storyline { margin-bottom: 16px; padding: 16px; background: var(--gray-50); border-radius: 8px; border-left: 3px solid var(--blue); }
+  .storyline:last-child { margin-bottom: 0; }
+  .storyline-meta { font-size: 12px; color: var(--gray-600); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+  .storyline-prose { font-size: 15px; }
+  .preview { padding: 16px; background: #fef9ee; border-radius: 8px; border-left: 3px solid var(--amber); }
+  .preview-meta { font-size: 12px; color: #92400e; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+  .preview-prose { font-size: 15px; }
+  .txn-list { list-style: none; }
+  .txn-list li { padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-600); }
+  .txn-list li:last-child { border-bottom: none; }
+  .nav { text-align: center; padding: 16px; }
+  .nav a { color: var(--blue); text-decoration: none; font-size: 13px; }
+  .nav a:hover { text-decoration: underline; }
+  footer { text-align: center; padding: 24px; color: var(--gray-400); font-size: 12px; }
+  .leaderboard-notice { padding: 16px 24px; background: #fef3cd; border-radius: 8px; font-size: 14px; color: #856404; text-align: center; }
+  .lb-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .lb-tab { padding: 6px 14px; border: 1px solid var(--gray-200); border-radius: 6px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--gray-600); }
+  .lb-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lb-table th { text-align: left; padding: 8px 6px; border-bottom: 2px solid var(--gray-200); color: var(--gray-400); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; user-select: none; white-space: nowrap; }
+  .lb-table th:hover { color: var(--gray-800); }
+  .lb-table th .sort-arrow { font-size: 10px; margin-left: 2px; }
+  .lb-table td { padding: 7px 6px; border-bottom: 1px solid var(--gray-100); }
+  .lb-table tr.detail-row td { padding: 6px 6px 10px 24px; background: var(--gray-50); font-size: 12px; color: var(--gray-600); }
+  .lb-table .rank { color: var(--gray-400); width: 28px; }
+  .lb-table .player-name { font-weight: 600; }
+  .lb-table .team { color: var(--gray-400); font-size: 12px; }
+  .lb-table .stat { font-variant-numeric: tabular-nums; text-align: right; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.confirmed { background: #d1fae5; color: #065f46; }
+  .badge.lucky { background: #fef3cd; color: #856404; }
+  .badge.unlucky { background: #fee2e2; color: #991b1b; }
+  .lb-panel { display: none; }
+  .lb-panel.active { display: block; }
+  .expand-btn { cursor: pointer; color: var(--gray-400); font-size: 12px; }
+  .off-day { padding: 32px 24px; text-align: center; }
+  .off-day h2 { color: var(--navy); margin-bottom: 8px; }
+  .off-day p { color: var(--gray-600); }
+  .tonight-schedule { margin-top: 20px; text-align: left; }
+  .tonight-schedule .game { padding: 6px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>⚾ MLB Digest</h1>
+  <div class="date">August 10, 2026</div>
+</header>
+
+<div class="content">
+
+
+<div class="section">
+  <div class="section-title">Scores</div>
+  <div class="score-row">
+    <span class="team">BOS</span>
+    <span class="score">
+      <span>1</span>
+      –
+      <span style="font-weight:700">2</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      TOR
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">NYM</span>
+    <span class="score">
+      <span style="font-weight:700">8</span>
+      –
+      <span>5</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      ATL
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team">BAL</span>
+    <span class="score">
+      <span>5</span>
+      –
+      <span style="font-weight:700">9</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      MIN
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">PHI</span>
+    <span class="score">
+      <span style="font-weight:700">6</span>
+      –
+      <span>5</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      STL
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">TEX</span>
+    <span class="score">
+      <span style="font-weight:700">4</span>
+      –
+      <span>1</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      LAA
+<span class="extra">(10)</span>    </span>
+  </div>
+  <div class="score-row">
+    <span class="team">COL</span>
+    <span class="score">
+      <span>0</span>
+      –
+      <span style="font-weight:700">9</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      AZ
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">TB</span>
+    <span class="score">
+      <span style="font-weight:700">10</span>
+      –
+      <span>6</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      ATH
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team">MIL</span>
+    <span class="score">
+      <span>2</span>
+      –
+      <span style="font-weight:700">3</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      SD
+    </span>
+  </div>
+  <div class="score-row">
+    <span class="team winner">HOU</span>
+    <span class="score">
+      <span style="font-weight:700">6</span>
+      –
+      <span>3</span>
+    </span>
+    <span class="team" style="text-align:right;">
+      SF
+<span class="extra">(10)</span>    </span>
+  </div>
+  <div class="score-row">
+    <span class="team">KC</span>
+    <span class="score">
+      <span>5</span>
+      –
+      <span style="font-weight:700">6</span>
+    </span>
+    <span class="team winner" style="text-align:right;">
+      LAD
+    </span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Storylines</div>
+  <div class="storyline">
+    <div class="storyline-meta">
+      MIL @ SD
+      · 2–3
+    </div>
+    <div class="storyline-prose">Milwaukee Brewers 2, San Diego Padres 3. Yuki Matsui earned the win. Key moment: Jackson Merrill homers (19) on a fly ball to center field. Ty France scores..</div>
+  </div>
+  <div class="storyline">
+    <div class="storyline-meta">
+      KC @ LAD
+      · 5–6
+    </div>
+    <div class="storyline-prose">Kansas City Royals 5, Los Angeles Dodgers 6. Jack Dreyer earned the win. Key moment: Max Muncy doubles (17) on a line drive to right fielder Starling Marte. Tommy Edman scores. Miguel Rojas scores. Kyle Tucker scores. Max Muncy to 3rd..</div>
+  </div>
+  <div class="storyline">
+    <div class="storyline-meta">
+      HOU @ SF
+      · 6–3
+ · Extra Innings    </div>
+    <div class="storyline-prose">The Houston Astros defeated the San Francisco Giants 6-3 in extra innings, with Josh Hader earning the victory and Jason Foley taking the loss. Isaac Paredes&#39; 21st double of the season in the tenth inning proved crucial, driving in two runs as Houston extended their lead. Drew Gilbert&#39;s fifth home run in the seventh inning had briefly sparked the Giants&#39; comeback attempt, but it wasn&#39;t enough to overcome the Astros&#39; rally in the extra frame.</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Tonight</div>
+  <div class="preview">
+    <div class="preview-meta">
+      SEA @ NYY
+ · National TV    </div>
+    <div class="preview-prose">The Seattle Mariners, sitting at 56-63, will send Bryan Woo to the mound against the New York Yankees&#39; Ryan Weathers in a matchup between teams heading in opposite directions. The Yankees, owners of a 66-52 record, will host the struggling Mariners in a nationally televised contest on TBS.</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Off-field</div>
+  <ul class="txn-list">
+    <li>New York Mets placed RHP Devin Williams on the 15-day injured list retroactive to August 8, 2026. Right shoulder strain.</li>
+    <li>Texas Rangers placed RHP Nathan Eovaldi on the 15-day injured list retroactive to August 9, 2026. Right posterior elbow inflammation.</li>
+    <li>San Francisco Giants placed C Daniel Susac on the 10-day injured list. Left knee patella fracture.</li>
+    <li>Colorado Rockies placed RF Tyler Freeman on the 10-day injured list retroactive to August 9, 2026. Lumbar pain.</li>
+    <li>Philadelphia Phillies placed RHP Caleb Kilian on the 15-day injured list. Left oblique strain.</li>
+    <li>Athletics activated 3B Zack Gelof from the 10-day injured list.</li>
+    <li>Los Angeles Angels placed RHP Shaun Anderson on the 15-day injured list. Right shoulder inflammation.</li>
+    <li>Baltimore Orioles recalled RHP Cam Sanders from Norfolk Tides.</li>
+    <li>Texas Rangers recalled RHP Ben Peoples from Round Rock Express.</li>
+    <li>Colorado Rockies recalled 1B Connor Norby from Albuquerque Isotopes.</li>
+    <li>Los Angeles Dodgers recalled RHP Seth Halvorsen from Oklahoma City Comets.</li>
+    <li>Toronto Blue Jays recalled 2B Charles McAdoo from Buffalo Bisons.</li>
+    <li>New York Mets recalled RHP Jonathan Pintaro from Syracuse Mets.</li>
+    <li>Philadelphia Phillies recalled RHP Chase Shugart from Lehigh Valley IronPigs.</li>
+  </ul>
+</div>
+
+
+<div class="section">
+  <div class="section-title">Player Leaderboards</div>
+
+
+  <div class="lb-tabs">
+    <button class="lb-tab active" data-panel="hot-hitters">Hot Hitters</button>
+    <button class="lb-tab" data-panel="cold-hitters">Cold Hitters</button>
+    <button class="lb-tab" data-panel="hot-pitchers">Hot Pitchers</button>
+    <button class="lb-tab" data-panel="cold-pitchers">Cold Pitchers</button>
+    <button class="lb-tab" data-panel="breakout-hitters">Breakout Hitters</button>
+    <button class="lb-tab" data-panel="breakout-pitchers">Breakout Pitchers</button>
+  </div>
+
+  <div class="lb-panel active" id="hot-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="hot-h-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Jac Caglianone</span> <span class="team">KC</span></td>
+        <td class="stat">.481</td>
+        <td class="stat">3</td>
+        <td class="stat">10</td>
+        <td class="stat">1.407</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-1" style="display:none;">
+        <td colspan="7">
+          7 G · 27 PA · 1 SB · OBP .481 · SLG .926
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Cam Smith</span> <span class="team">HOU</span></td>
+        <td class="stat">.500</td>
+        <td class="stat">3</td>
+        <td class="stat">5</td>
+        <td class="stat">1.705</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-2" style="display:none;">
+        <td colspan="7">
+          4 G · 16 PA · 0 SB · OBP .562 · SLG 1.143
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Wilyer Abreu</span> <span class="team">BOS</span></td>
+        <td class="stat">.368</td>
+        <td class="stat">3</td>
+        <td class="stat">9</td>
+        <td class="stat">1.376</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-3" style="display:none;">
+        <td colspan="7">
+          6 G · 27 PA · 1 SB · OBP .481 · SLG .895
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Jackson Merrill</span> <span class="team">SD</span></td>
+        <td class="stat">.357</td>
+        <td class="stat">3</td>
+        <td class="stat">9</td>
+        <td class="stat">1.129</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-4" style="display:none;">
+        <td colspan="7">
+          7 G · 29 PA · 1 SB · OBP .379 · SLG .750
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Josh Bell</span> <span class="team">MIN</span></td>
+        <td class="stat">.370</td>
+        <td class="stat">3</td>
+        <td class="stat">8</td>
+        <td class="stat">1.155</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-5" style="display:none;">
+        <td colspan="7">
+          7 G · 31 PA · 0 SB · OBP .452 · SLG .704
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Jackson Chourio</span> <span class="team">MIL</span></td>
+        <td class="stat">.360</td>
+        <td class="stat">4</td>
+        <td class="stat">5</td>
+        <td class="stat">1.307</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-6" style="display:none;">
+        <td colspan="7">
+          7 G · 30 PA · 1 SB · OBP .467 · SLG .840
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Brandon Nimmo</span> <span class="team">TEX</span></td>
+        <td class="stat">.435</td>
+        <td class="stat">2</td>
+        <td class="stat">7</td>
+        <td class="stat">1.219</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-7" style="display:none;">
+        <td colspan="7">
+          6 G · 25 PA · 0 SB · OBP .480 · SLG .739
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Dillon Dingler</span> <span class="team">DET</span></td>
+        <td class="stat">.308</td>
+        <td class="stat">3</td>
+        <td class="stat">8</td>
+        <td class="stat">1.072</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-8" style="display:none;">
+        <td colspan="7">
+          6 G · 29 PA · 0 SB · OBP .379 · SLG .692
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Jake McCarthy</span> <span class="team">COL</span></td>
+        <td class="stat">.538</td>
+        <td class="stat">2</td>
+        <td class="stat">3</td>
+        <td class="stat">1.402</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-9" style="display:none;">
+        <td colspan="7">
+          6 G · 27 PA · 3 SB · OBP .556 · SLG .846
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-h-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Angel Martínez</span> <span class="team">CLE</span></td>
+        <td class="stat">.368</td>
+        <td class="stat">1</td>
+        <td class="stat">9</td>
+        <td class="stat">1.013</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-h-10" style="display:none;">
+        <td colspan="7">
+          5 G · 21 PA · 0 SB · OBP .381 · SLG .632
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="cold-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="cold-h-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Grant McCray</span> <span class="team">SF</span></td>
+        <td class="stat">.000</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.167</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-1" style="display:none;">
+        <td colspan="7">
+          5 G · 18 PA · 0 SB · OBP .167 · SLG .000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Evan Carter</span> <span class="team">TEX</span></td>
+        <td class="stat">.000</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.059</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-2" style="display:none;">
+        <td colspan="7">
+          6 G · 17 PA · 0 SB · OBP .059 · SLG .000
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Gunnar Henderson</span> <span class="team">BAL</span></td>
+        <td class="stat">.050</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.360</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-3" style="display:none;">
+        <td colspan="7">
+          7 G · 29 PA · 1 SB · OBP .310 · SLG .050
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Teoscar Hernández</span> <span class="team">LAD</span></td>
+        <td class="stat">.059</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.118</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-4" style="display:none;">
+        <td colspan="7">
+          6 G · 17 PA · 0 SB · OBP .059 · SLG .059
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Esmerlyn Valdez</span> <span class="team">PIT</span></td>
+        <td class="stat">.067</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.400</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-5" style="display:none;">
+        <td colspan="7">
+          5 G · 21 PA · 0 SB · OBP .333 · SLG .067
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Jeremy Peña</span> <span class="team">HOU</span></td>
+        <td class="stat">.040</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.183</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-6" style="display:none;">
+        <td colspan="7">
+          6 G · 28 PA · 0 SB · OBP .143 · SLG .040
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Trevor Larnach</span> <span class="team">MIN</span></td>
+        <td class="stat">.071</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.259</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-7" style="display:none;">
+        <td colspan="7">
+          5 G · 16 PA · 0 SB · OBP .188 · SLG .071
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Jim Jarvis</span> <span class="team">ATL</span></td>
+        <td class="stat">.062</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.180</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-8" style="display:none;">
+        <td colspan="7">
+          6 G · 17 PA · 0 SB · OBP .118 · SLG .062
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Bryan Torres</span> <span class="team">STL</span></td>
+        <td class="stat">.077</td>
+        <td class="stat">0</td>
+        <td class="stat">1</td>
+        <td class="stat">0.312</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-9" style="display:none;">
+        <td colspan="7">
+          6 G · 17 PA · 0 SB · OBP .235 · SLG .077
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-h-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Carlos Narváez</span> <span class="team">BAL</span></td>
+        <td class="stat">.118</td>
+        <td class="stat">0</td>
+        <td class="stat">0</td>
+        <td class="stat">0.276</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-h-10" style="display:none;">
+        <td colspan="7">
+          6 G · 19 PA · 0 SB · OBP .158 · SLG .118
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="hot-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="hot-p-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Yoendrys Gómez</span> <span class="team">MIN</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">3</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-1" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Jacob Webb</span> <span class="team">CHC</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">2</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-2" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Emilio Pagán</span> <span class="team">CIN</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">2</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-3" style="display:none;">
+        <td colspan="7">
+            2 APP · 2 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Dylan Cease</span> <span class="team">TOR</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">7.0</td>
+        <td class="stat">10</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-4" style="display:none;">
+        <td colspan="7">
+            1 GS · WHIP 0.43 · K/9 12.86
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Mitch Bratt</span> <span class="team">AZ</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">7.0</td>
+        <td class="stat">9</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-5" style="display:none;">
+        <td colspan="7">
+            1 GS · WHIP 0.57 · K/9 11.57
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Cam Schlittler</span> <span class="team">NYY</span></td>
+        <td class="stat">1.29</td>
+        <td class="stat">7.0</td>
+        <td class="stat">11</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-6" style="display:none;">
+        <td colspan="7">
+            1 GS · WHIP 0.43 · K/9 14.14
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Bryan Baker</span> <span class="team">TB</span></td>
+        <td class="stat">3.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-7" style="display:none;">
+        <td colspan="7">
+            3 APP · 3 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Sandy Alcantara</span> <span class="team">MIA</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">7.0</td>
+        <td class="stat">8</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-8" style="display:none;">
+        <td colspan="7">
+            1 GS · WHIP 0.57 · K/9 10.29
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Drew Rasmussen</span> <span class="team">TB</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">7.0</td>
+        <td class="stat">8</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-9" style="display:none;">
+        <td colspan="7">
+            1 GS · WHIP 0.57 · K/9 10.29
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="hot-p-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Riley O&#39;Brien</span> <span class="team">STL</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">1</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="hot-p-10" style="display:none;">
+        <td colspan="7">
+            3 APP · 3 SV · 0 BS · SV% 100%
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="cold-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="cold-p-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Casey Mize</span> <span class="team">SD</span></td>
+        <td class="stat">9.64</td>
+        <td class="stat">9.1</td>
+        <td class="stat">7</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-1" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 2.04 · K/9 6.75
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Trevor Richards</span> <span class="team">CWS</span></td>
+        <td class="stat">6.75</td>
+        <td class="stat">2.2</td>
+        <td class="stat">0</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-2" style="display:none;">
+        <td colspan="7">
+            2 APP · 1 SV · 1 BS · SV% 50%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Freddy Peralta</span> <span class="team">TB</span></td>
+        <td class="stat">9.31</td>
+        <td class="stat">9.2</td>
+        <td class="stat">8</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-3" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.76 · K/9 7.45
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Bryce Elder</span> <span class="team">ATL</span></td>
+        <td class="stat">6.00</td>
+        <td class="stat">12.0</td>
+        <td class="stat">7</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-4" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.33 · K/9 5.25
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Jared Jones</span> <span class="team">PIT</span></td>
+        <td class="stat">14.14</td>
+        <td class="stat">7.0</td>
+        <td class="stat">7</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-5" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 2.57 · K/9 9.00
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Randy Dobnak</span> <span class="team">KC</span></td>
+        <td class="stat">4.50</td>
+        <td class="stat">10.0</td>
+        <td class="stat">5</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-6" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.70 · K/9 4.50
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Louis Varland</span> <span class="team">TOR</span></td>
+        <td class="stat">9.00</td>
+        <td class="stat">2.0</td>
+        <td class="stat">1</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-7" style="display:none;">
+        <td colspan="7">
+            2 APP · 1 SV · 1 BS · SV% 50%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Gabriel Hughes</span> <span class="team">COL</span></td>
+        <td class="stat">11.57</td>
+        <td class="stat">9.1</td>
+        <td class="stat">10</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-8" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.50 · K/9 9.64
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Dylan Smith</span> <span class="team">SF</span></td>
+        <td class="stat">4.50</td>
+        <td class="stat">2.0</td>
+        <td class="stat">0</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-9" style="display:none;">
+        <td colspan="7">
+            2 APP · 1 SV · 1 BS · SV% 50%
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="cold-p-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Emerson Hancock</span> <span class="team">SEA</span></td>
+        <td class="stat">4.22</td>
+        <td class="stat">10.2</td>
+        <td class="stat">9</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="cold-p-10" style="display:none;">
+        <td colspan="7">
+            2 GS · WHIP 1.88 · K/9 7.59
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="breakout-hitters">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">AVG</th>
+        <th class="stat">HR</th>
+        <th class="stat">RBI</th>
+        <th class="stat">OPS</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="brk-h-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Jac Caglianone</span> <span class="team">KC</span></td>
+        <td class="stat">.373</td>
+        <td class="stat">5</td>
+        <td class="stat">15</td>
+        <td class="stat">1.141</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-1" style="display:none;">
+        <td colspan="7">
+          13 G · 53 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Cam Smith</span> <span class="team">HOU</span></td>
+        <td class="stat">.390</td>
+        <td class="stat">3</td>
+        <td class="stat">8</td>
+        <td class="stat">1.126</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-2" style="display:none;">
+        <td colspan="7">
+          10 G · 43 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Wilyer Abreu</span> <span class="team">BOS</span></td>
+        <td class="stat">.255</td>
+        <td class="stat">5</td>
+        <td class="stat">12</td>
+        <td class="stat">0.958</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-3" style="display:none;">
+        <td colspan="7">
+          13 G · 58 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Jackson Merrill</span> <span class="team">SD</span></td>
+        <td class="stat">.345</td>
+        <td class="stat">4</td>
+        <td class="stat">15</td>
+        <td class="stat">0.987</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-4" style="display:none;">
+        <td colspan="7">
+          14 G · 57 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Josh Bell</span> <span class="team">MIN</span></td>
+        <td class="stat">.326</td>
+        <td class="stat">3</td>
+        <td class="stat">9</td>
+        <td class="stat">0.947</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-5" style="display:none;">
+        <td colspan="7">
+          12 G · 52 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Jackson Chourio</span> <span class="team">MIL</span></td>
+        <td class="stat">.296</td>
+        <td class="stat">4</td>
+        <td class="stat">7</td>
+        <td class="stat">0.924</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-6" style="display:none;">
+        <td colspan="7">
+          14 G · 62 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Brandon Nimmo</span> <span class="team">TEX</span></td>
+        <td class="stat">.333</td>
+        <td class="stat">3</td>
+        <td class="stat">8</td>
+        <td class="stat">0.992</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-7" style="display:none;">
+        <td colspan="7">
+          14 G · 57 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Dillon Dingler</span> <span class="team">DET</span></td>
+        <td class="stat">.259</td>
+        <td class="stat">4</td>
+        <td class="stat">12</td>
+        <td class="stat">0.773</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-8" style="display:none;">
+        <td colspan="7">
+          12 G · 62 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Jake McCarthy</span> <span class="team">COL</span></td>
+        <td class="stat">.358</td>
+        <td class="stat">3</td>
+        <td class="stat">9</td>
+        <td class="stat">0.967</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-9" style="display:none;">
+        <td colspan="7">
+          12 G · 55 PA · 15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-h-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Angel Martínez</span> <span class="team">CLE</span></td>
+        <td class="stat">.290</td>
+        <td class="stat">1</td>
+        <td class="stat">9</td>
+        <td class="stat">0.778</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-h-10" style="display:none;">
+        <td colspan="7">
+          8 G · 34 PA · 15-day window
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="lb-panel" id="breakout-pitchers">
+  <table class="lb-table" data-sortable>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th class="stat">ERA</th>
+        <th class="stat">IP</th>
+        <th class="stat">K</th>
+        <th class="stat">Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="expand-btn" data-detail="brk-p-1">
+        <td class="rank">1</td>
+        <td><span class="player-name">Yoendrys Gómez</span> <span class="team">MIN</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">4</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-1" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-2">
+        <td class="rank">2</td>
+        <td><span class="player-name">Jacob Webb</span> <span class="team">CHC</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">3</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-2" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-3">
+        <td class="rank">3</td>
+        <td><span class="player-name">Emilio Pagán</span> <span class="team">CIN</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">4</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-3" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-4">
+        <td class="rank">4</td>
+        <td><span class="player-name">Dylan Cease</span> <span class="team">TOR</span></td>
+        <td class="stat">0.69</td>
+        <td class="stat">13.0</td>
+        <td class="stat">17</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-4" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-5">
+        <td class="rank">5</td>
+        <td><span class="player-name">Mitch Bratt</span> <span class="team">AZ</span></td>
+        <td class="stat">0.75</td>
+        <td class="stat">12.0</td>
+        <td class="stat">11</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-5" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-6">
+        <td class="rank">6</td>
+        <td><span class="player-name">Cam Schlittler</span> <span class="team">NYY</span></td>
+        <td class="stat">3.31</td>
+        <td class="stat">16.1</td>
+        <td class="stat">25</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-6" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-7">
+        <td class="rank">7</td>
+        <td><span class="player-name">Bryan Baker</span> <span class="team">TB</span></td>
+        <td class="stat">1.50</td>
+        <td class="stat">6.0</td>
+        <td class="stat">8</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-7" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-8">
+        <td class="rank">8</td>
+        <td><span class="player-name">Sandy Alcantara</span> <span class="team">MIA</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">20.0</td>
+        <td class="stat">18</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-8" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-9">
+        <td class="rank">9</td>
+        <td><span class="player-name">Drew Rasmussen</span> <span class="team">TB</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">13.0</td>
+        <td class="stat">18</td>
+        <td class="stat" style="text-transform:capitalize;">starter</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-9" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+      <tr class="expand-btn" data-detail="brk-p-10">
+        <td class="rank">10</td>
+        <td><span class="player-name">Riley O&#39;Brien</span> <span class="team">STL</span></td>
+        <td class="stat">0.00</td>
+        <td class="stat">3.0</td>
+        <td class="stat">1</td>
+        <td class="stat" style="text-transform:capitalize;">closer</td>
+        <td></td>
+      </tr>
+      <tr class="detail-row" id="brk-p-10" style="display:none;">
+        <td colspan="7">
+          15-day window
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+</div>
+
+</div>
+
+<div class="nav">
+  <a href="../../">← All digests</a>
+</div>
+
+<footer>
+  mlbreview · August 10, 2026
+</footer>
+
+</div>
+
+<script>
+/* Tab switching */
+document.querySelectorAll('.lb-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.lb-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.lb-panel').forEach(function(p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    var panel = document.getElementById(tab.getAttribute('data-panel'));
+    if (panel) panel.classList.add('active');
+  });
+});
+
+/* Expand/collapse detail rows */
+document.querySelectorAll('.expand-btn').forEach(function(row) {
+  row.addEventListener('click', function() {
+    var detailId = row.getAttribute('data-detail');
+    var detail = document.getElementById(detailId);
+    if (detail) {
+      detail.style.display = detail.style.display === 'none' ? '' : 'none';
+    }
+  });
+});
+
+/* Column sorting */
+document.querySelectorAll('.lb-table[data-sortable] th').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var table = th.closest('table');
+    var tbody = table.querySelector('tbody');
+    var idx = Array.from(th.parentNode.children).indexOf(th);
+    var rows = Array.from(tbody.querySelectorAll('tr:not(.detail-row)'));
+    var asc = th.getAttribute('data-sort-dir') !== 'asc';
+    th.parentNode.querySelectorAll('th').forEach(function(t) { t.removeAttribute('data-sort-dir'); });
+    th.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+    rows.sort(function(a, b) {
+      var av = a.children[idx] ? a.children[idx].textContent.trim() : '';
+      var bv = b.children[idx] ? b.children[idx].textContent.trim() : '';
+      var an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an) && !isNaN(bn)) {
+        return asc ? an - bn : bn - an;
+      }
+      return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(function(row) {
+      var detailId = row.getAttribute('data-detail');
+      var detail = detailId ? document.getElementById(detailId) : null;
+      tbody.appendChild(row);
+      if (detail) tbody.appendChild(detail);
+    });
+  });
+});
+</script>
+
+</body>
+</html>
